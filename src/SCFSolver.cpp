@@ -31,27 +31,47 @@ namespace HF {
 
         // Diagonalize Hcore to obtain a guess for the density matrix P
         Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> saes0 (H_core);
-        Eigen::MatrixXd C_0 = saes0.eigenvectors();
-        Eigen::MatrixXd P_0 = calculate_P(C_0, this->molecule.nelec);
-        
+        Eigen::MatrixXd C = saes0.eigenvectors();
+        Eigen::MatrixXd P = HF::calculate_P(C, this->molecule.nelec);
+
         // Initialize the loop parameters
         bool converged = false;
         unsigned iteration_number = 1;
 
         while ((! converged) || iteration_number > this->MAX_NO_ITERATIONS ) {
-            //
+            // Calculate the G-matrix
+            Eigen::MatrixXd G = HF::calculate_G(P, tei);
 
+            // Calculate the Fock matrix
+            Eigen::MatrixXd F = H_core + G;
 
-            converged = true;
+            // Transform the Fock matrix: F'=X^dagger*F*X
+            Eigen::MatrixXd F_ = X.adjoint() * F * X;
 
-        }
+            // Diagonalize F' to obtain C' and e
+            Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> saes (F_);
+            Eigen::MatrixXd C_ = saes.eigenvectors();
 
+            // Calculate the improved coefficient matrix C
+            C = X * C_;
+
+            // Calculate an improved density matrix P from the improved coefficient matrix C
+            Eigen::MatrixXd P_previous = P; // We will store the previous density matrix
+            P = HF::calculate_P(C, this->molecule.nelec);
+
+            // Check for convergence on the density matrix P
+            if ((P - P_previous).norm() <= this->threshold) {
+                converged = true;
+
+                // After the calculation has converged, calculate the energy
+                this->E = HF::calculate_energy(P, H_core, F);
+            }
+        } // SCF cycle loop
 
         libint2::finalize();
-
-    }
-
+    } // constructor
 
 
-}
+
+} // namespace HF
 

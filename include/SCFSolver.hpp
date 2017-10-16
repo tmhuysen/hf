@@ -15,6 +15,8 @@ public:
     constexpr unsigned MAX_NO_ITERATIONS = 128;
     std::string basis_name;                     // e.g. "STO-3G" or "6-31G"
 
+    double E;                                   // The converged energy
+
 
     // Constructors
     /** Constructor based on a given Wrapper::Molecule molecule and a threshold
