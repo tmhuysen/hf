@@ -12,3 +12,8 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 # Source files for the target library
 add_subdirectory(src)
 
+
+# Set up testing
+enable_testing()
+find_package(Boost REQUIRED)
+add_subdirectory(tests)

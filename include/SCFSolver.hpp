@@ -12,10 +12,10 @@ public:
     Wrapper::Molecule molecule;                 // A molecule instance
                                                 //      This has properties atoms, and nelec
     double threshold;                           // Convergence threshold for the SCF procedure
-    constexpr unsigned MAX_NO_ITERATIONS = 128;
+    const unsigned MAX_NO_ITERATIONS = 128;
     std::string basis_name;                     // e.g. "STO-3G" or "6-31G"
 
-    double E;                                   // The converged energy
+    double energy;                              // The converged energy
 
 
     // Constructors

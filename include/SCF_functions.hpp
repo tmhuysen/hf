@@ -2,6 +2,8 @@
 #define HARTREE_FOCK_SCF_FUNCTIONS_HPP
 
 #include <Eigen/Dense>
+#include <unsupported/Eigen/CXX11/Tensor>
+
 
 namespace HF {
 

@@ -64,7 +64,7 @@ namespace HF {
                 converged = true;
 
                 // After the calculation has converged, calculate the energy
-                this->E = HF::calculate_energy(P, H_core, F);
+                this->energy = HF::calculate_energy(P, H_core, F);
             }
         } // SCF cycle loop
 

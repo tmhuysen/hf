@@ -1,6 +1,5 @@
 #include "SCF_functions.hpp"
 
-#include <unsupported/Eigen/CXX11/Tensor>
 
 namespace HF {
 
