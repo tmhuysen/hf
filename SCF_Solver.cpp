@@ -4,7 +4,7 @@
 int main () {
     libint2::initialize();
 
-    const auto xyzfilename = "/Users/laurentlemmens/Software/libint-eigen/docs/n.xyz";
+    const auto xyzfilename = "/Users/laurentlemmens/Software/libint-eigen/docs/h2o.xyz";
     std::string basis_name = "STO-3G";
 
 

@@ -1,0 +1,10 @@
+#ifndef HARTREE_FOCK_SCFSOLVER_HPP
+#define HARTREE_FOCK_SCFSOLVER_HPP
+
+
+class SCFSolver {
+
+};
+
+
+#endif //HARTREE_FOCK_SCFSOLVER_HPP
