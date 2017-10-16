@@ -1,0 +1,93 @@
+\documentclass[12pt]{article}
+
+\usepackage[onlytext]{MinionPro}
+\usepackage{microtype}
+
+\usepackage{physics}
+
+\setlength{\parindent}{0in}                                                     % No indentation for every paragraph
+
+\usepackage[left=3cm, right=3cm]{geometry}		                                % Margins left and right
+\usepackage{hyperref}                                                           % Clickable table of contents in PDFs
+\usepackage{datetime}                                                           % Currenttime
+
+
+\title{The Roothaan-Hall equations}
+\author{Laurent Lemmens}
+\date{\today \hspace{6pt} \currenttime}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+\line(1,0){250}
+\end{center}
+
+\tableofcontents
+\newpage
+
+% % % MAIN TEXT % % %
+
+\section{A naive implementation procedure}
+    In Szabo \cite{szabo}, we can find a recipe to implement the Roothaan-Hall equations:
+    \begin{enumerate}
+        \item Specify a molecule (a set of nucleic coordinates, their charge and the number of electrons) and a basis set.
+
+        \item Calculate the overlap integral matrix $\vb{S}$, the kinetic integral matrix $\vb{T}$, the nuclear attraction integral matrix $\vb{V}$, the core Hamiltonian matrix $\vb{H}^\text{core}$ and the two-electron integrals $(\mu \nu|\lambda \sigma)$, which are defined in chemists's notation
+        \begin{align}
+            (\mu \nu|\sigma \lambda) &= \int \int \dd{\vb{r}_1} \dd{\vb{r}_2} \frac{\phi_\mu^*(\vb{r}_1) \phi_\nu(\vb{r}_1) \phi_\lambda^*(\vb{r}_2) \phi_\sigma(\vb{r}_2)}{|\vb{r}_1 - \vb{r}_2|} \\
+            &= \braket{\mu \lambda}{\nu \sigma} \thinspace .
+        \end{align}
+
+        \item Diagonalize $\vb{S}$ to obtain $\vb{X}$ as
+        \begin{equation}
+            \vb{X} = \vb{S}^{-1/2} \thinspace .
+        \end{equation}
+
+        \item \label{item:scf:density_matrix} Obtain a guess for the density matrix $\vb{P}$.
+
+        \item Calculate the matrix $\vb{G}$ as
+        \begin{equation}
+            G_{\mu \nu} = \sum_{\lambda \sigma} P_{\lambda \sigma} \qty[ (\mu \nu|\lambda \sigma) - \frac{1}{2} (\mu \lambda|\sigma \nu)] \thinspace .
+        \end{equation}
+
+        \item Calculate the Fock matrix $\vb{F}$ as
+        \begin{equation}
+            \vb{F} = \vb{H}^\text{core} + G \thinspace .
+        \end{equation}
+
+        \item Transform the Fock matrix to $\vb{F}'$ as
+        \begin{equation}
+            \vb{F}' = \vb{X}^\dagger \vb{F} \vb{X} \thinspace .
+        \end{equation}
+
+        \item Diagonalize $\vb{F}'$ to obtain $\vb{C}'$ and $\boldsymbol{\epsilon}$:
+        \begin{equation}
+            \boldsymbol{\epsilon} = \vb{C}'^\dagger \vb{F}' \vb{C}'
+        \end{equation}
+
+        \item Calculate the improved coefficient matrix $\vb{C}$ as
+        \begin{equation}
+            \vb{C} = \vb{X} \vb{C}'
+        \end{equation}
+
+        \item Form an improved density matrix $\vb{P}$ from the improved coefficient matrix $\vb{C}$:
+        \begin{equation}
+            P_{\mu \nu} = 2 \sum_a^{N/2} C_{\mu a} C^*_{\nu a} \thinspace .
+        \end{equation}
+
+        \item Check for convergence on the density matrix $\vb{P}$, and if no convergence is yet achieved, return to step \ref{item:scf:density_matrix}.
+
+        \item If convergence is achieved, output the results.
+    \end{enumerate}
+
+
+
+
+% % % REFERENCES % % %
+
+\bibliographystyle{unsrt}                                                       % Bibliography in chronological order
+\bibliography{/Users/laurentlemmens/Documents/Archief/Bibliotheek/research_bib}
+
+\end{document}
