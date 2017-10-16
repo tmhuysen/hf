@@ -34,20 +34,36 @@
     \begin{enumerate}
         \item Specify a molecule (a set of nucleic coordinates, their charge and the number of electrons) and a basis set.
 
-        \item Calculate the overlap integral matrix $\vb{S}$, the kinetic integral matrix $\vb{T}$, the nuclear attraction integral matrix $\vb{V}$, the core Hamiltonian matrix $\vb{H}^\text{core}$ and the two-electron integrals $(\mu \nu|\lambda \sigma)$, which are defined in chemists's notation
+        \item Calculate the overlap integral matrix $\vb{S}$, the kinetic integral matrix $\vb{T}$, the nuclear attraction integral matrix $\vb{V}$, and the two-electron integrals $(\mu \nu|\lambda \sigma)$, which are defined in chemists's notation
         \begin{align}
             (\mu \nu|\sigma \lambda) &= \int \int \dd{\vb{r}_1} \dd{\vb{r}_2} \frac{\phi_\mu^*(\vb{r}_1) \phi_\nu(\vb{r}_1) \phi_\lambda^*(\vb{r}_2) \phi_\sigma(\vb{r}_2)}{|\vb{r}_1 - \vb{r}_2|} \\
-            &= \braket{\mu \lambda}{\nu \sigma} \thinspace .
+            &= \braket{\mu \lambda}{\nu \sigma} \thinspace ,
         \end{align}
-
-        \item Diagonalize $\vb{S}$ to obtain $\vb{X}$ as
+        and calculate the core Hamiltonian matrix $\vb{H}^\text{core}$:
         \begin{equation}
-            \vb{X} = \vb{S}^{-1/2} \thinspace .
+            \vb{H} = \vb{T} + \vb{V} \thinspace .
         \end{equation}
 
-        \item \label{item:scf:density_matrix} Obtain a guess for the density matrix $\vb{P}$.
+        \item Diagonalize $\vb{S}$
+        \begin{equation}
+            \vb{s} = \vb{U}^\dagger \vb{S} \vb{U}
+        \end{equation}
+        to obtain $\vb{X}$ as
+        \begin{align}
+            \vb{X} &= \vb{S}^{-1/2} \\
+            &= \vb{U} \vb{s}^{-1/2} \vb{U}^\dagger \thinspace .
+        \end{align}
 
-        \item Calculate the matrix $\vb{G}$ as
+        \item Obtain a guess for the density matrix $\vb{P}$. This can be done by diagonalizing $\vb{H}^\text{core}$:
+        \begin{equation}
+            \vb{h}^\text{core} = \vb{C}^\dagger_0 \vb{H}^\text{core} \vb{C}_0 \thinspace ,
+        \end{equation}
+        and calculating the initial density matrix $\vb{P}_0$ as
+        \begin{equation}
+            P_{\mu \nu}^0 = 2 \sum_a^{N/2} C_{\mu a}^0 C_{\nu a}^{0, *} \thinspace .
+        \end{equation}
+
+        \item \label{item:scf:g_matrix}  Calculate the matrix $\vb{G}$ as
         \begin{equation}
             G_{\mu \nu} = \sum_{\lambda \sigma} P_{\lambda \sigma} \qty[ (\mu \nu|\lambda \sigma) - \frac{1}{2} (\mu \lambda|\sigma \nu)] \thinspace .
         \end{equation}
@@ -77,7 +93,10 @@
             P_{\mu \nu} = 2 \sum_a^{N/2} C_{\mu a} C^*_{\nu a} \thinspace .
         \end{equation}
 
-        \item Check for convergence on the density matrix $\vb{P}$, and if no convergence is yet achieved, return to step \ref{item:scf:density_matrix}.
+        \item Check for convergence on the density matrix $\vb{P}$, and if no convergence is yet achieved, return to step \ref{item:scf:g_matrix}. We can check for converge by requiring that the Frobenius norm is smaller than a certain threshold $\varepsilon$:
+        \begin{equation}
+            ||\vb{P}_i - \vb{P}_{i-1}||_\text{F} \leq \varepsilon .
+        \end{equation}
 
         \item If convergence is achieved, output the results.
     \end{enumerate}
