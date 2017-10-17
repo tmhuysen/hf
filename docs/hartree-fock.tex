@@ -58,10 +58,9 @@
         \item Specify a molecule (a set of nucleic coordinates, their charge and the number of electrons) and a basis set.
 
         \item Calculate the overlap integral matrix $\vb{S}$, the kinetic integral matrix $\vb{T}$, the nuclear attraction integral matrix $\vb{V}$, and the two-electron integrals $(\mu \nu|\lambda \sigma)$, which are defined in chemist's notation
-        \begin{align}
-            (\mu \nu|\lambda \sigma) &= \int \int \dd{\vb{r}_1} \dd{\vb{r}_2} \frac{\phi_\mu^*(\vb{r}_1) \phi_\nu(\vb{r}_1) \phi_\lambda^*(\vb{r}_2) \phi_\sigma(\vb{r}_2)}{|\vb{r}_1 - \vb{r}_2|} \\
-            &= \braket{\mu \lambda}{\nu \sigma} \thinspace ,
-        \end{align}
+        \begin{equation}
+            (\mu \nu|\lambda \sigma) = \int \int \dd{\vb{r}_1} \dd{\vb{r}_2} \frac{\phi_\mu^*(\vb{r}_1) \phi_\nu(\vb{r}_1) \phi_\lambda^*(\vb{r}_2) \phi_\sigma(\vb{r}_2)}{|\vb{r}_1 - \vb{r}_2|} \thinspace ,
+        \end{equation}
         and calculate the core Hamiltonian matrix $\vb{H}^\text{core}$:
         \begin{equation}
             \vb{H} = \vb{T} + \vb{V} \thinspace .
@@ -74,10 +73,9 @@
         for the coefficient matrix $\vb{C}$ and calculating the density matrix $\vb{P}$ from it.
 
         \item \label{item:scf:g_matrix}  Calculate the matrix $\vb{G}$ as
-        \begin{align}
-            G_{\mu \nu} &= \sum_{\lambda \sigma} P_{\lambda \sigma} \qty[ (\mu \nu|\sigma \lambda) - \frac{1}{2} (\mu \lambda|\sigma \nu)] \\
-            &= \sum_{\lambda \sigma} P_{\lambda \sigma} \qty[ \braket{\mu \sigma}{\nu \lambda} - \frac{1}{2} \braket{\mu \sigma}{\lambda \nu}] \thinspace .
-        \end{align}
+        \begin{equation}
+            G_{\mu \nu} = \sum_{\lambda \sigma} P_{\lambda \sigma} \qty[ (\mu \nu|\sigma \lambda) - \frac{1}{2} (\mu \lambda|\sigma \nu)] \thinspace .
+        \end{equation}
 
         \item Calculate the Fock matrix $\vb{F}$ as
         \begin{equation} \label{eq:fock_matrix}
