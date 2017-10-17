@@ -75,8 +75,8 @@
 
         \item \label{item:scf:g_matrix}  Calculate the matrix $\vb{G}$ as
         \begin{align}
-            G_{\mu \nu} &= \sum_{\lambda \sigma} P_{\lambda \sigma} \qty[ (\mu \nu|\lambda \sigma) - \frac{1}{2} (\mu \lambda|\sigma \nu)] \\
-            &= \sum_{\lambda \sigma} P_{\lambda \sigma} \qty[ \braket{\mu \lambda}{\nu \sigma} - \frac{1}{2} \braket{\mu \sigma}{\lambda \nu}] \thinspace .
+            G_{\mu \nu} &= \sum_{\lambda \sigma} P_{\lambda \sigma} \qty[ (\mu \nu|\sigma \lambda) - \frac{1}{2} (\mu \lambda|\sigma \nu)] \\
+            &= \sum_{\lambda \sigma} P_{\lambda \sigma} \qty[ \braket{\mu \sigma}{\nu \lambda} - \frac{1}{2} \braket{\mu \sigma}{\lambda \nu}] \thinspace .
         \end{align}
 
         \item Calculate the Fock matrix $\vb{F}$ as
@@ -84,7 +84,7 @@
             \vb{F} = \vb{H}^\text{core} + \vb{G} \thinspace .
         \end{equation}
 
-        \item Solve the Roothaan equation (cfr. equation (\ref{eq:roothaan})) for the coefficient matrix $\vb{C}$, and calculate an improved density matrix $\vb{P}$. 
+        \item Solve the Roothaan equation (cfr. equation (\ref{eq:roothaan})) for the coefficient matrix $\vb{C}$, and calculate an improved density matrix $\vb{P}$.
 
         \item Check for convergence on the density matrix $\vb{P}$, and if no convergence is yet achieved, return to step \ref{item:scf:g_matrix}. We can check for converge by requiring that the Frobenius norm is smaller than a certain threshold $\varepsilon$:
         \begin{equation}
