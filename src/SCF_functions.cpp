@@ -1,5 +1,7 @@
 #include "SCF_functions.hpp"
 
+#include <iostream>
+
 
 namespace HF {
 
@@ -21,22 +23,17 @@ Eigen::MatrixXd calculate_X(Eigen::MatrixXd& S) {
 /** Given the coefficient matrix C, and the number of electrons N, calculate the RHF density matrix P
  */
 Eigen::MatrixXd calculate_P(Eigen::MatrixXd& C, unsigned N) {
+    // In RHF, we should have an even number of electrons
+    assert(N % 2 == 0);
+
     auto nbf = C.cols();
 
-    // Initialize P to a zero matrix
-    Eigen::MatrixXd P = Eigen::MatrixXd::Zero (nbf, nbf);
+    // Construct the occupancy matrix
+    Eigen::MatrixXd O = Eigen::MatrixXd::Zero (nbf, nbf);
+    O.topLeftCorner(N/2, N/2) = Eigen::MatrixXd::Identity (N/2, N/2);
 
-    // This is a very naive implementation to calculate P
-    for (int mu = 0; mu < nbf; ++mu) {
-        for (int nu = 0; nu < nbf; ++nu) {
-            for (int a = 0; a < N / 2; ++a) {
-                P(mu, nu) += 2 * C(mu, a) * C.conjugate()(nu, a);
-            }
-        }
-
-    }
-
-    return P;
+    // P = C O C^dagger
+    return C * O * C.adjoint();
 }
 
 
@@ -66,7 +63,7 @@ Eigen::MatrixXd calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei) {
 /** Calculate the RHF energy based on the density matrix P, the core Hamiltonian H_core and the Fock matrix F
  *
  */
-double calculate_energy(Eigen::MatrixXd &P, Eigen::MatrixXd &H_core, Eigen::MatrixXd &F) {
+double calculate_energy(Eigen::MatrixXd& P, Eigen::MatrixXd& H_core, Eigen::MatrixXd& F) {
     auto nbf = P.cols();
 
     double E = 0.0;
@@ -74,7 +71,7 @@ double calculate_energy(Eigen::MatrixXd &P, Eigen::MatrixXd &H_core, Eigen::Matr
     // This is a very naive implementation to calculate E
     for (int mu = 0; mu < nbf; ++mu) {
         for (int nu = 0; nu < nbf; ++nu) {
-            E += 0.5 * P(nu, mu) * ( H_core(mu, nu) + F(mu, nu));
+            E += 0.5 * P(nu, mu) * (H_core(mu, nu) + F(mu, nu));
         }
     }
 

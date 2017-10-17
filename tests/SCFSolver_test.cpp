@@ -6,7 +6,7 @@
 #include <boost/test/included/unit_test.hpp>  // include this to get main(), otherwise the compiler will complain
 
 
-BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
+BOOST_AUTO_TEST_CASE ( h2osto3g ) {
 
     // Specify some data
     constexpr auto xyzfilename = "../../docs/h2o.xyz"; // Anticipate an out-of source build, so we need one level higher in directories
