@@ -52,19 +52,24 @@ Eigen::MatrixXd calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei_te
 /** Calculate the RHF energy based on the density matrix P, the core Hamiltonian H_core and the Fock matrix F
  *
  */
-double calculate_electronic_energy(Eigen::MatrixXd &P, Eigen::MatrixXd &H_core, Eigen::MatrixXd &F) {
-    auto nbf = P.cols();
+double calculate_electronic_energy(Eigen::MatrixXd& P, Eigen::MatrixXd& H_core, Eigen::MatrixXd& F) {
+    // First, calculate the sum of H_core and F (this saves a contraction)
+    Eigen::MatrixXd Z = H_core + F;
 
-    double E = 0.0;
+    // Convert the matrices Z and P to an Eigen::Tensor<double, 2> P_tensor, as contractions are only implemented for Eigen::Tensors
+    Eigen::TensorMap<Eigen::Tensor<double, 2>> P_tensor (P.data(), P.rows(), P.cols());
+    Eigen::TensorMap<Eigen::Tensor<double, 2>> Z_tensor (Z.data(), P.rows(), P.cols());
 
-    // This is a very naive implementation to calculate E
-    for (int mu = 0; mu < nbf; ++mu) {
-        for (int nu = 0; nu < nbf; ++nu) {
-            E += 0.5 * P(nu, mu) * (H_core(mu, nu) + F(mu, nu));
-        }
-    }
+    // Specify the contraction pair
+    // To calculate the electronic energy, we must perform a double contraction
+    //      0.5 P(nu mu) Z(mu nu)
+    Eigen::array<Eigen::IndexPair<int>, 2> contraction_pair = {Eigen::IndexPair<int>(0, 1), Eigen::IndexPair<int>(1, 0)};
 
-    return E;
+    // Calculate the double contraction (with prefactor 0.5)
+    Eigen::Tensor<double, 0> contraction = 0.5 * P_tensor.contract(Z_tensor, contraction_pair);
+
+    // As the double contraction of two matrices is a scalar (a tensor of rank 0), we can access the value as (0).
+    return contraction(0);
 }
 
 
