@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
     // In this test case, we will follow section 3.5.2 in Szabo.
 
     // Specify the data
-    const auto xyzfilename = "../../docs/h2.xyz";
+    std::string xyzfilename = "../../docs/h2.xyz";
     std::string basis_name = "STO-3G";
     double threshold = 1.0e-06;
 
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
 
     // Specify some data
-    constexpr auto xyzfilename = "../../docs/h2o.xyz"; // Anticipate an out-of source build, so we need one level higher in directories
+    std::string xyzfilename = "../../docs/h2o.xyz"; // Anticipate an out-of source build, so we need one level higher in directories
     Wrapper::Molecule water (xyzfilename);
     double threshold = 1.0e-06;
     std::string basis_name = "STO-3G";

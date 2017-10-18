@@ -12,6 +12,7 @@ namespace HF {
         molecule(molecule), threshold(threshold), basis_name(basis_name)
     {
         // Automatically start the SCF procedure
+        std::cout << "Starting a Hartree-Fock calculation." << std::endl;
         libint2::initialize();
 
         // Calculate all one- and two-electron integrals, based on my libint wrapper
@@ -24,30 +25,24 @@ namespace HF {
 
         // Calculate H_core
         Eigen::MatrixXd H_core = T + V;
-        std::cout << "H_core" << std::endl << H_core << std::endl << std::endl;
 
         // Solve the generalized eigenvalue problem for H_core to obtain a guess for the density matrix P
         //  H_core should be self-adjoint
         //  S should be positive definite
         Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (H_core, S);
         Eigen::MatrixXd C = gsaes0.eigenvectors();
-        std::cout << "Initial guess for C:" << std::endl << C << std::endl << std::endl;
         Eigen::MatrixXd P = HF::calculate_P(C, this->molecule.nelec);
-        std::cout << "Initial guess for P:" << std::endl << P << std::endl << std::endl;
 
         // Initialize the loop parameters
         bool converged = false;
         unsigned iteration_counter = 1;
 
         while ((! converged) || iteration_counter > this->MAX_NO_ITERATIONS) {
-            std::cout << "Starting iteration number " << iteration_counter << std::endl;
-
             // Calculate the G-matrix
             Eigen::MatrixXd G = HF::calculate_G(P, tei);
 
             // Calculate the Fock matrix
             Eigen::MatrixXd F = H_core + G;
-            std::cout << "The Fock matrix in this SCF cycle is" << std::endl << F << std::endl << std::endl;
 
             // Solve the Roothaan equation (generalized eigenvalue problem)
             Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes (F, S);
@@ -55,14 +50,12 @@ namespace HF {
 
             // Calculate an improved density matrix P from the improved coefficient matrix C
             Eigen::MatrixXd P_previous = P; // We will store the previous density matrix
-            std::cout << "P_previous" << std::endl << P_previous << std::endl << std::endl;
             P = HF::calculate_P(C, this->molecule.nelec);
-            std::cout << "P" << std::endl << P << std::endl << std::endl;
 
             // Check for convergence on the density matrix P
             if ((P - P_previous).norm() <= this->threshold) {
                 converged = true;
-                std::cout << "converged!" << std::endl;
+                std::cout << "The SCF algorithm has converged after " << iteration_counter << " iterations." << std::endl;
 
                 // After the calculation has converged, calculate the energy as the sum of the electronic energy and the internuclear repulsion energy
                 this->energy = HF::calculate_electronic_energy(P, H_core, F) + this->molecule.internuclear_repulsion();
@@ -76,7 +69,4 @@ namespace HF {
         libint2::finalize();
     } // constructor
 
-
-
 } // namespace HF
-
