@@ -12,7 +12,7 @@ namespace HF {
         molecule(molecule), threshold(threshold), basis_name(basis_name)
     {
         // Automatically start the SCF procedure
-        std::cout << "Starting a Hartree-Fock calculation." << std::endl;
+        std::cout << "\nStarting a Hartree-Fock calculation." << std::endl;
         libint2::initialize();
 
         // Calculate all one- and two-electron integrals, based on my libint wrapper
@@ -55,7 +55,7 @@ namespace HF {
             // Check for convergence on the density matrix P
             if ((P - P_previous).norm() <= this->threshold) {
                 converged = true;
-                std::cout << "The SCF algorithm has converged after " << iteration_counter << " iterations." << std::endl;
+                std::cout << "The SCF algorithm has converged after " << iteration_counter << " iterations.\n" << std::endl;
 
                 // After the calculation has converged, calculate the energy as the sum of the electronic energy and the internuclear repulsion energy
                 this->energy = HF::calculate_electronic_energy(P, H_core, F) + this->molecule.internuclear_repulsion();

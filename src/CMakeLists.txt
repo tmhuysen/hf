@@ -16,6 +16,6 @@ target_link_libraries(hartree-fock PRIVATE /usr/local/lib/liblibint-wrapper.a)
 target_link_libraries(hartree-fock PRIVATE Eigen3::Eigen)
 
 # Add libint
-target_include_directories(hartree-fock PRIVATE /usr/local/libint/2.2.0/include)
-target_include_directories(hartree-fock PRIVATE /usr/local/libint/2.2.0/include/libint2)
-target_link_libraries(hartree-fock PRIVATE /usr/local/libint/2.2.0/lib/libint2.a)
+target_include_directories(hartree-fock PRIVATE /usr/local/libint/2.3.1/include)
+target_include_directories(hartree-fock PRIVATE /usr/local/libint/2.3.1/include/libint2)
+target_link_libraries(hartree-fock PRIVATE /usr/local/libint/2.3.1/lib/libint2.a)
