@@ -16,7 +16,6 @@ namespace HF {
 
         // Calculate all one- and two-electron integrals, based on my libint wrapper
         Wrapper::Basis basis (this->molecule, this->basis_name);
-        auto nbf = basis.nbf();
 
         Eigen::MatrixXd S = basis.compute_overlap_integrals();
         Eigen::MatrixXd T = basis.compute_kinetic_integrals();
@@ -32,7 +31,9 @@ namespace HF {
         //  S should be positive definite
         Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (H_core, S);
         Eigen::MatrixXd C = gsaes0.eigenvectors();
+        std::cout << "Initial guess for C:" << std::endl << C << std::endl << std::endl;
         Eigen::MatrixXd P = HF::calculate_P(C, this->molecule.nelec);
+        std::cout << "Initial guess for P:" << std::endl << P << std::endl << std::endl;
 
         // Initialize the loop parameters
         bool converged = false;
@@ -46,6 +47,7 @@ namespace HF {
 
             // Calculate the Fock matrix
             Eigen::MatrixXd F = H_core + G;
+            std::cout << "The Fock matrix in this SCF cycle is" << std::endl << F << std::endl << std::endl;
 
             // Solve the Roothaan equation (generalized eigenvalue problem)
             Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes (F, S);

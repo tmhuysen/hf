@@ -3,7 +3,7 @@ import numpy as np
 np.set_printoptions(linewidth=150)
 
 # Specify some data
-water = IOData.from_file('../../../docs/h2o.xyz')
+water = IOData.from_file('../../../docs/h2.xyz')
 threshold = 10 ** (-6)
 basis_name = "STO-3G"
 
@@ -31,14 +31,14 @@ external = {'Nuclear repulsion': compute_nucnuc(water.coordinates, water.pseudo_
 
 terms = [
     RTwoIndexTerm(T, 'Kinetic energy'),
+    RTwoIndexTerm(V, 'Nuclear attraction'),
     RDirectTerm(tei, 'HF coulomb'),
     RExchangeTerm(tei, 'HF exchange'),
-    RTwoIndexTerm(V, 'Nuclear attraction'),
 ]
 hamiltonian = REffHam(terms, external)
 
 # Decide how to occupy the orbitals (5 alpha electrons and 5 beta electrons)
-occ_model = AufbauOccModel(5)
+occ_model = AufbauOccModel(1)
 
 # Converge WFN with plain SCF
 scf_solver = PlainSCFSolver(threshold)
