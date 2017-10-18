@@ -25,7 +25,7 @@ Eigen::MatrixXd calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei);
 /** Calculate the RHF energy based on the density matrix P, the core Hamiltonian H_core and the Fock matrix F
  *
  */
-double calculate_energy(Eigen::MatrixXd& P, Eigen::MatrixXd& H_core, Eigen::MatrixXd& F);
+double calculate_electronic_energy(Eigen::MatrixXd &P, Eigen::MatrixXd &H_core, Eigen::MatrixXd &F);
 
 } // namespace HF
 

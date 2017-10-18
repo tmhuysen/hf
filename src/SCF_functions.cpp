@@ -16,7 +16,7 @@ Eigen::MatrixXd calculate_P(Eigen::MatrixXd& C, unsigned N) {
 
     // Construct the occupancy matrix
     Eigen::MatrixXd O = Eigen::MatrixXd::Zero (nbf, nbf);
-    O.topLeftCorner(N/2, N/2) = Eigen::MatrixXd::Identity (N/2, N/2);
+    O.topLeftCorner(N/2, N/2) = 2 * Eigen::MatrixXd::Identity (N/2, N/2);
 
     // P = C O C^dagger
     return C * O * C.adjoint();
@@ -57,7 +57,7 @@ Eigen::MatrixXd calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei_te
 /** Calculate the RHF energy based on the density matrix P, the core Hamiltonian H_core and the Fock matrix F
  *
  */
-double calculate_energy(Eigen::MatrixXd& P, Eigen::MatrixXd& H_core, Eigen::MatrixXd& F) {
+double calculate_electronic_energy(Eigen::MatrixXd &P, Eigen::MatrixXd &H_core, Eigen::MatrixXd &F) {
     auto nbf = P.cols();
 
     double E = 0.0;

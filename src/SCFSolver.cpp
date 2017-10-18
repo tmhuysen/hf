@@ -64,8 +64,8 @@ namespace HF {
                 converged = true;
                 std::cout << "converged!" << std::endl;
 
-                // After the calculation has converged, calculate the energy
-                this->energy = HF::calculate_energy(P, H_core, F);
+                // After the calculation has converged, calculate the energy as the sum of the electronic energy and the internuclear repulsion energy
+                this->energy = HF::calculate_electronic_energy(P, H_core, F) + this->molecule.internuclear_repulsion();
             }
 
             // Update the iteration number

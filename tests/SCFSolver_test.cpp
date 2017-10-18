@@ -10,8 +10,6 @@
 BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
     // In this test case, we will follow section 3.5.2 in Szabo.
 
-    libint2::initialize();
-
     // Specify the data
     const auto xyzfilename = "../../docs/h2.xyz";
     std::string basis_name = "STO-3G";
@@ -30,12 +28,13 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
     P_converged_ref << p11, p11,
                        p11, p11;
 
-    std::cout << P_converged_ref << std::endl;
+    std::cout << "P_converged_ref:" << std::endl << P_converged_ref << std::endl << std::endl;
 
-    libint2::finalize();
+    // Check the energy
+    BOOST_CHECK(std::abs(scf.energy - (-1.1167)) < 1.0e-04); // Reference data from Szabo
 }
 
-/*
+
 BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
 
     // Specify some data
@@ -48,6 +47,5 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
     HF::SCFSolver scf (water, threshold, basis_name);
 
     // Check the energy
-    std::cout << scf.energy << std::endl;
+    BOOST_CHECK(std::abs(scf.energy - (-74.942080)) < 1.0e-06); // Reference data from horton
 }
-*/
