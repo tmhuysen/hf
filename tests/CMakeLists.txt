@@ -20,8 +20,8 @@ foreach(test_source ${test_sources})
     target_link_libraries(${test_name} PUBLIC Eigen3::Eigen)
 
     # ... add the libint2 headers ...
-    target_include_directories(${test_name} PRIVATE /usr/local/libint/2.2.0/include)
-    target_include_directories(${test_name} PRIVATE /usr/local/libint/2.2.0/include/libint2)
+    target_include_directories(${test_name} PRIVATE /usr/local/libint/2.3.1/include)
+    target_include_directories(${test_name} PRIVATE /usr/local/libint/2.3.1/include/libint2)
 
     # ... add my own libint wrapper ...
     target_include_directories(${test_name} PRIVATE /usr/local/include/libint-wrapper)
@@ -31,5 +31,5 @@ foreach(test_source ${test_sources})
     target_link_libraries(${test_name} PRIVATE hartree-fock)
 
     # ... and finally make a test ...
-    add_test(NAME ${test_name} COMMAND ${test_name})
+    add_test(NAME ${test_name} COMMAND ${test_name} WORKING_DIRECTORY ../build)
 endforeach()

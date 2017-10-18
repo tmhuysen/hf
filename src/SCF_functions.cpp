@@ -29,8 +29,6 @@ Eigen::MatrixXd calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei_te
     // We will first have to convert the Eigen::MatrixXd P to an Eigen::Tensor<double, 2> P_tensor, as contractions are only implemented for Eigen::Tensors
     Eigen::TensorMap<Eigen::Tensor<double, 2>> P_tensor (P.data(), P.rows(), P.cols());
 
-    std::cout << "P_tensor" << std::endl << P_tensor << std::endl << std::endl;
-
     // Specify the contraction pairs
     // To calculate G, we must perform two double contractions
     //      1. (mu nu|sigma lambda) P(lambda sigma)
@@ -41,9 +39,6 @@ Eigen::MatrixXd calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei_te
     // Calculate both contractions (and incorporate prefactors)
     Eigen::Tensor<double, 2> direct_contraction = tei_tensor.contract(P_tensor, direct_contraction_pair);
     Eigen::Tensor<double, 2> exchange_contraction = -0.5 * tei_tensor.contract(P_tensor, exchange_contraction_pair);
-
-    std::cout << "direct_contraction" << std::endl << direct_contraction << std::endl << std::endl;
-    std::cout << "exchange_contraction" << std::endl << exchange_contraction << std::endl << std::endl;
 
     // The previous contractions are Eigen::Tensor<double 2> instances. In order to calculate the G matrix, we will convert them back into Eigen::MatrixXd instances.
     Eigen::Map<Eigen::MatrixXd> G1 (direct_contraction.data(), direct_contraction.dimension(0), direct_contraction.dimension(1));

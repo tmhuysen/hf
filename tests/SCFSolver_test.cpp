@@ -6,12 +6,11 @@
 #include <boost/test/included/unit_test.hpp>  // include this to get main(), otherwise the compiler will complain
 
 
-
 BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
     // In this test case, we will follow section 3.5.2 in Szabo.
 
     // Specify the data
-    std::string xyzfilename = "../../docs/h2.xyz";
+    const std::string xyzfilename = "../tests/reference/h2.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
     std::string basis_name = "STO-3G";
     double threshold = 1.0e-06;
 
@@ -28,7 +27,8 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
     P_converged_ref << p11, p11,
                        p11, p11;
 
-    std::cout << "P_converged_ref:" << std::endl << P_converged_ref << std::endl << std::endl;
+    // Check the converged density matrix
+    // FIXME: Check the converged density matrix
 
     // Check the energy
     BOOST_CHECK(std::abs(scf.energy - (-1.1167)) < 1.0e-04); // Reference data from Szabo
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
 
     // Specify some data
-    std::string xyzfilename = "../../docs/h2o.xyz"; // Anticipate an out-of source build, so we need one level higher in directories
+    const std::string xyzfilename = "../tests/reference/h2o.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
     Wrapper::Molecule water (xyzfilename);
     double threshold = 1.0e-06;
     std::string basis_name = "STO-3G";
