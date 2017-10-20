@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD 11)
 # Find the Eigen3 package (http://eigen.tuxfamily.org/dox/TopicCMakeGuide.html)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
+# Find my own library libint-wrapper
+find_package(libwrp 1.0.0 REQUIRED)
+
 
 # Source files for the target library
 add_subdirectory(src)

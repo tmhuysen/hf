@@ -1,9 +1,10 @@
-#ifndef HARTREE_FOCK_SCFSOLVER_HPP
-#define HARTREE_FOCK_SCFSOLVER_HPP
+#ifndef HF_SCFSOLVER_HPP
+#define HF_SCFSOLVER_HPP
 
 #include <string>
 
-#include <libint-wrapper.hpp>
+#include <libwrp.hpp>
+
 
 namespace HF {
 
@@ -29,4 +30,4 @@ public:
 } // namespace HF
 
 
-#endif //HARTREE_FOCK_SCFSOLVER_HPP
+#endif //HF_SCFSOLVER_HPP

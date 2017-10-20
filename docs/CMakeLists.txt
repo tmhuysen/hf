@@ -2,11 +2,11 @@
 cmake_minimum_required(VERSION 2.8)
 
 # Specify the tex file name
-set(TEX_NAME hartree-fock)
+set(TEX_NAME hf)
 
 
 # Define a LaTeX project, and specify where to find the UseLATEX commands
-project(hartree-fock NONE)			# The NONE option has to be included, since we are not using the langue c, cxx, or Fortran
+project(hf NONE)			        # The NONE option has to be included, since we are not using the langue c, cxx, or Fortran
 include(cmake/UseLATEX.cmake)		# I like anti-cluttering by moving the UseLATEX.cmake file into a separate directory
 
 # BUILD: Add a file to the specified project

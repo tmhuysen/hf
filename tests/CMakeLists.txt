@@ -24,8 +24,8 @@ foreach(test_source ${test_sources})
     target_include_directories(${test_name} PRIVATE /usr/local/libint/2.3.1/include/libint2)
 
     # ... add my own libint wrapper ...
-    target_include_directories(${test_name} PRIVATE /usr/local/include/libint-wrapper)
-    target_link_libraries(${test_name} PRIVATE /usr/local/lib/liblibint-wrapper.a)
+    target_include_directories(${test_name} PRIVATE ${libwrp_INCLUDE_DIRS})
+    target_link_libraries(${test_name} PRIVATE libwrp)
 
     # ... link to this project's library ...
     target_link_libraries(${test_name} PRIVATE hartree-fock)

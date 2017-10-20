@@ -9,8 +9,8 @@ add_library(hartree-fock
 target_include_directories(hartree-fock PRIVATE ../include)
 
 # Add my own libint wrapper
-target_include_directories(hartree-fock PRIVATE /usr/local/include/libint-wrapper)
-target_link_libraries(hartree-fock PRIVATE /usr/local/lib/liblibint-wrapper.a)
+target_include_directories(hartree-fock PRIVATE ${libwrp_INCLUDE_DIRS})
+target_link_libraries(hartree-fock PRIVATE libwrp)
 
 # Include the Eigen headers
 target_link_libraries(hartree-fock PRIVATE Eigen3::Eigen)
