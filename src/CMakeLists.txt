@@ -1,21 +1,13 @@
-# src-level CMakeLists
-
-add_library(hartree-fock
-        SCFSolver.cpp
-        SCF_functions.cpp)
+# src-level CMakeLists.txt
 
 
-# Include this project's headers
-target_include_directories(hartree-fock PRIVATE ../include)
+# We want to make a static library target called "libhf", based on the project source files
+add_library(${LIBRARY_NAME} ${LIBRARY_TYPE} ${PROJECT_SOURCE_FILES})
 
-# Add my own libint wrapper
-target_include_directories(hartree-fock PRIVATE ${libwrp_INCLUDE_DIRS})
-target_link_libraries(hartree-fock PRIVATE libwrp)
 
-# Include the Eigen headers
-target_link_libraries(hartree-fock PRIVATE Eigen3::Eigen)
+# Configure the library: include headers and link to libraries
+include(${CMAKE_SOURCE_DIR}/cmake/ConfigureLibrary.cmake)
 
-# Add libint
-target_include_directories(hartree-fock PRIVATE /usr/local/libint/2.3.1/include)
-target_include_directories(hartree-fock PRIVATE /usr/local/libint/2.3.1/include/libint2)
-target_link_libraries(hartree-fock PRIVATE /usr/local/libint/2.3.1/lib/libint2.a)
+
+# Make the install target for this library
+include(${CMAKE_SOURCE_DIR}/cmake/InstallLibrary.cmake)
