@@ -1,35 +1,16 @@
-# src-level CMakeLists
+# test-level CMakeLists.txt
 
 # For every *.cpp-file (every file corresponding to one set of tests) ...
-file(GLOB test_sources ./*.cpp)
-
-foreach(test_source ${test_sources})
-    # ... extract the filename without extension as a name for our executable ...
-    get_filename_component(test_name ${test_source} NAME_WE)
+foreach(TEST_SOURCE ${PROJECT_TEST_SOURCE_FILES})
+    # ... extract the filename without extension (NAME_WE) as a name for our executable ...
+    get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
 
     # ... add an executable based on the test source ...
-    add_executable(${test_name} ${test_source})
+    add_executable(${TEST_NAME} ${TEST_SOURCE})
 
-    # ... add the boost headers (for testing) ...
-    target_include_directories(${test_name} PRIVATE ${Boost_INCLUDE_DIRS})
+    # ... configure (include headers and link libraries) the test ...
+    include(${CMAKE_SOURCE_DIR}/cmake/ConfigureTest.cmake)
 
-    # ... add this project's headers ...
-    target_include_directories(${test_name} PRIVATE ../include)
-
-    # ... add the eigen3 headers ...
-    target_link_libraries(${test_name} PUBLIC Eigen3::Eigen)
-
-    # ... add the libint2 headers ...
-    target_include_directories(${test_name} PRIVATE /usr/local/libint/2.3.1/include)
-    target_include_directories(${test_name} PRIVATE /usr/local/libint/2.3.1/include/libint2)
-
-    # ... add my own libint wrapper ...
-    target_include_directories(${test_name} PRIVATE ${libwrp_INCLUDE_DIRS})
-    target_link_libraries(${test_name} PRIVATE libwrp)
-
-    # ... link to this project's library ...
-    target_link_libraries(${test_name} PRIVATE hartree-fock)
-
-    # ... and finally make a test ...
-    add_test(NAME ${test_name} COMMAND ${test_name} WORKING_DIRECTORY ../build)
+    # ... and finally make a test
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME} WORKING_DIRECTORY ${CMAKE_BINARY_DIR})  # the working directory will be the build directory
 endforeach()
