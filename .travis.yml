@@ -79,7 +79,7 @@ install:
   - ls -a
   - tar -xvzf v1.0.0.tar.gz
   - ls -a
-  - cd v1.0.0
+  - cd libpwrp-v1.0.0
   - mkdir build && cd build
   - cmake .. && make && make test && sudo make install
 
