@@ -77,7 +77,7 @@ install:
   - mkdir /tmp/libwrp && cd /tmp/libwrp
   - curl -OL "https://github.com/lelemmen/libwrp/archive/v1.0.0.tar.gz"
   - ls -a
-  - tar -xvzf v1.0.0.tar
+  - tar -xvzf v1.0.0.tar.gz
   - ls -a
   - cd v1.0.0
   - mkdir build && cd build
