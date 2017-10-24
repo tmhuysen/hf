@@ -14,4 +14,4 @@ find_package(libint2)
 
 
 # Find my own libint wrapper
-find_package(libwrp 1.0.0 REQUIRED)
+find_package(libwrp 1.0.1 REQUIRED)
