@@ -12,3 +12,6 @@ include(@CMAKE_INSTALL_DIR@/@PROJECT_NAME@Targets.cmake)
 
 # Specify the library value
 set(@PROJECT_NAME_LOWERCASE@_LIBRARIES @LIBRARY_NAME@)
+
+# Output the library version
+message(STATUS "@PROJECT_NAME_LOWERCASE@ version: @PROJECT_VERSION@")
