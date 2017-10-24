@@ -17,7 +17,7 @@ To install this library:
 
         curl -OL "https://github.com/lelemmen/hf/archive/v1.0.0.tar.gz"
         tar -xvzf v1.0.0.tar.gz
-        cd hf-1.0.1
+        cd hf-1.0.0
 
 2. perform an out-of-source cmake build:
 
