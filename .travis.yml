@@ -75,7 +75,7 @@ install:
 
   # Install the libint wrapper
   - mkdir /tmp/libwrp && cd /tmp/libwrp
-  - curl -OL "https://github.com/lelemmen/libwrp/releases/tag/v1.0.1"
+  - curl -OL "https://github.com/lelemmen/libwrp/archive/v1.0.1.tar.gz"
   - ls -a
   - tar -xvzf v1.0.1.tar.gz
   - ls -a
