@@ -59,6 +59,10 @@ namespace HF {
 
                 // After the calculation has converged, calculate the energy as the sum of the electronic energy and the internuclear repulsion energy
                 this->energy = HF::calculate_electronic_energy(P, H_core, F) + this->molecule.internuclear_repulsion();
+
+                // Furthermore, add the orbital energies and the coefficient matrix to this
+                this->orbital_energies = gsaes.eigenvalues();
+                this->C = C;
             }
 
             // Update the iteration number
