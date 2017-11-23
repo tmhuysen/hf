@@ -3,7 +3,7 @@ import numpy as np
 np.set_printoptions(linewidth=150)
 
 # Specify some data
-water = IOData.from_file('../docs/h2o.xyz')
+water = IOData.from_file('../h2o.xyz')
 threshold = 10 ** (-6)
 basis_name = "STO-3G"
 
@@ -43,3 +43,8 @@ occ_model = AufbauOccModel(5)
 # Converge WFN with plain SCF
 scf_solver = PlainSCFSolver(threshold)
 scf_solver(hamiltonian, S, occ_model, orb_alpha)
+
+# Print some output
+print orb_alpha.energies
+print orb_alpha.coeffs
+

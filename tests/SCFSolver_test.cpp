@@ -6,6 +6,32 @@
 #include <boost/test/included/unit_test.hpp>  // include this to get main(), otherwise the compiler will complain
 
 
+/** Check if two sets of eigenvalues are equal
+ */
+bool are_equal_eigenvalues(Eigen::VectorXd evals1, Eigen::VectorXd evals2, double tol) {
+    return evals1.isApprox(evals2, tol);
+}
+
+/** Check if two eigenvectors are equal. This is the case if they are equal up to their sign.
+ */
+bool are_equal_eigenvectors(Eigen::VectorXd evec1, Eigen::VectorXd evec2, double tol) {
+    return (evec1.isApprox(evec2, tol) || evec1.isApprox(-evec2, tol));
+}
+
+/** Check if two sets of eigenvectors are equal.
+ */
+bool are_equal_sets_eigenvectors(Eigen::MatrixXd evecs1, Eigen::MatrixXd evecs2, double tol) {
+    auto dim = evecs1.cols();
+    for (unsigned i = 0; i < dim; i++) {
+        if (! are_equal_eigenvectors(evecs1.col(i), evecs2.col(i), tol)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+
 BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
     // In this test case, we will follow section 3.5.2 in Szabo.
 
@@ -43,11 +69,30 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
     double threshold = 1.0e-06;
     std::string basis_name = "STO-3G";
 
+
+    // Supply the reference data from HORTON
+    double ref_energy = -74.942080055631;
+    Eigen::VectorXd ref_orbital_energies (7);  // 7 BF in STO-3G for water
+    ref_orbital_energies << -20.26289322, -1.20969863, -0.54796582, -0.43652631, -0.38758791, 0.47762043, 0.5881361;
+
+    Eigen::MatrixXd C_ref (7, 7);
+    C_ref << -9.94434594e-01, -2.39158997e-01,  3.61117086e-17, -9.36837259e-02,  3.73303682e-31, -1.11639152e-01, -9.04958229e-17,
+             -2.40970260e-02,  8.85736467e-01, -1.62817254e-16,  4.79589270e-01, -1.93821120e-30,  6.69575233e-01,  5.16088339e-16,
+              1.59542752e-18,  5.29309704e-17, -6.07288675e-01, -1.49717339e-16,  8.94470461e-17, -8.85143477e-16,  9.19231270e-01,
+             -3.16155527e-03,  8.58957413e-02,  2.89059171e-16, -7.47426286e-01,  2.81871324e-30,  7.38494291e-01,  6.90314422e-16,
+              6.65079968e-35,  1.16150362e-32, -2.22044605e-16, -4.06685146e-30, -1.00000000e+00, -1.78495825e-31,  2.22044605e-16,
+              4.59373756e-03,  1.44038811e-01, -4.52995183e-01, -3.29475784e-01,  2.16823939e-16, -7.09847234e-01, -7.32462496e-01,
+              4.59373756e-03,  1.44038811e-01,  4.52995183e-01, -3.29475784e-01, -2.16823939e-16, -7.09847234e-01,  7.32462496e-01;
+
+
     // Do the SCF cycle
     HF::SCFSolver scf (water, threshold, basis_name);
 
-    // Check the energy
-    BOOST_CHECK(std::abs(scf.energy - (-74.942080)) < 1.0e-06); // Reference data from horton
+
+    // Check the calculated results with the reference
+    BOOST_CHECK(std::abs(scf.energy - ref_energy) < 1.0e-06);
+    BOOST_CHECK(are_equal_eigenvalues(ref_orbital_energies, scf.orbital_energies, 1.0e-06));
+    BOOST_CHECK(are_equal_sets_eigenvectors(C_ref, scf.C, 1.0e-05));
 }
 
 

@@ -16,6 +16,9 @@ public:
     const unsigned MAX_NO_ITERATIONS = 128;
     std::string basis_name;                     // e.g. "STO-3G" or "6-31G"
 
+    Eigen::VectorXd orbital_energies;           // Energies of the spatial orbitals (i.e. eigenvalues of the diagonal Fock operator)
+    Eigen::MatrixXd C;                          // Coefficient matrix linking the spatial orbitals to the underlying (Gaussian) basis set
+                                                //      Every column represents a spatial orbital in terms of its AOs
     double energy;                              // The converged energy
 
 
