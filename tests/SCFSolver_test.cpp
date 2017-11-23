@@ -49,3 +49,45 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
     // Check the energy
     BOOST_CHECK(std::abs(scf.energy - (-74.942080)) < 1.0e-06); // Reference data from horton
 }
+
+
+BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
+
+    // This example is taken from (http://sirius.chem.vt.edu/wiki/doku.php?id=crawdad:programming:project3), but the input .xyz-file was converted to Angstrom.
+
+    // Specify the input file, energy threshold and basis set
+    const std::string xyzfilename = "../tests/reference/h2o_crawdad.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
+    Wrapper::Molecule water (xyzfilename);
+    double threshold = 1.0e-06;
+    std::string basis_name = "STO-3G";
+
+    // Check if the internuclear distance between O and H is really 1.1 A (= 2.07869 bohr), as specified in the text
+    BOOST_CHECK(std::abs(Wrapper::distance(water.atoms[0], water.atoms[1]) - 2.07869) < 1.0e-3);
+
+    // Do the SCF cycle
+    HF::SCFSolver scf (water, threshold, basis_name);
+
+    // Check the energy
+    BOOST_CHECK(std::abs(scf.energy - (-74.9420799281920)) < threshold);  // Reference data from crawdad
+}
+
+
+BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
+
+    // This example is taken from (http://sirius.chem.vt.edu/wiki/doku.php?id=crawdad:programming:project3), but the input .xyz-file was converted to Angstrom.
+
+    // Specify the input file, energy threshold and basis set
+    const std::string xyzfilename = "../tests/reference/ch4_crawdad.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
+    Wrapper::Molecule methane (xyzfilename);
+    double threshold = 1.0e-06;
+    std::string basis_name = "STO-3G";
+
+    // Check if the internuclear distance between C and H is really around 2.05 bohr, which is the bond distance Wikipedia (108.7 pm) specifies
+    BOOST_CHECK(std::abs(Wrapper::distance(methane.atoms[0], methane.atoms[1]) - 2.05) < 1.0e-1);
+
+    // Do the SCF cycle
+    HF::SCFSolver scf (methane, threshold, basis_name);
+
+    // Check the energy
+    BOOST_CHECK(std::abs(scf.energy - (-39.726850324347)) < threshold);
+}
