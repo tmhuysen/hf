@@ -11,6 +11,8 @@ namespace HF {
     SCFSolver::SCFSolver(Wrapper::Molecule& molecule, double threshold, std::string& basis_name) :
         molecule(molecule), threshold(threshold), basis_name(basis_name)
     {
+        assert(this->molecule.nelec % 2 == 0);  // We have only implemented a restricted Hartree-Fock algorithm
+
         // Automatically start the SCF procedure
         std::cout << "\nStarting a Hartree-Fock calculation." << std::endl;
         libint2::initialize();

@@ -27,7 +27,7 @@ public:
     // Constructors
     /** Constructor based on a given Wrapper::Molecule molecule and a threshold
      *
-     * This automatically starts the SCF procedure
+     * This automatically starts the restricted SCF procedure
      */
     SCFSolver(Wrapper::Molecule& molecule, double threshold, std::string& basis_name);
 };

@@ -3,12 +3,35 @@
 #include <iostream>
 
 
-namespace HF {
+/** Given a number of spatial orbitals K and a number of electrons N, calculated the index of the HOMO in the restricted case
+ */
+size_t HF::HOMO_index(unsigned K, unsigned N) {
+    if (N % 2 != 0) {
+        throw std::invalid_argument("The unrestricted case is not supported.");
+    }
+
+    if (N > 2 * K) {
+        throw std::invalid_argument("Cannot place that many electrons N in K spatial orbitals.");
+    }
+
+    return N / 2 - 1;  // Need to subtract 1 because computer indices start at 0
+}
+
+
+/** Given a number of spatial orbitals K and a number of electrons N, calculated the index of the LUMO in the restricted case
+ */
+size_t HF::LUMO_index(unsigned K, unsigned N) {
+    if (N >= 2 * K) {
+        throw std::invalid_argument("There is no LUMO for the given amount of electrons N and spatial orbitals K");
+    }
+
+    return HOMO_index(K, N) + 1;
+}
 
 
 /** Given the coefficient matrix C, and the number of electrons N, calculate the RHF density matrix P
  */
-Eigen::MatrixXd calculate_P(Eigen::MatrixXd& C, unsigned N) {
+Eigen::MatrixXd HF::calculate_P(Eigen::MatrixXd& C, unsigned N) {
     // In RHF, we should have an even number of electrons
     assert(N % 2 == 0);
 
@@ -25,7 +48,7 @@ Eigen::MatrixXd calculate_P(Eigen::MatrixXd& C, unsigned N) {
 
 /** Given the density matrix P, and the two-electron integrals, calculate the G-matrix
  */
-Eigen::MatrixXd calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei_tensor) {
+Eigen::MatrixXd HF::calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei_tensor) {
     // We will first have to convert the Eigen::MatrixXd P to an Eigen::Tensor<double, 2> P_tensor, as contractions are only implemented for Eigen::Tensors
     Eigen::TensorMap<Eigen::Tensor<double, 2>> P_tensor (P.data(), P.rows(), P.cols());
 
@@ -52,7 +75,7 @@ Eigen::MatrixXd calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei_te
 /** Calculate the RHF energy based on the density matrix P, the core Hamiltonian H_core and the Fock matrix F
  *
  */
-double calculate_electronic_energy(Eigen::MatrixXd& P, Eigen::MatrixXd& H_core, Eigen::MatrixXd& F) {
+double HF::calculate_electronic_energy(Eigen::MatrixXd& P, Eigen::MatrixXd& H_core, Eigen::MatrixXd& F) {
     // First, calculate the sum of H_core and F (this saves a contraction)
     Eigen::MatrixXd Z = H_core + F;
 
@@ -71,6 +94,3 @@ double calculate_electronic_energy(Eigen::MatrixXd& P, Eigen::MatrixXd& H_core, 
     // As the double contraction of two matrices is a scalar (a tensor of rank 0), we can access the value as (0).
     return contraction(0);
 }
-
-
-} // namespace HF
