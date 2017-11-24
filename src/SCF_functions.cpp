@@ -31,9 +31,9 @@ Eigen::MatrixXd calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei_te
 
     // Specify the contraction pairs
     // To calculate G, we must perform two double contractions
-    //      1. (mu nu|sigma lambda) P(lambda sigma)
+    //      1. (mu nu|rho lambda) P(lambda rho)
     Eigen::array<Eigen::IndexPair<int>, 2> direct_contraction_pair = {Eigen::IndexPair<int>(3, 0), Eigen::IndexPair<int>(2, 1)};
-    //      2. -0.5 (mu lambda|sigma nu) P(lambda sigma)
+    //      2. -0.5 (mu lambda|rho nu) P(lambda rho)
     Eigen::array<Eigen::IndexPair<int>, 2> exchange_contraction_pair = {Eigen::IndexPair<int>(1, 0), Eigen::IndexPair<int>(2, 1)};
 
     // Calculate both contractions (and incorporate prefactors)

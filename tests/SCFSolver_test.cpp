@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
     // Check the calculated results with the reference
     BOOST_CHECK(std::abs(scf.energy - ref_energy) < 1.0e-06);
     BOOST_CHECK(are_equal_eigenvalues(ref_orbital_energies, scf.orbital_energies, 1.0e-06));
-    BOOST_CHECK(are_equal_sets_eigenvectors(C_ref, scf.C, 1.0e-05));
+    BOOST_CHECK(are_equal_sets_eigenvectors(C_ref, scf.C_canonical, 1.0e-05));
 }
 
 

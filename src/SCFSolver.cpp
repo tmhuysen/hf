@@ -54,15 +54,21 @@ namespace HF {
 
             // Check for convergence on the density matrix P
             if ((P - P_previous).norm() <= this->threshold) {
+
+                // After the SCF procedure, we end up with canonical spatial orbitals, i.e. the Fock matrix should be diagonal in this basis
+                // Let's check if this is the case, within double float precision
+                Eigen::MatrixXd f_MO = C.adjoint() * F * C;  // FIXME: we can use the libwrp function for this
+                assert(f_MO.isDiagonal());
+
                 converged = true;
                 std::cout << "The SCF algorithm has converged after " << iteration_counter << " iterations.\n" << std::endl;
 
                 // After the calculation has converged, calculate the energy as the sum of the electronic energy and the internuclear repulsion energy
                 this->energy = HF::calculate_electronic_energy(P, H_core, F) + this->molecule.internuclear_repulsion();
 
-                // Furthermore, add the orbital energies and the coefficient matrix to this
+                // Furthermore, add the orbital energies and the coefficient matrix to (this)
                 this->orbital_energies = gsaes.eigenvalues();
-                this->C = C;
+                this->C_canonical = C;
             }
 
             // Update the iteration number
