@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
     libwrp::Molecule h2 (xyzfilename);
 
     // Do the SCF cycle
-    HF::SCFSolver scf (h2, threshold, basis_name);
+    hf::SCFSolver scf (h2, threshold, basis_name);
 
 
     // The converged coefficient matrix is listed as
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
 
 
     // Do the SCF cycle
-    HF::SCFSolver scf (water, threshold, basis_name);
+    hf::SCFSolver scf (water, threshold, basis_name);
 
 
     // Check the calculated results with the reference
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
     BOOST_CHECK(std::abs(libwrp::distance(water.atoms[0], water.atoms[1]) - 2.07869) < 1.0e-3);
 
     // Do the SCF cycle
-    HF::SCFSolver scf (water, threshold, basis_name);
+    hf::SCFSolver scf (water, threshold, basis_name);
 
     // Check the energy
     BOOST_CHECK(std::abs(scf.energy - (-74.9420799281920)) < threshold);  // Reference data from crawdad
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
     BOOST_CHECK(std::abs(libwrp::distance(methane.atoms[0], methane.atoms[1]) - 2.05) < 1.0e-1);
 
     // Do the SCF cycle
-    HF::SCFSolver scf (methane, threshold, basis_name);
+    hf::SCFSolver scf (methane, threshold, basis_name);
 
     // Check the energy
     BOOST_CHECK(std::abs(scf.energy - (-39.726850324347)) < threshold);

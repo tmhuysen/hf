@@ -6,7 +6,7 @@
 #include <libwrp.hpp>
 
 
-namespace HF {
+namespace hf {
 
 class SCFSolver {
 public:
@@ -32,7 +32,7 @@ public:
     SCFSolver(libwrp::Molecule& molecule, double threshold, std::string& basis_name);
 };
 
-} // namespace HF
+} // namespace hf
 
 
 #endif //HF_SCFSOLVER_HPP
