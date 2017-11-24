@@ -10,7 +10,7 @@ namespace HF {
 
 class SCFSolver {
 public:
-    Wrapper::Molecule molecule;                 // A molecule instance
+    libwrp::Molecule molecule;                 // A molecule instance
                                                 //      This has properties atoms, and nelec
     double threshold;                           // Convergence threshold for the SCF procedure
     const unsigned MAX_NO_ITERATIONS = 128;
@@ -25,11 +25,11 @@ public:
 
 
     // Constructors
-    /** Constructor based on a given Wrapper::Molecule molecule and a threshold
+    /** Constructor based on a given libwrp::Molecule molecule and a threshold
      *
      * This automatically starts the restricted SCF procedure
      */
-    SCFSolver(Wrapper::Molecule& molecule, double threshold, std::string& basis_name);
+    SCFSolver(libwrp::Molecule& molecule, double threshold, std::string& basis_name);
 };
 
 } // namespace HF
