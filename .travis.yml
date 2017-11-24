@@ -75,11 +75,9 @@ install:
 
   # Install the libint wrapper
   - mkdir /tmp/libwrp && cd /tmp/libwrp
-  - curl -OL "https://github.com/lelemmen/libwrp/archive/v1.0.1.tar.gz"
-  - ls -a
-  - tar -xvzf v1.0.1.tar.gz
-  - ls -a
-  - cd libwrp-1.0.1
+  - curl -OL "https://github.com/lelemmen/libwrp/archive/v2.0.0.tar.gz"
+  - tar -xvzf v2.0.0.tar.gz
+  - cd libwrp-2.0.0
   - mkdir build && cd build
   - cmake .. && make && make test && sudo make install
 
