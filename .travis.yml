@@ -81,6 +81,7 @@ install:
   - mkdir build && cd build
   - cmake .. && make && make test && sudo make install
 
+
 # Run the build script
 script:
   - cd /home/travis/build/lelemmen/hf
