@@ -35,6 +35,16 @@ addons:
 
 # Install dependencies
 install:
+
+  # Install the libint wrapper
+  - mkdir /tmp/libwrp && cd /tmp/libwrp
+  - git clone https://github.com/lelemmen/libwrp.git
+  - ls
+  - cd libwrp
+  - mkdir build && cd build
+  - cmake .. && make && make test && sudo make install
+
+
   # We need a recent version of Eigen3, but this is not available through APT.
   - hg clone https://bitbucket.org/eigen/eigen /tmp/eigen
   - mkdir /tmp/build-eigen && cd /tmp/build-eigen
@@ -74,12 +84,12 @@ install:
 
 
   # Install the libint wrapper
-  - mkdir /tmp/libwrp && cd /tmp/libwrp
-  - curl -OL "https://github.com/lelemmen/libwrp/archive/v2.0.0.tar.gz"
-  - tar -xvzf v2.0.0.tar.gz
-  - cd libwrp-2.0.0
-  - mkdir build && cd build
-  - cmake .. && make && make test && sudo make install
+#  - mkdir /tmp/libwrp && cd /tmp/libwrp
+#  - curl -OL "https://github.com/lelemmen/libwrp/archive/v2.0.0.tar.gz"
+#  - tar -xvzf v2.0.0.tar.gz
+#  - cd libwrp-2.0.0
+#  - mkdir build && cd build
+#  - cmake .. && make && make test && sudo make install
 
 
 # Run the build script
