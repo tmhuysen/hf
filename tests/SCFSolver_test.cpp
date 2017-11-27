@@ -30,6 +30,22 @@ bool are_equal_sets_eigenvectors(Eigen::MatrixXd evecs1, Eigen::MatrixXd evecs2,
     return true;
 }
 
+BOOST_AUTO_TEST_CASE ( reference ) {
+
+    // Specify some data, create a Molecule and a Basis
+    const std::string xyzfilename = "../tests/reference/h2.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
+    std::string basis_name = "STO-3G";
+    double threshold = 1.0e-06;
+
+    libwrp::Molecule h2 (xyzfilename);
+    libwrp::Basis basis (h2, basis_name);
+
+    // Create an SCFSolver instance - this automatically performs the SCF cycle (not that this is needed in this test)
+    hf::SCFSolver scf (basis, threshold);
+
+    // Test if a reference to the Basis object is made
+    BOOST_CHECK_EQUAL(&basis, &scf.basis);
+}
 
 
 BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
@@ -42,9 +58,10 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 
     // Create a Molecule and a Basis
     libwrp::Molecule h2 (xyzfilename);
+    libwrp::Basis basis (h2, basis_name);
 
     // Do the SCF cycle
-    hf::SCFSolver scf (h2, threshold, basis_name);
+    hf::SCFSolver scf (basis, threshold);
 
 
     // The converged coefficient matrix is listed as
@@ -65,9 +82,11 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
 
     // Specify some data
     const std::string xyzfilename = "../tests/reference/h2o.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
-    libwrp::Molecule water (xyzfilename);
     double threshold = 1.0e-06;
     std::string basis_name = "STO-3G";
+
+    libwrp::Molecule water (xyzfilename);
+    libwrp::Basis basis (water, basis_name);
 
 
     // Supply the reference data from HORTON
@@ -86,7 +105,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
 
 
     // Do the SCF cycle
-    hf::SCFSolver scf (water, threshold, basis_name);
+    hf::SCFSolver scf (basis, threshold);
 
 
     // Check the calculated results with the reference
@@ -102,15 +121,18 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 
     // Specify the input file, energy threshold and basis set
     const std::string xyzfilename = "../tests/reference/h2o_crawdad.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
-    libwrp::Molecule water (xyzfilename);
     double threshold = 1.0e-06;
     std::string basis_name = "STO-3G";
+
+    libwrp::Molecule water (xyzfilename);
+    libwrp::Basis basis (water, basis_name);
+
 
     // Check if the internuclear distance between O and H is really 1.1 A (= 2.07869 bohr), as specified in the text
     BOOST_CHECK(std::abs(libwrp::distance(water.atoms[0], water.atoms[1]) - 2.07869) < 1.0e-3);
 
     // Do the SCF cycle
-    hf::SCFSolver scf (water, threshold, basis_name);
+    hf::SCFSolver scf (basis, threshold);
 
     // Check the energy
     BOOST_CHECK(std::abs(scf.energy - (-74.9420799281920)) < threshold);  // Reference data from crawdad
@@ -123,15 +145,18 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 
     // Specify the input file, energy threshold and basis set
     const std::string xyzfilename = "../tests/reference/ch4_crawdad.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
-    libwrp::Molecule methane (xyzfilename);
     double threshold = 1.0e-06;
     std::string basis_name = "STO-3G";
+
+    libwrp::Molecule methane (xyzfilename);
+    libwrp::Basis basis (methane, basis_name);
+
 
     // Check if the internuclear distance between C and H is really around 2.05 bohr, which is the bond distance Wikipedia (108.7 pm) specifies
     BOOST_CHECK(std::abs(libwrp::distance(methane.atoms[0], methane.atoms[1]) - 2.05) < 1.0e-1);
 
     // Do the SCF cycle
-    hf::SCFSolver scf (methane, threshold, basis_name);
+    hf::SCFSolver scf (basis, threshold);
 
     // Check the energy
     BOOST_CHECK(std::abs(scf.energy - (-39.726850324347)) < threshold);

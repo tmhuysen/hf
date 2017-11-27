@@ -2,28 +2,21 @@
 #include "SCF_functions.hpp"
 
 
-namespace hf {
-
-/** Constructor based on a given libwrp::Molecule molecule and a threshold
+/** Constructor based on a given libwrp::Basis and an SCF-cycle threshold
  *
- * This automatically starts the SCF procedure
+ *      This automatically starts the restricted SCF procedure
  */
-SCFSolver::SCFSolver(libwrp::Molecule& molecule, double threshold, std::string& basis_name) :
-    molecule(molecule), threshold(threshold), basis_name(basis_name)
+hf::SCFSolver::SCFSolver(libwrp::Basis& basis, double threshold):
+    basis(basis), threshold(threshold)
 {
-    assert(this->molecule.nelec % 2 == 0);  // We have only implemented a restricted Hartree-Fock algorithm
+    assert(this->basis.molecule.nelec % 2 == 0);  // We have only implemented a restricted Hartree-Fock algorithm
 
     // Automatically start the SCF procedure
     std::cout << "\nStarting a Hartree-Fock calculation." << std::endl;
     libint2::initialize();
 
-    // Calculate all one- and two-electron integrals, based on my libint wrapper
-    libwrp::Basis basis (this->molecule, this->basis_name);
-
-    basis.compute_overlap_integrals();
-    basis.compute_kinetic_integrals();
-    basis.compute_nuclear_integrals();
-    basis.compute_two_electron_integrals();
+    // Compute all integrals in the AO basis
+    basis.compute_integrals();
 
     // Calculate H_core
     Eigen::MatrixXd H_core = basis.T + basis.V;
@@ -33,7 +26,7 @@ SCFSolver::SCFSolver(libwrp::Molecule& molecule, double threshold, std::string& 
     //  S should be positive definite
     Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (H_core, basis.S);
     Eigen::MatrixXd C = gsaes0.eigenvectors();
-    Eigen::MatrixXd P = hf::calculate_P(C, this->molecule.nelec);
+    Eigen::MatrixXd P = hf::calculate_P(C, this->basis.molecule.nelec);
 
     // Initialize the loop parameters
     bool converged = false;
@@ -52,7 +45,7 @@ SCFSolver::SCFSolver(libwrp::Molecule& molecule, double threshold, std::string& 
 
         // Calculate an improved density matrix P from the improved coefficient matrix C
         Eigen::MatrixXd P_previous = P; // We will store the previous density matrix
-        P = hf::calculate_P(C, this->molecule.nelec);
+        P = hf::calculate_P(C, this->basis.molecule.nelec);
 
         // Check for convergence on the density matrix P
         if ((P - P_previous).norm() <= this->threshold) {
@@ -66,7 +59,7 @@ SCFSolver::SCFSolver(libwrp::Molecule& molecule, double threshold, std::string& 
             std::cout << "The SCF algorithm has converged after " << iteration_counter << " iterations.\n" << std::endl;
 
             // After the calculation has converged, calculate the energy as the sum of the electronic energy and the internuclear repulsion energy
-            this->energy = hf::calculate_electronic_energy(P, H_core, F) + this->molecule.internuclear_repulsion();
+            this->energy = hf::calculate_electronic_energy(P, H_core, F) + this->basis.molecule.internuclear_repulsion();
 
             // Furthermore, add the orbital energies and the coefficient matrix to (this)
             this->orbital_energies = gsaes.eigenvalues();
@@ -79,6 +72,5 @@ SCFSolver::SCFSolver(libwrp::Molecule& molecule, double threshold, std::string& 
     } // SCF cycle loop
 
     libint2::finalize();
-} // constructor
 
-} // namespace hf
+} // constructor

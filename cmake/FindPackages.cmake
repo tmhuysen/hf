@@ -10,4 +10,4 @@ find_package(Boost REQUIRED)
 
 
 # Find my own libint wrapper
-find_package(libwrp 2.0.0 REQUIRED)
+find_package(libwrp 2.1.0 REQUIRED)

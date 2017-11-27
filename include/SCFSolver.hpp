@@ -1,20 +1,19 @@
 #ifndef HF_SCFSOLVER_HPP
 #define HF_SCFSOLVER_HPP
 
-#include <string>
-
 #include <libwrp.hpp>
+#include <string>
 
 
 namespace hf {
 
 class SCFSolver {
 public:
-    libwrp::Molecule molecule;                 // A molecule instance
-                                                //      This has properties atoms, and nelec
+    libwrp::Basis& basis;                       // A reference to a Basis object. Post_SCF methods transform the integrals from AO basis to SO basis, so it's better not to re-calculate them.
+                                                // Contains: .S, .T, .V, .tei
+
     double threshold;                           // Convergence threshold for the SCF procedure
     const unsigned MAX_NO_ITERATIONS = 128;
-    std::string basis_name;                     // e.g. "STO-3G" or "6-31G"
 
     Eigen::VectorXd orbital_energies;           // Energies of the spatial orbitals (i.e. eigenvalues of the diagonal Fock operator)
     Eigen::MatrixXd C_canonical;                // Coefficient matrix linking the spatial orbitals to the underlying (Gaussian) basis set
@@ -24,12 +23,11 @@ public:
     double energy;                              // The converged energy
 
 
-    // Constructors
-    /** Constructor based on a given libwrp::Molecule molecule and a threshold
+    /** Constructor based on a given libwrp::Basis and an SCF-cycle threshold
      *
-     * This automatically starts the restricted SCF procedure
+     *      This automatically starts the restricted SCF procedure
      */
-    SCFSolver(libwrp::Molecule& molecule, double threshold, std::string& basis_name);
+    SCFSolver(libwrp::Basis& basis, double threshold);
 };
 
 } // namespace hf
