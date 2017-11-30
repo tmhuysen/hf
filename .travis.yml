@@ -41,7 +41,7 @@ install:
   - ls -a
   - curl -OL "http://bitbucket.org/eigen/eigen/get/3.3.4.tar.bz2"
   - ls -a
-  - tar -xvfz 3.3.4.tar.bz2
+  - tar --bzip2 -xf 3.3.4.tar.bz2
   - ls -a
   - mkdir /tmp/build-eigen && cd /tmp/build-eigen
   - ls -a
