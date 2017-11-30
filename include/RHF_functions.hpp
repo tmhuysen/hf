@@ -19,7 +19,7 @@ size_t LUMO_index(unsigned K, unsigned N);
 
 /** Given the coefficient matrix C, and the number of electrons N, calculate the RHF density matrix P
  */
-Eigen::MatrixXd calculate_P(Eigen::MatrixXd &C, unsigned N);  // FIXME: use a libwrp function for this
+Eigen::MatrixXd calculate_P(Eigen::MatrixXd &C, unsigned N);
 
 
 /** Given the density matrix P, and the two-electron integrals, calculate the G-matrix

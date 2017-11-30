@@ -47,9 +47,6 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
     P_converged_ref << p11, p11,
                        p11, p11;
 
-    // Check the converged density matrix
-    // FIXME: Check the converged density matrix
-
     // Check the energy
     BOOST_CHECK(std::abs(rhf.energy - (-1.1167)) < 1.0e-04); // Reference data from Szabo
 }
