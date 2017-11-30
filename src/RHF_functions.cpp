@@ -32,9 +32,6 @@ size_t hf::rhf::LUMO_index(unsigned K, unsigned N) {
 /** Given the coefficient matrix C, and the number of electrons N, calculate the RHF density matrix P
  */
 Eigen::MatrixXd hf::rhf::calculate_P(Eigen::MatrixXd& C, unsigned N) {
-    // In RHF, we should have an even number of electrons
-    assert(N % 2 == 0);
-
     auto nbf = C.cols();
 
     // Construct the occupancy matrix

@@ -37,10 +37,10 @@ hf::rhf::RHF::RHF(libwrp::Basis& basis, double threshold):
         Eigen::MatrixXd G = rhf::calculate_G(P, basis.tei);
 
         // Calculate the Fock matrix
-        Eigen::MatrixXd F = H_core + G;
+        Eigen::MatrixXd f_AO = H_core + G;
 
         // Solve the Roothaan equation (generalized eigenvalue problem)
-        Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes (F, basis.S);
+        Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes (f_AO, basis.S);
         C = gsaes.eigenvectors();
 
         // Calculate an improved density matrix P from the improved coefficient matrix C
@@ -52,14 +52,14 @@ hf::rhf::RHF::RHF(libwrp::Basis& basis, double threshold):
 
             // After the SCF procedure, we end up with canonical spatial orbitals, i.e. the Fock matrix should be diagonal in this basis
             // Let's check if this is the case, within double float precision
-            Eigen::MatrixXd f_MO = C.adjoint() * F * C;  // FIXME: we can use the libwrp function for this
+            Eigen::MatrixXd f_MO = libwrp::transform_AO_to_SO(f_AO, C);  // FIXME: we can use the libwrp function for this
             assert(f_MO.isDiagonal());
 
             converged = true;
             std::cout << "The SCF algorithm has converged after " << iteration_counter << " iterations.\n" << std::endl;
 
             // After the calculation has converged, calculate the energy as the sum of the electronic energy and the internuclear repulsion energy
-            this->energy = rhf::calculate_electronic_energy(P, H_core, F) + this->basis.molecule.internuclear_repulsion();
+            this->energy = rhf::calculate_electronic_energy(P, H_core, f_AO) + this->basis.molecule.internuclear_repulsion();
 
             // Furthermore, add the orbital energies and the coefficient matrix to (this)
             this->orbital_energies = gsaes.eigenvalues();
