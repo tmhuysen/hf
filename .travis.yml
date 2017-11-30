@@ -45,7 +45,7 @@ install:
   - ls -a
   - mkdir /tmp/build-eigen && cd /tmp/build-eigen
   - ls -a
-  - cmake . /tmp/eigen/3.3.4
+  - cmake . /tmp/eigen/eigen-eigen-5a0156e40feb
   - make && sudo make install
 
 
