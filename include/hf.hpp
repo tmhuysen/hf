@@ -4,8 +4,8 @@
 
 // This header file acts as a collective header file
 
-#include "SCF_functions.hpp"
-#include "SCFSolver.hpp"
+#include "RHF_functions.hpp"
+#include "RHF.hpp"
 #include "version.hpp"
 
 

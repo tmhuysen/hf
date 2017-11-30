@@ -5,7 +5,7 @@
 #include <unsupported/Eigen/CXX11/Tensor>
 
 
-namespace hf {
+namespace rhf {
 
 /** Given a number of spatial orbitals K and a number of electrons N, calculated the index of the HOMO in the restricted case
  */
@@ -32,6 +32,6 @@ Eigen::MatrixXd calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei);
  */
 double calculate_electronic_energy(Eigen::MatrixXd& P, Eigen::MatrixXd& H_core, Eigen::MatrixXd& F);
 
-} // namespace hf
+} // namespace rhf
 
 #endif //HF_SCF_FUNCTIONS_HPP

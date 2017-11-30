@@ -5,11 +5,11 @@
 #include <string>
 
 
-namespace hf {
+namespace rhf {
 
-class SCFSolver {
+class RHF {
 public:
-    libwrp::Basis& basis;                       // A reference to a Basis object. Post_SCF methods transform the integrals from AO basis to SO basis, so it's better not to re-calculate them.
+    libwrp::Basis& basis;                       // A reference to a Basis object. Post-SCF methods transform the integrals from AO basis to SO basis, so it's better not to re-calculate them.
                                                 // Contains: .S, .T, .V, .tei
 
     double threshold;                           // Convergence threshold for the SCF procedure
@@ -27,10 +27,10 @@ public:
      *
      *      This automatically starts the restricted SCF procedure
      */
-    SCFSolver(libwrp::Basis& basis, double threshold);
+    RHF(libwrp::Basis& basis, double threshold);
 };
 
-} // namespace hf
+} // namespace rhf
 
 
 #endif //HF_SCFSOLVER_HPP
