@@ -6,7 +6,7 @@
  *
  *      This automatically starts the restricted SCF procedure
  */
-rhf::RHF::RHF(libwrp::Basis& basis, double threshold):
+hf::rhf::RHF::RHF(libwrp::Basis& basis, double threshold):
     basis(basis), threshold(threshold)
 {
     assert(this->basis.molecule.nelec % 2 == 0);  // We have only implemented a restricted Hartree-Fock algorithm
