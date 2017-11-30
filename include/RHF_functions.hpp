@@ -1,5 +1,5 @@
-#ifndef HF_SCF_FUNCTIONS_HPP
-#define HF_SCF_FUNCTIONS_HPP
+#ifndef HF_RHF_FUNCTIONS_HPP
+#define HF_RHF_FUNCTIONS_HPP
 
 #include <Eigen/Dense>
 #include <unsupported/Eigen/CXX11/Tensor>
@@ -35,4 +35,4 @@ double calculate_electronic_energy(Eigen::MatrixXd &P, Eigen::MatrixXd &H_core, 
 } // namespace hf
 } // namespace rhf
 
-#endif //HF_SCF_FUNCTIONS_HPP
+#endif // HF_RHF_FUNCTIONS_HPP

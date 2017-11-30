@@ -1,5 +1,5 @@
-#ifndef HF_SCFSOLVER_HPP
-#define HF_SCFSOLVER_HPP
+#ifndef HF_RHF_HPP
+#define HF_RHF_HPP
 
 #include <libwrp.hpp>
 #include <string>
@@ -34,4 +34,4 @@ public:
 } // namespace rhf
 
 
-#endif //HF_SCFSOLVER_HPP
+#endif // HF_RHF_HPP
