@@ -1,34 +1,11 @@
 #define BOOST_TEST_MODULE "SCFSolver"
 
 #include "RHF.hpp"
+#include "utility.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/included/unit_test.hpp>  // include this to get main(), otherwise the compiler will complain
 
-
-/** Check if two sets of eigenvalues are equal
- */
-bool are_equal_eigenvalues(Eigen::VectorXd evals1, Eigen::VectorXd evals2, double tol) {
-    return evals1.isApprox(evals2, tol);
-}
-
-/** Check if two eigenvectors are equal. This is the case if they are equal up to their sign.
- */
-bool are_equal_eigenvectors(Eigen::VectorXd evec1, Eigen::VectorXd evec2, double tol) {
-    return (evec1.isApprox(evec2, tol) || evec1.isApprox(-evec2, tol));
-}
-
-/** Check if two sets of eigenvectors are equal.
- */
-bool are_equal_sets_eigenvectors(Eigen::MatrixXd evecs1, Eigen::MatrixXd evecs2, double tol) {
-    auto dim = evecs1.cols();
-    for (unsigned i = 0; i < dim; i++) {
-        if (! are_equal_eigenvectors(evecs1.col(i), evecs2.col(i), tol)) {
-            return false;
-        }
-    }
-    return true;
-}
 
 BOOST_AUTO_TEST_CASE ( reference ) {
 
@@ -110,8 +87,8 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
 
     // Check the calculated results with the reference
     BOOST_CHECK(std::abs(rhf.energy - ref_energy) < 1.0e-06);
-    BOOST_CHECK(are_equal_eigenvalues(ref_orbital_energies, rhf.orbital_energies, 1.0e-06));
-    BOOST_CHECK(are_equal_sets_eigenvectors(C_ref, rhf.C_canonical, 1.0e-05));
+    BOOST_CHECK(hf::utility::are_equal_eigenvalues(ref_orbital_energies, rhf.orbital_energies, 1.0e-06));
+    BOOST_CHECK(hf::utility::are_equal_sets_eigenvectors(C_ref, rhf.C_canonical, 1.0e-05));
 }
 
 

@@ -2,7 +2,7 @@
 
 
 # We want to make a static library target called "libhf", based on the project source files
-add_library(${LIBRARY_NAME} ${LIBRARY_TYPE} ${PROJECT_SOURCE_FILES})
+add_library(${LIBRARY_NAME} ${LIBRARY_TYPE} ${PROJECT_SOURCE_FILES} ${PROJECT_INCLUDE_FILES})
 
 
 # Configure the library: include headers and link to libraries
