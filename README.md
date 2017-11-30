@@ -6,18 +6,17 @@ A C++ library that performs Hartree-Fock calculations using Eigen3 for matrix ma
 
 
 ## Dependencies
-[![libint2 Dependency](https://img.shields.io/badge/LibInt-2.3.1+-blue.svg)](https://github.com/evaleev/libint)
+[![libint2 Dependency](https://img.shields.io/badge/libint-2.3.1+-blue.svg)](https://github.com/evaleev/libint)
 [![Eigen3 Dependency](https://img.shields.io/badge/Eigen-3+-blue.svg)](http://eigen.tuxfamily.org/index.php?title=Main_Page)
-[![libwrp Dependency](https://img.shields.io/badge/libwrp-1.0.1+-blue.svg)](https://github.com/lelemmen/libwrp)
+[![libwrp Dependency](https://img.shields.io/badge/libwrp-2.1.1+-blue.svg)](https://github.com/lelemmen/libwrp)
 
 
 ## Installation
 To install this library:
-1. download and untar the latest release
+1. clone the master branch
 
-        curl -OL "https://github.com/lelemmen/hf/archive/v1.0.0.tar.gz"
-        tar -xvzf v1.0.0.tar.gz
-        cd hf-1.0.0
+        git clone https://github.com/lelemmen/hf.git
+        cd hf
 
 2. perform an out-of-source cmake build:
 
@@ -34,6 +33,6 @@ To install this library:
 ## Usage
 Basic usage of this library can be found in the `tests` directory. If you use CMake in other projects, you can add the following CMake command to the CMakeLists.txt-file:
 
-    find_package(libwrp x.y.z)
+    find_package(hf x.y.z)
 
 where `x.y.z` is the version number. CMake then provides the commands `hf_INCLUDE_DIRS` to be used in your `target_include_directories` and the library `hf` to be used in your `target_link_libraries`.

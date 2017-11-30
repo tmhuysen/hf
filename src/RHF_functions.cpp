@@ -1,11 +1,11 @@
-#include "SCF_functions.hpp"
+#include "RHF_functions.hpp"
 
 #include <iostream>
 
 
 /** Given a number of spatial orbitals K and a number of electrons N, calculated the index of the HOMO in the restricted case
  */
-size_t HF::HOMO_index(unsigned K, unsigned N) {
+size_t hf::rhf::HOMO_index(unsigned K, unsigned N) {
     if (N % 2 != 0) {
         throw std::invalid_argument("The unrestricted case is not supported.");
     }
@@ -20,7 +20,7 @@ size_t HF::HOMO_index(unsigned K, unsigned N) {
 
 /** Given a number of spatial orbitals K and a number of electrons N, calculated the index of the LUMO in the restricted case
  */
-size_t HF::LUMO_index(unsigned K, unsigned N) {
+size_t hf::rhf::LUMO_index(unsigned K, unsigned N) {
     if (N >= 2 * K) {
         throw std::invalid_argument("There is no LUMO for the given amount of electrons N and spatial orbitals K");
     }
@@ -31,10 +31,7 @@ size_t HF::LUMO_index(unsigned K, unsigned N) {
 
 /** Given the coefficient matrix C, and the number of electrons N, calculate the RHF density matrix P
  */
-Eigen::MatrixXd HF::calculate_P(Eigen::MatrixXd& C, unsigned N) {
-    // In RHF, we should have an even number of electrons
-    assert(N % 2 == 0);
-
+Eigen::MatrixXd hf::rhf::calculate_P(Eigen::MatrixXd& C, unsigned N) {
     auto nbf = C.cols();
 
     // Construct the occupancy matrix
@@ -48,7 +45,7 @@ Eigen::MatrixXd HF::calculate_P(Eigen::MatrixXd& C, unsigned N) {
 
 /** Given the density matrix P, and the two-electron integrals, calculate the G-matrix
  */
-Eigen::MatrixXd HF::calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei_tensor) {
+Eigen::MatrixXd hf::rhf::calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei_tensor) {
     // We will first have to convert the Eigen::MatrixXd P to an Eigen::Tensor<double, 2> P_tensor, as contractions are only implemented for Eigen::Tensors
     Eigen::TensorMap<Eigen::Tensor<double, 2>> P_tensor (P.data(), P.rows(), P.cols());
 
@@ -75,7 +72,7 @@ Eigen::MatrixXd HF::calculate_G(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& te
 /** Calculate the RHF energy based on the density matrix P, the core Hamiltonian H_core and the Fock matrix F
  *
  */
-double HF::calculate_electronic_energy(Eigen::MatrixXd& P, Eigen::MatrixXd& H_core, Eigen::MatrixXd& F) {
+double hf::rhf::calculate_electronic_energy(Eigen::MatrixXd& P, Eigen::MatrixXd& H_core, Eigen::MatrixXd& F) {
     // First, calculate the sum of H_core and F (this saves a contraction)
     Eigen::MatrixXd Z = H_core + F;
 
