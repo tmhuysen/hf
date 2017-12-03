@@ -3,7 +3,7 @@ import numpy as np
 np.set_printoptions(linewidth=150)
 
 # Specify some data
-water = IOData.from_file('../h2.xyz')
+water = IOData.from_file('../h2_szabo.xyz')
 threshold = 10 ** (-6)
 basis_name = "STO-3G"
 

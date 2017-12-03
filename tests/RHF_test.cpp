@@ -10,7 +10,7 @@
 BOOST_AUTO_TEST_CASE ( reference ) {
 
     // Specify some data, create a Molecule and a Basis
-    const std::string xyzfilename = "../tests/reference/h2.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
+    const std::string xyzfilename = "../tests/reference/h2_szabo.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
     std::string basis_name = "STO-3G";
     double threshold = 1.0e-06;
 
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
     // In this test case, we will follow section 3.5.2 in Szabo.
 
     // Specify the data
-    const std::string xyzfilename = "../tests/reference/h2.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
+    const std::string xyzfilename = "../tests/reference/h2_szabo.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
     std::string basis_name = "STO-3G";
     double threshold = 1.0e-06;
 
@@ -134,4 +134,62 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 
     // Check the energy
     BOOST_CHECK(std::abs(rhf.energy - (-39.726850324347)) < threshold);
+}
+
+
+BOOST_AUTO_TEST_CASE ( h2_sto6g ) {
+
+    // We have some reference data from olsens: H2 with HF/STO-6G orbitals
+    double E_el_rhf_ref = -1.838434256;
+
+    // Test the H2 results
+    const std::string xyzfilename = "../tests/reference/h2_olsens.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
+    std::string basis_name = "STO-6G";
+    double threshold = 1.0e-06;
+
+    libwrp::Molecule h2 (xyzfilename);
+    libwrp::Basis basis (h2, basis_name);
+    hf::rhf::RHF rhf (basis, threshold);
+
+    double E_el_rhf = rhf.energy - rhf.basis.molecule.internuclear_repulsion();  // we only have reference data for the electronic repulsion
+    BOOST_CHECK(std::abs(E_el_rhf_ref - E_el_rhf) < 1.0e-06);
+}
+
+
+BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
+
+    // We have some reference data from olsens: H2 with HF/6-31G** orbitals
+    double E_el_rhf_ref = -1.838434256;
+
+    // Test the H2 results
+    const std::string xyzfilename = "../tests/reference/h2_olsens.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
+    std::string basis_name = "6-31g**";
+    double threshold = 1.0e-06;
+
+    libwrp::Molecule h2 (xyzfilename);
+    libwrp::Basis basis (h2, basis_name);
+    hf::rhf::RHF rhf (basis, threshold);
+
+    double E_el_rhf = rhf.energy - rhf.basis.molecule.internuclear_repulsion();  // we only have reference data for the electronic repulsion
+    BOOST_CHECK(std::abs(E_el_rhf_ref - E_el_rhf) < 1.0e-06);
+    std::cout << E_el_rhf << std::endl;
+}
+
+
+BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
+
+    // We have some reference data from olsens: LiH with HF/STO-6G orbitals
+    double E_el_rhf_ref = -8.9472891719;
+
+    // Test the LiH results
+    const std::string xyzfilename = "../tests/reference/lih_olsens.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
+    std::string basis_name = "sto-6g";
+    double threshold = 1.0e-06;
+
+    libwrp::Molecule lih (xyzfilename);
+    libwrp::Basis basis (lih, basis_name);
+    hf::rhf::RHF rhf (basis, threshold);
+
+    double E_el_rhf = rhf.energy - rhf.basis.molecule.internuclear_repulsion();  // we only have reference data for the electronic repulsion
+    BOOST_CHECK(std::abs(E_el_rhf_ref - E_el_rhf) < 1.0e-06);
 }
