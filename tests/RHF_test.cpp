@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto6g ) {
 BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
 
     // We have some reference data from olsens: H2 with HF/6-31G** orbitals
-    double E_el_rhf_ref = -1.838434256;
+    double E_el_rhf_ref = -1.84444667247;
 
     // Test the H2 results
     const std::string xyzfilename = "../tests/reference/h2_olsens.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)

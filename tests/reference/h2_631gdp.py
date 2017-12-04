@@ -3,9 +3,9 @@ import numpy as np
 np.set_printoptions(linewidth=150)
 
 # Specify some data
-water = IOData.from_file('../h2_szabo.xyz')
-threshold = 10 ** (-6)
-basis_name = "STO-3G"
+water = IOData.from_file('h2_olsens.xyz')
+threshold = 1.0e-7
+basis_name = "6-31G(d,p)"
 
 
 # Create a Gaussian basis set
@@ -37,9 +37,11 @@ terms = [
 ]
 hamiltonian = REffHam(terms, external)
 
-# Decide how to occupy the orbitals (1 alpha electrons and 1 beta electrons)
+# Decide how to occupy the orbitals (1 alpha electron and 1 beta electron)
 occ_model = AufbauOccModel(1)
 
 # Converge WFN with plain SCF
 scf_solver = PlainSCFSolver(threshold)
 scf_solver(hamiltonian, S, occ_model, orb_alpha)
+
+print "HF electronic energy: ", hamiltonian.compute_energy() - external['Nuclear repulsion']
