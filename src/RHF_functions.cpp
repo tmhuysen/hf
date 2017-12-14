@@ -5,7 +5,7 @@
 
 /** Given a number of spatial orbitals K and a number of electrons N, calculated the index of the HOMO in the restricted case
  */
-size_t hf::rhf::HOMO_index(unsigned K, unsigned N) {
+size_t hf::rhf::HOMO_index(size_t K, size_t N) {
     if (N % 2 != 0) {
         throw std::invalid_argument("The unrestricted case is not supported.");
     }
@@ -20,7 +20,7 @@ size_t hf::rhf::HOMO_index(unsigned K, unsigned N) {
 
 /** Given a number of spatial orbitals K and a number of electrons N, calculated the index of the LUMO in the restricted case
  */
-size_t hf::rhf::LUMO_index(unsigned K, unsigned N) {
+size_t hf::rhf::LUMO_index(size_t K, size_t N) {
     if (N >= 2 * K) {
         throw std::invalid_argument("There is no LUMO for the given amount of electrons N and spatial orbitals K");
     }
@@ -31,7 +31,7 @@ size_t hf::rhf::LUMO_index(unsigned K, unsigned N) {
 
 /** Given the coefficient matrix C, and the number of electrons N, calculate the RHF density matrix P
  */
-Eigen::MatrixXd hf::rhf::calculate_P(Eigen::MatrixXd& C, unsigned N) {
+Eigen::MatrixXd hf::rhf::calculate_P(Eigen::MatrixXd& C, size_t N) {
     auto nbf = C.cols();
 
     // Construct the occupancy matrix
