@@ -9,17 +9,17 @@ namespace rhf {
 
 /** Given a number of spatial orbitals K and a number of electrons N, calculated the index of the HOMO in the restricted case
  */
-size_t HOMO_index(unsigned K, unsigned N);
+size_t HOMO_index(size_t K, size_t N);
 
 
 /** Given a number of spatial orbitals K and a number of electrons N, calculated the index of the LUMO in the restricted case
  */
-size_t LUMO_index(unsigned K, unsigned N);
+size_t LUMO_index(size_t K, size_t N);
 
 
 /** Given the coefficient matrix C, and the number of electrons N, calculate the RHF density matrix P
  */
-Eigen::MatrixXd calculate_P(Eigen::MatrixXd &C, unsigned N);
+Eigen::MatrixXd calculate_P(Eigen::MatrixXd &C, size_t N);
 
 
 /** Given the density matrix P, and the two-electron integrals, calculate the G-matrix

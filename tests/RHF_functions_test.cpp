@@ -8,15 +8,15 @@
 
 BOOST_AUTO_TEST_CASE ( homo ) {
 
-        unsigned K1 = 4;
-        unsigned K2 = 3;
+        size_t K1 = 4;
+        size_t K2 = 3;
 
-        unsigned N1 = 2;
-        unsigned N2 = 4;
-        unsigned N3 = 6;
-        unsigned N4 = 8;
-        unsigned N5 = 10;
-        unsigned N_odd = 3;
+        size_t N1 = 2;
+        size_t N2 = 4;
+        size_t N3 = 6;
+        size_t N4 = 8;
+        size_t N5 = 10;
+        size_t N_odd = 3;
 
         BOOST_CHECK_EQUAL(hf::rhf::HOMO_index(K1, N1), 0);
         BOOST_CHECK_EQUAL(hf::rhf::HOMO_index(K1, N2), 1);
@@ -35,14 +35,14 @@ BOOST_AUTO_TEST_CASE ( homo ) {
 
 BOOST_AUTO_TEST_CASE ( lumo ) {
 
-        unsigned K1 = 4;
-        unsigned K2 = 3;
+        size_t K1 = 4;
+        size_t K2 = 3;
 
-        unsigned N1 = 2;
-        unsigned N2 = 4;
-        unsigned N3 = 6;
-        unsigned N4 = 8;
-        unsigned N_odd = 3;
+        size_t N1 = 2;
+        size_t N2 = 4;
+        size_t N3 = 6;
+        size_t N4 = 8;
+        size_t N_odd = 3;
 
         BOOST_CHECK_EQUAL(hf::rhf::LUMO_index(K1, N1), 1);
         BOOST_CHECK_EQUAL(hf::rhf::LUMO_index(K1, N2), 2);

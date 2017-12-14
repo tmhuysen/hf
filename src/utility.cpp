@@ -17,7 +17,7 @@ bool hf::utility::are_equal_eigenvectors(Eigen::VectorXd evec1, Eigen::VectorXd 
  */
 bool hf::utility::are_equal_sets_eigenvectors(Eigen::MatrixXd evecs1, Eigen::MatrixXd evecs2, double tol) {
     auto dim = evecs1.cols();
-    for (unsigned i = 0; i < dim; i++) {
+    for (size_t i = 0; i < dim; i++) {
         if (!are_equal_eigenvectors(evecs1.col(i), evecs2.col(i), tol)) {
             return false;
         }

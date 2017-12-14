@@ -30,7 +30,7 @@ hf::rhf::RHF::RHF(libwrp::Basis& basis, double threshold):
 
     // Initialize the loop parameters
     bool converged = false;
-    unsigned iteration_counter = 1;
+    size_t iteration_counter = 1;
 
     while ((! converged) || iteration_counter > this->MAX_NO_ITERATIONS) {
         // Calculate the G-matrix

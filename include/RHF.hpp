@@ -13,7 +13,7 @@ public:
     // Contains: .S, .T, .V, .tei
 
     double threshold;                           // Convergence threshold for the SCF procedure
-    const unsigned MAX_NO_ITERATIONS = 128;
+    const size_t MAX_NO_ITERATIONS = 128;
 
     Eigen::VectorXd orbital_energies;           // Energies of the spatial orbitals (i.e. eigenvalues of the diagonal Fock operator)
     Eigen::MatrixXd C_canonical;                // Coefficient matrix linking the spatial orbitals to the underlying (Gaussian) basis set
