@@ -77,9 +77,9 @@ install:
 
 
   # Install the libint wrapper
-  - mkdir /tmp/libwrp && cd /tmp/libwrp
-  - git clone https://github.com/lelemmen/libwrp.git
-  - cd libwrp
+  - mkdir /tmp/libwint && cd /tmp/libwint
+  - git clone https://github.com/GQCG/libwint.git
+  - cd libwint
   - mkdir build && cd build
   - cmake .. && make && make test && sudo make install
 

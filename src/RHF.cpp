@@ -2,11 +2,11 @@
 #include "RHF_functions.hpp"
 
 
-/** Constructor based on a given libwrp::Basis and an SCF-cycle threshold
+/** Constructor based on a given libwint::Basis and an SCF-cycle threshold
  *
  *      This automatically starts the restricted SCF procedure
  */
-hf::rhf::RHF::RHF(libwrp::Basis& basis, double threshold):
+hf::rhf::RHF::RHF(libwint::Basis& basis, double threshold):
     basis(basis), threshold(threshold)
 {
     assert(this->basis.molecule.nelec % 2 == 0);  // We have only implemented a restricted Hartree-Fock algorithm
@@ -52,7 +52,7 @@ hf::rhf::RHF::RHF(libwrp::Basis& basis, double threshold):
 
             // After the SCF procedure, we end up with canonical spatial orbitals, i.e. the Fock matrix should be diagonal in this basis
             // Let's check if this is the case, within double float precision
-            Eigen::MatrixXd f_MO = libwrp::transform_AO_to_SO(f_AO, C);  // FIXME: we can use the libwrp function for this
+            Eigen::MatrixXd f_MO = libwint::transform_AO_to_SO(f_AO, C);  // FIXME: we can use the libwint function for this
             assert(f_MO.isDiagonal());
 
             converged = true;
