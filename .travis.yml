@@ -10,7 +10,7 @@ compiler: gcc
 
 # Enable Slack notifications, disable e-mail
 notifications:
-    slack: gqcg:13JQ7AAK5DMZPeAInhCMX6YJ
+    slack: gqcg:5PZ5ibXCwNU1b5ToWbHVIqnI
     email: false
 
 
