@@ -16,7 +16,7 @@ You might have to copy the sto-6g.g94 (provided in `tests/reference_data/sto-6g.
 To install this library:
 1. clone the master branch
 
-        git clone https://github.com/lelemmen/hf.git
+        git clone https://github.com/GQCG/hf.git
         cd hf
 
 2. perform an out-of-source cmake build:
