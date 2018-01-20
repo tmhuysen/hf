@@ -17,7 +17,7 @@ install(FILES ${PROJECT_INCLUDE_FILES} DESTINATION ${INCLUDE_INSTALL_DIR})
 
 
 # Export the target library into a ${PROJECT_NAME}Targets.cmake file.
-# The file libwrpConfig.cmake includes this file, to be able to use this library with a find_package(hf X.Y.Z) call
+# The file hfConfig.cmake includes this file, to be able to use this library with a find_package(hf X.Y.Z) call
 install(EXPORT ${LIBRARY_NAME} DESTINATION ${CMAKE_INSTALL_DIR} FILE ${PROJECT_NAME}Targets.cmake)
 
 
