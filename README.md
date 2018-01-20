@@ -8,7 +8,7 @@ A C++ library that performs Hartree-Fock calculations using Eigen3 for matrix ma
 ## Dependencies
 [![libint2 Dependency](https://img.shields.io/badge/libint-2.3.1+-blue.svg)](https://github.com/evaleev/libint)
 [![Eigen3 Dependency](https://img.shields.io/badge/Eigen-3+-blue.svg)](http://eigen.tuxfamily.org/index.php?title=Main_Page)
-[![libwrp Dependency](https://img.shields.io/badge/libwrp-2.1.1+-blue.svg)](https://github.com/lelemmen/libwrp)
+[![libwint Dependency](https://img.shields.io/badge/libwint-2.1.2+-blue.svg)](https://github.com/lelemmen/libwint)
 You might have to copy the sto-6g.g94 (provided in `tests/reference_data/sto-6g.g94`) file to the relevant directory. In a default installation, the file should be copied to `/usr/local/libint/2.3.1/share/libint/2.3.1/basis/sto-6g.g94`.
 
 
@@ -16,7 +16,7 @@ You might have to copy the sto-6g.g94 (provided in `tests/reference_data/sto-6g.
 To install this library:
 1. clone the master branch
 
-        git clone https://github.com/lelemmen/hf.git
+        git clone https://github.com/GQCG/hf.git
         cd hf
 
 2. perform an out-of-source cmake build:

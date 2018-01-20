@@ -6,6 +6,7 @@
 
 #include "RHF_functions.hpp"
 #include "RHF.hpp"
+#include "utility.hpp"
 #include "version.hpp"
 
 

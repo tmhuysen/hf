@@ -10,7 +10,7 @@ compiler: gcc
 
 # Enable Slack notifications, disable e-mail
 notifications:
-    slack: gqcg:13JQ7AAK5DMZPeAInhCMX6YJ
+    slack: gqcg:5PZ5ibXCwNU1b5ToWbHVIqnI
     email: false
 
 
@@ -77,16 +77,16 @@ install:
 
 
   # Install the libint wrapper
-  - mkdir /tmp/libwrp && cd /tmp/libwrp
-  - git clone https://github.com/lelemmen/libwrp.git
-  - cd libwrp
+  - mkdir /tmp/libwint && cd /tmp/libwint
+  - git clone https://github.com/GQCG/libwint.git
+  - cd libwint
   - mkdir build && cd build
   - cmake .. && make && make test && sudo make install
 
 
 # Run the build script
 script:
-  - cd /home/travis/build/lelemmen/hf
+  - cd /home/travis/build/GQCG/hf
   - sudo cp tests/reference/sto-6g.g94 ${LIBINT_DATA_PATH}  # copy the extra basis set
   - mkdir build && cd build
   - cmake ..

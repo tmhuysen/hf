@@ -6,5 +6,5 @@ target_include_directories(${LIBRARY_NAME} PRIVATE ${PROJECT_INCLUDE_FOLDER})
 
 
 # Include the libint wrapper
-target_include_directories(${LIBRARY_NAME} PUBLIC ${libwrp_INCLUDE_DIRS})
-target_link_libraries(${LIBRARY_NAME} PUBLIC libwrp)
+target_include_directories(${LIBRARY_NAME} PUBLIC ${libwint_INCLUDE_DIRS})
+target_link_libraries(${LIBRARY_NAME} PUBLIC libwint)

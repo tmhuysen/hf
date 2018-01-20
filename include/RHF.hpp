@@ -1,7 +1,7 @@
 #ifndef HF_RHF_HPP
 #define HF_RHF_HPP
 
-#include <libwrp.hpp>
+#include <libwint.hpp>
 #include <string>
 
 namespace hf {
@@ -9,7 +9,7 @@ namespace rhf {
 
 class RHF {
 public:
-    libwrp::Basis &basis;                       // A reference to a Basis object. Post-SCF methods transform the integrals from AO basis to SO basis, so it's better not to re-calculate them.
+    libwint::Basis &basis;                       // A reference to a Basis object. Post-SCF methods transform the integrals from AO basis to SO basis, so it's better not to re-calculate them.
     // Contains: .S, .T, .V, .tei
 
     double threshold;                           // Convergence threshold for the SCF procedure
@@ -23,11 +23,11 @@ public:
     double energy;                              // The converged energy
 
 
-    /** Constructor based on a given libwrp::Basis and an SCF-cycle threshold
+    /** Constructor based on a given libwint::Basis and an SCF-cycle threshold
      *
      *      This automatically starts the restricted SCF procedure
      */
-    RHF(libwrp::Basis &basis, double threshold);
+    RHF(libwint::Basis &basis, double threshold);
 };
 
 } // namespace hf

@@ -14,8 +14,8 @@ BOOST_AUTO_TEST_CASE ( reference ) {
     std::string basis_name = "STO-3G";
     double threshold = 1.0e-06;
 
-    libwrp::Molecule h2 (xyzfilename);
-    libwrp::Basis basis (h2, basis_name);
+    libwint::Molecule h2 (xyzfilename);
+    libwint::Basis basis (h2, basis_name);
 
     // Create an SCFSolver instance - this automatically performs the SCF cycle (not that this is needed in this test)
     hf::rhf::RHF rhf (basis, threshold);
@@ -34,8 +34,8 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
     double threshold = 1.0e-06;
 
     // Create a Molecule and a Basis
-    libwrp::Molecule h2 (xyzfilename);
-    libwrp::Basis basis (h2, basis_name);
+    libwint::Molecule h2 (xyzfilename);
+    libwint::Basis basis (h2, basis_name);
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (basis, threshold);
@@ -59,8 +59,8 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
     double threshold = 1.0e-06;
     std::string basis_name = "STO-3G";
 
-    libwrp::Molecule water (xyzfilename);
-    libwrp::Basis basis (water, basis_name);
+    libwint::Molecule water (xyzfilename);
+    libwint::Basis basis (water, basis_name);
 
 
     // Supply the reference data from HORTON
@@ -98,12 +98,12 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
     double threshold = 1.0e-06;
     std::string basis_name = "STO-3G";
 
-    libwrp::Molecule water (xyzfilename);
-    libwrp::Basis basis (water, basis_name);
+    libwint::Molecule water (xyzfilename);
+    libwint::Basis basis (water, basis_name);
 
 
     // Check if the internuclear distance between O and H is really 1.1 A (= 2.07869 bohr), as specified in the text
-    BOOST_CHECK(std::abs(libwrp::distance(water.atoms[0], water.atoms[1]) - 2.07869) < 1.0e-3);
+    BOOST_CHECK(std::abs(libwint::distance(water.atoms[0], water.atoms[1]) - 2.07869) < 1.0e-3);
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (basis, threshold);
@@ -122,12 +122,12 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
     double threshold = 1.0e-06;
     std::string basis_name = "STO-3G";
 
-    libwrp::Molecule methane (xyzfilename);
-    libwrp::Basis basis (methane, basis_name);
+    libwint::Molecule methane (xyzfilename);
+    libwint::Basis basis (methane, basis_name);
 
 
     // Check if the internuclear distance between C and H is really around 2.05 bohr, which is the bond distance Wikipedia (108.7 pm) specifies
-    BOOST_CHECK(std::abs(libwrp::distance(methane.atoms[0], methane.atoms[1]) - 2.05) < 1.0e-1);
+    BOOST_CHECK(std::abs(libwint::distance(methane.atoms[0], methane.atoms[1]) - 2.05) < 1.0e-1);
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (basis, threshold);
@@ -147,8 +147,8 @@ BOOST_AUTO_TEST_CASE ( h2_sto6g ) {
     std::string basis_name = "STO-6G";
     double threshold = 1.0e-06;
 
-    libwrp::Molecule h2 (xyzfilename);
-    libwrp::Basis basis (h2, basis_name);
+    libwint::Molecule h2 (xyzfilename);
+    libwint::Basis basis (h2, basis_name);
     hf::rhf::RHF rhf (basis, threshold);
 
     double E_el_rhf = rhf.energy - rhf.basis.molecule.internuclear_repulsion();  // we only have reference data for the electronic repulsion
@@ -166,8 +166,8 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
     std::string basis_name = "6-31g**";
     double threshold = 1.0e-06;
 
-    libwrp::Molecule h2 (xyzfilename);
-    libwrp::Basis basis (h2, basis_name);
+    libwint::Molecule h2 (xyzfilename);
+    libwint::Basis basis (h2, basis_name);
     hf::rhf::RHF rhf (basis, threshold);
 
     double E_el_rhf = rhf.energy - rhf.basis.molecule.internuclear_repulsion();  // we only have reference data for the electronic repulsion
@@ -186,8 +186,8 @@ BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
     std::string basis_name = "sto-6g";
     double threshold = 1.0e-06;
 
-    libwrp::Molecule lih (xyzfilename);
-    libwrp::Basis basis (lih, basis_name);
+    libwint::Molecule lih (xyzfilename);
+    libwint::Basis basis (lih, basis_name);
     hf::rhf::RHF rhf (basis, threshold);
 
     double E_el_rhf = rhf.energy - rhf.basis.molecule.internuclear_repulsion();  // we only have reference data for the electronic repulsion
