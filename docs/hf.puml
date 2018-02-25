@@ -1,19 +1,6 @@
 @startuml
 
 
-package libint {
-    namespace libint2 {
-        class global {
-            void initialize()
-            void finalize()
-        }
-    }
-
-}
-
-
-
-
 namespace libwint {
 
     class Basis {
@@ -66,7 +53,6 @@ namespace hf {
 
 hf.rhf.RHF o--> libwint.Basis
 
-hf.rhf.RHF ..> libint2.global
 hf.rhf.RHF ..> libwint.global
 
 @enduml
