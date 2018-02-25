@@ -3,16 +3,16 @@
 
 namespace libwint {
 
-    class Basis {
-        __ public data __
-            + Molecule& molecule
+    class AOBasis {
         __ public methods __
-            + void compute_integrals()
+            + libwint::Molecule& **get_molecule**() const
+            + void **calculateIntegrals**()
     }
 
 
-    class global {
-        Eigen::MatrixXd transform_AO_to_SO(Eigen::MatrixXd& f_AO, Eigen::MatrixXd& C)
+    class IntegralTransformations {
+        __ public methods __
+            + {static} Eigen::MatrixXd **AO_to_SO**(Eigen::MatrixXd& f_AO, Eigen::MatrixXd& C)
     }
 
 }
@@ -22,37 +22,34 @@ namespace hf {
     namespace rhf {
 
         class RHF {
+            __ private members __
+                - libwint::Basis& basis
+                - double threshold
+                - const size_t MAX_NO_SCF_ITERATIONS = 128
+                - Eigen::VectorXd& orbital_energies
+                - Eigen::MatrixXd& C_canonical
+                - double electronic_energy
+            __ private methods __
+                - Eigen::MatrixXd **calculateP**(Eigen::MatrixXd& C, size_t N)
+                - Eigen::MatrixXd **calculateG**(Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei)
             == constructors ==
-                RHF(libwint::Basis &basis, double threshold)
-            __ public data __
-                + libwint::Basis &basis
-                + double threshold
-                + const size_t MAX_NO_ITERATIONS = 128
-                + Eigen::VectorXd orbital_energies
-                + Eigen::MatrixXd C_canonical
-                + double energy
-        }
+                RHF(libwint::Basis& basis, double scf_threshold)
+            __ public methods __
+                + Eigen::VectorXd& **get_orbital_energies**() const
+                + Eigen::MatrixXd& **get_C_canonical**() const
+                + double **get_electronic_energy**() const
 
-        class global {
-            .. RHF_functions ..
-                size_t HOMO_index(size_t K, size_t N)
-                size_t LUMO_index(size_t K, size_t N)
-                Eigen::MatrixXd calculate_P(Eigen::MatrixXd &C, size_t N)
-                Eigen::MatrixXd calculate_G(Eigen::MatrixXd &P, Eigen::Tensor<double, 4> &tei)
-                double calculate_electronic_energy(Eigen::MatrixXd &P, Eigen::MatrixXd &H_core, Eigen::MatrixXd &F)
-            .. utility ..
-                bool are_equal_eigenvalues(Eigen::VectorXd evals1, Eigen::VectorXd evals2, double tol)
-                bool are_equal_eigenvectors(Eigen::VectorXd evec1, Eigen::VectorXd evec2, double tol)
-                bool are_equal_sets_eigenvectors(Eigen::MatrixXd evecs1, Eigen::MatrixXd evecs2, double tol)
+                + size_t **HOMOIndex**(size_t K, size_t N)
+                + size_t **LUMOIndex**(size_t K, size_t N)
+                + double **calculateElectronicEnergy**(Eigen::MatrixXd& P, Eigen::MatrixXd& H_core, Eigen::MatrixXd& F)
         }
-
     }
 }
 
 
 
-hf.rhf.RHF o--> libwint.Basis
+hf.rhf.RHF o--> libwint.AOBasis
 
-hf.rhf.RHF ..> libwint.global
+hf.rhf.RHF ..> libwint.IntegralTransformations
 
 @enduml
