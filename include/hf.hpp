@@ -5,7 +5,6 @@
 
 // This header file acts as a collective header file
 
-#include "RHF_functions.hpp"
 #include "RHF.hpp"
 #include "version.hpp"
 
