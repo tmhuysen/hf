@@ -30,16 +30,18 @@ namespace hf {
                 - double electronic_energy
                 - double total_energy
             __ private methods __
-                - Eigen::MatrixXd **calculateP**(const Eigen::MatrixXd& C, size_t N) const
+                - Eigen::MatrixXd **calculateP**(const Eigen::MatrixXd& C) const
                 - Eigen::MatrixXd **calculateG**(const Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei) const
                 - double **calculateElectronicEnergy**(const Eigen::MatrixXd& P, const Eigen::MatrixXd& H_core, const Eigen::MatrixXd& F) const
             == constructors ==
                 RHF(libwint::AOBasis& ao_basis, double scf_threshold)
             __ public methods __
-                + Eigen::VectorXd& **get_orbital_energies**() const
-                + Eigen::MatrixXd& **get_C_canonical**() const
+                + Eigen::VectorXd **get_orbital_energies**() const
+                + Eigen::MatrixXd **get_C_canonical**() const
                 + double **get_electronic_energy**() const
                 + double **get_total_energy**() const
+
+                + void **solve**()
 
                 + {static} size_t **HOMOIndex**(size_t K, size_t N)
                 + {static} size_t **LUMOIndex**(size_t K, size_t N)
