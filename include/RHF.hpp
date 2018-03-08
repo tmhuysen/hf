@@ -15,6 +15,8 @@ namespace rhf {
 class RHF {
 private:
     static const size_t MAX_NUMBER_OF_SCF_CYCLES = 128;
+    bool is_converged = false;
+
     const double scf_threshold;  // convergence threshold for the SCF procedure
     const libwint::AOBasis& ao_basis;
     const libwint::Molecule& molecule;
@@ -58,10 +60,10 @@ public:
 
 
     // Getters
-    Eigen::VectorXd get_orbital_energies() const { return this->orbital_energies; }
-    double get_orbital_energies(size_t index) const { return this->orbital_energies(index); }
-    Eigen::MatrixXd get_C_canonical() const { return this->C_canonical; }
-    double get_electronic_energy() const { return this->electronic_energy; }
+    Eigen::VectorXd get_orbital_energies() const;
+    double get_orbital_energies(size_t index) const;
+    Eigen::MatrixXd get_C_canonical() const;
+    double get_electronic_energy() const;
 
 
     // Methods

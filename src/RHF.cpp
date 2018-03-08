@@ -105,6 +105,48 @@ RHF::RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, do
 
 
 /*
+ *  GETTERS
+ */
+
+Eigen::VectorXd RHF::get_orbital_energies() const {
+
+    if (!(this->is_converged)) {
+        throw std::runtime_error("The RHF procedure isn't converged yet and you are trying to get orbital energies.");
+    }
+
+    return this->orbital_energies;
+}
+
+double RHF::get_orbital_energies(size_t index) const {
+
+    if (!(this->is_converged)) {
+        throw std::runtime_error("The RHF procedure isn't converged yet and you are trying to get orbital energies.");
+    }
+
+    return this->orbital_energies(index);
+}
+
+Eigen::MatrixXd RHF::get_C_canonical() const {
+
+    if (!(this->is_converged)) {
+        throw std::runtime_error("The RHF procedure isn't converged yet and you are trying to get the coefficient matrix.");
+    }
+
+    return this->C_canonical;
+}
+
+double RHF::get_electronic_energy() const {
+
+    if (!(this->is_converged)) {
+        throw std::runtime_error("The RHF procedure isn't converged yet and you are trying to get the electronic energy.");
+    }
+
+    return this->electronic_energy;
+}
+
+
+
+/*
  *  PUBLIC METHODS
  */
 
@@ -123,11 +165,8 @@ void RHF::solve() {
     Eigen::MatrixXd C = gsaes0.eigenvectors();
     Eigen::MatrixXd P = this->calculateP(C);
 
-    // Initialize the loop parameters
-    bool converged = false;
     size_t iteration_counter = 1;
-
-    while (!converged) {
+    while (!this->is_converged) {
         // Calculate the G-matrix
         Eigen::MatrixXd G = this->calculateG(P, this->ao_basis.get_g());
 
@@ -144,7 +183,7 @@ void RHF::solve() {
 
         // Check for convergence on the density matrix P
         if ((P - P_previous).norm() <= this->scf_threshold) {
-            converged = true;
+            this->is_converged = true;
 
             // After the SCF procedure, we end up with canonical spatial orbitals, i.e. the Fock matrix should be diagonal in this basis
             // Let's check if this is the case, within double float precision

@@ -33,7 +33,9 @@ namespace hf {
         class RHF {
             __ private members __
                 - const size_t {static} MAX_NUMBER_OF_SCF_CYCLES = 128
+                - bool is_converged = false
                 - const double scf_threshold
+
                 - const libwint::AOBasis& ao_basis
                 - const libwint::Molecule& molecule
 
