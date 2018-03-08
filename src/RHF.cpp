@@ -31,8 +31,8 @@ Eigen::MatrixXd RHF::calculateP(const Eigen::MatrixXd& C) const {
  */
 Eigen::MatrixXd RHF::calculateG(const Eigen::MatrixXd& P, const Eigen::Tensor<double, 4>& g) const {
 
-    // We will first have to convert the Eigen::MatrixXd P to an Eigen::Tensor<double, 2> P_tensor, as contractions are only implemented for Eigen::Tensors
-    Eigen::TensorMap<Eigen::Tensor<double, 2>> P_tensor (P.data(), P.rows(), P.cols());
+    // We will first have to convert the Eigen::MatrixXd P to an Eigen::Tensor<const double, 2> P_tensor, as contractions are only implemented for Eigen::Tensors
+    Eigen::TensorMap<Eigen::Tensor<const double, 2>> P_tensor (P.data(), P.rows(), P.cols());
 
     // Specify the contraction pairs
     // To calculate G, we must perform two double contractions

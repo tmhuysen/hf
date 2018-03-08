@@ -9,3 +9,6 @@ find_package(Boost REQUIRED)
 
 # Find my own libint wrapper
 find_package(libwint 2.1.1 REQUIRED)
+
+# Find cpputil
+find_package(cpputil 1.1.1 REQUIRED)

@@ -87,7 +87,7 @@ install:
 # Run the build script
 script:
   - cd /home/travis/build/GQCG/hf
-  - sudo cp tests/reference/sto-6g.g94 ${LIBINT_DATA_PATH}  # copy the extra basis set
+  - sudo cp docs/sto-6g.g94 ${LIBINT_DATA_PATH}  # copy the extra basis set
   - mkdir build && cd build
   - cmake ..
   - make && make test && sudo make install
