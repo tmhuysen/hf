@@ -73,12 +73,12 @@ public:
     /**
      *  Given a number of spatial orbitals @param: K and a number of electrons @param: N, calculated the index of the HOMO in the restricted case
      */
-    size_t HOMOIndex();
+    size_t HOMOIndex() const;
 
     /**
      *  Given a number of spatial orbitals @param: K and a number of electrons @param: N, calculated the index of the LUMO in the restricted case
      */
-    size_t LUMOIndex();
+    size_t LUMOIndex() const;
 };
 
 

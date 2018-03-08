@@ -57,8 +57,8 @@ namespace hf {
 
                 + void **solve**()
 
-                + size_t **HOMOIndex**()
-                + size_t **LUMOIndex**()
+                + size_t **HOMOIndex**() const
+                + size_t **LUMOIndex**() const
         }
     }
 }
