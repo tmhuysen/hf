@@ -54,7 +54,7 @@ public:
     /**
      *  Constructor based on a given libwint::AOBasis @param: ao_basis, a molecule @param: molecule and an SCF-cycle @param: scf_threshold
      */
-    RHF(const libwint::AOBasis& ao_basis, const libwint::Molecule& molecule, double scf_threshold);
+    RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold);
 
 
     // Getters

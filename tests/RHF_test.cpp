@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
     ao_basis.calculateIntegrals();
 
     // Do the SCF cycle
-    hf::rhf::RHF rhf (ao_basis, h2, 1.0e-06);
+    hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
     rhf.solve();
     double total_energy = rhf.get_electronic_energy() + h2.calculateInternuclearRepulsionEnergy();
 
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
     libwint::AOBasis ao_basis (water, "STO-3G");
     ao_basis.calculateIntegrals();
 
-    hf::rhf::RHF rhf (ao_basis, water, 1.0e-06);
+    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
     rhf.solve();
 
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 
 
     // Do the SCF cycle
-    hf::rhf::RHF rhf (ao_basis, water, 1.0e-06);
+    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
     rhf.solve();
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 
 
     // Do the SCF cycle
-    hf::rhf::RHF rhf (ao_basis, methane, 1.0e-06);
+    hf::rhf::RHF rhf (methane, ao_basis, 1.0e-06);
     rhf.solve();
     double total_energy = rhf.get_electronic_energy() + methane.calculateInternuclearRepulsionEnergy();
 
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto6g ) {
     libwint::AOBasis ao_basis (h2, "STO-6G");
     ao_basis.calculateIntegrals();
 
-    hf::rhf::RHF rhf (ao_basis, h2, 1.0e-06);
+    hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
     rhf.solve();
 
 
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
     libwint::AOBasis ao_basis (h2, "6-31g**");
     ao_basis.calculateIntegrals();
 
-    hf::rhf::RHF rhf (ao_basis, h2, 1.0e-06);
+    hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
     rhf.solve();
 
 
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
     libwint::AOBasis ao_basis (lih, "STO-6G");
     ao_basis.calculateIntegrals();
 
-    hf::rhf::RHF rhf (ao_basis, lih, 1.0e-06);
+    hf::rhf::RHF rhf (lih, ao_basis, 1.0e-06);
     rhf.solve();
 
 
