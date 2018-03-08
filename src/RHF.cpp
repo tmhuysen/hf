@@ -16,13 +16,13 @@ Eigen::MatrixXd RHF::calculateP(const Eigen::MatrixXd& C) const {
 
     size_t K = this->ao_basis.calculateNumberOfBasisFunctions();
 
-    // Construct the occupancy matrix, i.e. the density matrix in SO basis
+    // Construct the occupancy matrix O
     Eigen::MatrixXd O = Eigen::MatrixXd::Zero (K, K);
-    O.topLeftCorner(this->N/2, this->N/2) = 2 * Eigen::MatrixXd::Identity (this->N/2, this->N/2);
+    O.topLeftCorner(this->N/2, this->N/2) = 2 * Eigen::MatrixXd::Identity(this->N/2, this->N/2);
 
 
-    // P is the density matrix in AO basis
-    return libwint::transformations::transform_SO_to_AO(O, C);
+    // P = C * O * C^dagger
+    return C * O * C.adjoint();
 }
 
 
@@ -63,7 +63,7 @@ double RHF::calculateElectronicEnergy(const Eigen::MatrixXd& P, const Eigen::Mat
     Eigen::MatrixXd Z = H_core + F;
 
     // Convert the matrices Z and P to an Eigen::Tensor<double, 2> P_tensor, as contractions are only implemented for Eigen::Tensors
-    Eigen::TensorMap<Eigen::Tensor<double, 2>> P_tensor (P.data(), P.rows(), P.cols());
+    Eigen::TensorMap<Eigen::Tensor<const double, 2>> P_tensor (P.data(), P.rows(), P.cols());
     Eigen::TensorMap<Eigen::Tensor<double, 2>> Z_tensor (Z.data(), P.rows(), P.cols());
 
     // Specify the contraction pair
@@ -123,7 +123,7 @@ void RHF::solve() {
     bool converged = false;
     size_t iteration_counter = 1;
 
-    while ((! converged) || iteration_counter > this->MAX_NUMBER_OF_SCF_CYCLES) {
+    while (!converged) {
         // Calculate the G-matrix
         Eigen::MatrixXd G = this->calculateG(P, this->ao_basis.get_g());
 
@@ -140,13 +140,13 @@ void RHF::solve() {
 
         // Check for convergence on the density matrix P
         if ((P - P_previous).norm() <= this->scf_threshold) {
+            converged = true;
 
             // After the SCF procedure, we end up with canonical spatial orbitals, i.e. the Fock matrix should be diagonal in this basis
             // Let's check if this is the case, within double float precision
-            Eigen::MatrixXd f_MO = libwint::transformations::transform_AO_to_SO(f_AO, C);
-            assert(f_MO.isDiagonal());
+            Eigen::MatrixXd f_SO = libwint::transformations::transform_AO_to_SO(f_AO, C);
+            assert(f_SO.isDiagonal());
 
-            converged = true;
             std::cout << "The SCF algorithm has converged after " << iteration_counter << " iterations.\n" << std::endl;
 
             // After the calculation has converged, calculate the electronic energy
@@ -158,12 +158,13 @@ void RHF::solve() {
         }
         else {  // not converged yet
             iteration_counter ++;
+
+            // If we reach more than this->MAX_NUMBER_OF_SCF_CYCLES, the system is considered not to be converging
+            if (iteration_counter >= this->MAX_NUMBER_OF_SCF_CYCLES) {
+                throw std::runtime_error("The SCF procedure did not converge.");
+            }
         }
-
     } // SCF cycle loop
-
-    // If we reach more than this->MAX_NO_ SCF cycles, the system is considered not to be converging
-    throw std::runtime_error("The SCF procedure did not converge.");
 }
 
 
@@ -198,4 +199,3 @@ size_t RHF::LUMO_index(size_t K, size_t N) {
 
 }  // namespace rhf
 }  // namespace hf
-

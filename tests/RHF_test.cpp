@@ -12,19 +12,20 @@
 BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 
     // In this test case, we will follow section 3.5.2 in Szabo.
+    double ref_total_energy = -1.1167;
 
-    // Create a Molecule and a Basis
+
+    // Create a Molecule and an AOBasis
     libwint::Molecule h2 ("../tests/ref_data/h2_szabo.xyz");
     libwint::AOBasis ao_basis (h2, "STO-3G");
+    ao_basis.calculateIntegrals();
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (ao_basis, h2.get_N(), 1.0e-06);
     rhf.solve();
-
-    // Check the energy
-    double ref_total_energy = -1.1167;  // reference data from Szabo
     double total_energy = rhf.get_electronic_energy() + h2.calculateInternuclearRepulsionEnergy();
 
+    std::cout << total_energy << std::endl;
     BOOST_CHECK(std::abs(total_energy - ref_total_energy) < 1.0e-04);
 }
 
@@ -39,18 +40,21 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
 
     Eigen::MatrixXd ref_C (7, 7);
     ref_C << -9.94434594e-01, -2.39158997e-01,  3.61117086e-17, -9.36837259e-02,  3.73303682e-31, -1.11639152e-01, -9.04958229e-17,
-            -2.40970260e-02,  8.85736467e-01, -1.62817254e-16,  4.79589270e-01, -1.93821120e-30,  6.69575233e-01,  5.16088339e-16,
-            1.59542752e-18,  5.29309704e-17, -6.07288675e-01, -1.49717339e-16,  8.94470461e-17, -8.85143477e-16,  9.19231270e-01,
-            -3.16155527e-03,  8.58957413e-02,  2.89059171e-16, -7.47426286e-01,  2.81871324e-30,  7.38494291e-01,  6.90314422e-16,
-            6.65079968e-35,  1.16150362e-32, -2.22044605e-16, -4.06685146e-30, -1.00000000e+00, -1.78495825e-31,  2.22044605e-16,
-            4.59373756e-03,  1.44038811e-01, -4.52995183e-01, -3.29475784e-01,  2.16823939e-16, -7.09847234e-01, -7.32462496e-01,
-            4.59373756e-03,  1.44038811e-01,  4.52995183e-01, -3.29475784e-01, -2.16823939e-16, -7.09847234e-01,  7.32462496e-01;
+             -2.40970260e-02,  8.85736467e-01, -1.62817254e-16,  4.79589270e-01, -1.93821120e-30,  6.69575233e-01,  5.16088339e-16,
+              1.59542752e-18,  5.29309704e-17, -6.07288675e-01, -1.49717339e-16,  8.94470461e-17, -8.85143477e-16,  9.19231270e-01,
+             -3.16155527e-03,  8.58957413e-02,  2.89059171e-16, -7.47426286e-01,  2.81871324e-30,  7.38494291e-01,  6.90314422e-16,
+              6.65079968e-35,  1.16150362e-32, -2.22044605e-16, -4.06685146e-30, -1.00000000e+00, -1.78495825e-31,  2.22044605e-16,
+              4.59373756e-03,  1.44038811e-01, -4.52995183e-01, -3.29475784e-01,  2.16823939e-16, -7.09847234e-01, -7.32462496e-01,
+              4.59373756e-03,  1.44038811e-01,  4.52995183e-01, -3.29475784e-01, -2.16823939e-16, -7.09847234e-01,  7.32462496e-01;
 
 
     // Do our own RHF calculation
     libwint::Molecule water ("../tests/ref_data/h2o.xyz");
     libwint::AOBasis ao_basis (water, "STO-3G");
+    ao_basis.calculateIntegrals();
+
     hf::rhf::RHF rhf (ao_basis, water.get_N(), 1.0e-06);
+    rhf.solve();
 
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
@@ -58,7 +62,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
     // Check the calculated results with the reference
     BOOST_CHECK(std::abs(total_energy - ref_total_energy) < 1.0e-06);
     BOOST_CHECK(cpputil::linalg::areEqualEigenvalues(ref_orbital_energies, rhf.get_orbital_energies(), 1.0e-06));
-    BOOST_CHECK(cpputil::linalg::areEqualSetsOfEigenvectors(ref_C, rhf.get_C_canonical(), 1.0e-06));
+    BOOST_CHECK(cpputil::linalg::areEqualSetsOfEigenvectors(ref_C, rhf.get_C_canonical(), 1.0e-05));
 }
 
 
@@ -70,14 +74,17 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 
     // Do our own RHF calculation
     libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
-    libwint::AOBasis basis (water, "STO-3G");
+    libwint::AOBasis ao_basis (water, "STO-3G");
+    ao_basis.calculateIntegrals();
+
 
     // Check if the internuclear distance between O and H is really 1.1 A (= 2.07869 bohr), as specified in the text
     BOOST_REQUIRE(std::abs(water.calculateInternuclearDistance(0, 1) - 2.07869) < 1.0e-4);
 
 
     // Do the SCF cycle
-    hf::rhf::RHF rhf (basis, water.get_N(), 1.0e-06);
+    hf::rhf::RHF rhf (ao_basis, water.get_N(), 1.0e-06);
+    rhf.solve();
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
 
@@ -93,6 +100,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
     // Do our own RHF calculation
     libwint::Molecule methane ("../tests/ref_data/ch4_crawdad.xyz");
     libwint::AOBasis ao_basis (methane, "STO-3G");
+    ao_basis.calculateIntegrals();
 
     // Check if the internuclear distance between C and H is really around 2.05 bohr, which is the bond distance Wikipedia (108.7 pm) specifies
     BOOST_CHECK(std::abs(methane.calculateInternuclearDistance(0, 1) - 2.05) < 1.0e-1);
@@ -100,6 +108,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (ao_basis, methane.get_N(), 1.0e-06);
+    rhf.solve();
     double total_energy = rhf.get_electronic_energy() + methane.calculateInternuclearRepulsionEnergy();
 
 
@@ -114,9 +123,12 @@ BOOST_AUTO_TEST_CASE ( h2_sto6g ) {
 
 
     // Do our own RHF calculation
-    libwint::Molecule h2 ("../tests/reference/h2_olsens.xyz");
+    libwint::Molecule h2 ("../tests/ref_data/h2_olsens.xyz");
     libwint::AOBasis ao_basis (h2, "STO-6G");
+    ao_basis.calculateIntegrals();
+
     hf::rhf::RHF rhf (ao_basis, h2.get_N(), 1.0e-06);
+    rhf.solve();
 
 
     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
@@ -132,7 +144,10 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
     // Do our own RHF calculation
     libwint::Molecule h2 ("../tests/ref_data/h2_olsens.xyz");
     libwint::AOBasis ao_basis (h2, "6-31g**");
+    ao_basis.calculateIntegrals();
+
     hf::rhf::RHF rhf (ao_basis, h2.get_N(), 1.0e-06);
+    rhf.solve();
 
 
     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
@@ -148,8 +163,62 @@ BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
     // Do our own RHF calculation
     libwint::Molecule lih ("../tests/ref_data/lih_olsens.xyz");
     libwint::AOBasis ao_basis (lih, "STO-6G");
+    ao_basis.calculateIntegrals();
+
     hf::rhf::RHF rhf (ao_basis, lih.get_N(), 1.0e-06);
+    rhf.solve();
 
 
     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
+}
+
+
+BOOST_AUTO_TEST_CASE ( homo ) {
+
+    size_t K1 = 4;
+    size_t K2 = 3;
+
+    size_t N1 = 2;
+    size_t N2 = 4;
+    size_t N3 = 6;
+    size_t N4 = 8;
+    size_t N5 = 10;
+    size_t N_odd = 3;
+
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K1, N1), 0);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K1, N2), 1);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K1, N3), 2);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K1, N4), 3);
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMO_index(K1, N5), std::invalid_argument);  // cannot place more than 8 electrons in 4 orbitals
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMO_index(K1, N_odd), std::invalid_argument);  // the unrestricted case is not supported
+
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K2, N1), 0);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K2, N2), 1);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K2, N3), 2);
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMO_index(K2, N4), std::invalid_argument);  // Cannot place more than 6 electrons in 3 orbitals
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMO_index(K2, N_odd), std::invalid_argument);  // The unrestricted case is not supported
+}
+
+
+BOOST_AUTO_TEST_CASE ( lumo ) {
+
+    size_t K1 = 4;
+    size_t K2 = 3;
+
+    size_t N1 = 2;
+    size_t N2 = 4;
+    size_t N3 = 6;
+    size_t N4 = 8;
+    size_t N_odd = 3;
+
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMO_index(K1, N1), 1);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMO_index(K1, N2), 2);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMO_index(K1, N3), 3);
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMO_index(K1, N4), std::invalid_argument);  // There is no lumo for 8 electrons in 4 spatial orbitals
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMO_index(K1, N_odd), std::invalid_argument);  // The unrestricted case is not supported
+
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMO_index(K2, N1), 1);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMO_index(K2, N2), 2);
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMO_index(K2, N3), std::invalid_argument);  // There is no LUMO for 6 electrons in 3 spatial orbitals
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMO_index(K2, N_odd), std::invalid_argument);  // The unrestricted case is not supported
 }
