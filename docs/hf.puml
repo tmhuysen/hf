@@ -5,12 +5,24 @@ namespace libwint {
 
     class AOBasis {
         __ public methods __
-            + libwint::Molecule& **get_molecule**() const
+            + Eigen::MatrixXd **get_S**() const
+            + Eigen::MatrixXd **get_T**() const
+            + Eigen::MatrixXd **get_V**() const
+            + Eigen::Tensor<double, 4> **get_g**() const
+
+            + size_t **calculateNumberOfBasisFunctions**() const
+    }
+
+
+    class Molecule {
+        __ public methods __
+            + site_t **get_N** () const
+
     }
 
 
     class transformations {
-        + {static} Eigen::MatrixXd **transform_AO_to_SO**(Eigen::MatrixXd& f_AO, Eigen::MatrixXd& C)
+        + Eigen::MatrixXd **transform_AO_to_SO**(Eigen::MatrixXd& f_AO, Eigen::MatrixXd& C)
     }
 
 }
@@ -24,6 +36,9 @@ namespace hf {
                 - const size_t {static} MAX_NUMBER_OF_SCF_CYCLES = 128
                 - const double scf_threshold
                 - const libwint::AOBasis& ao_basis
+                - const libwint::Molecule& molecule
+
+                - const size_t K
                 - const size_t N
 
                 - Eigen::VectorXd orbital_energies
@@ -34,7 +49,7 @@ namespace hf {
                 - Eigen::MatrixXd **calculateG**(const Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei) const
                 - double **calculateElectronicEnergy**(const Eigen::MatrixXd& P, const Eigen::MatrixXd& H_core, const Eigen::MatrixXd& F) const
             == constructors ==
-                RHF(libwint::AOBasis& ao_basis, size_t N, double scf_threshold)
+                **RHF**(const libwint::AOBasis& ao_basis, const libwint::Molecule& molecule, double scf_threshold)
             __ public methods __
                 + Eigen::VectorXd **get_orbital_energies**() const
                 + Eigen::MatrixXd **get_C_canonical**() const
@@ -42,8 +57,8 @@ namespace hf {
 
                 + void **solve**()
 
-                + {static} size_t **HOMOIndex**(size_t K, size_t N)
-                + {static} size_t **LUMOIndex**(size_t K, size_t N)
+                + size_t **HOMOIndex**()
+                + size_t **LUMOIndex**()
         }
     }
 }

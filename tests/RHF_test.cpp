@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
     ao_basis.calculateIntegrals();
 
     // Do the SCF cycle
-    hf::rhf::RHF rhf (ao_basis, h2.get_N(), 1.0e-06);
+    hf::rhf::RHF rhf (ao_basis, h2, 1.0e-06);
     rhf.solve();
     double total_energy = rhf.get_electronic_energy() + h2.calculateInternuclearRepulsionEnergy();
 
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
     libwint::AOBasis ao_basis (water, "STO-3G");
     ao_basis.calculateIntegrals();
 
-    hf::rhf::RHF rhf (ao_basis, water.get_N(), 1.0e-06);
+    hf::rhf::RHF rhf (ao_basis, water, 1.0e-06);
     rhf.solve();
 
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 
 
     // Do the SCF cycle
-    hf::rhf::RHF rhf (ao_basis, water.get_N(), 1.0e-06);
+    hf::rhf::RHF rhf (ao_basis, water, 1.0e-06);
     rhf.solve();
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 
 
     // Do the SCF cycle
-    hf::rhf::RHF rhf (ao_basis, methane.get_N(), 1.0e-06);
+    hf::rhf::RHF rhf (ao_basis, methane, 1.0e-06);
     rhf.solve();
     double total_energy = rhf.get_electronic_energy() + methane.calculateInternuclearRepulsionEnergy();
 
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto6g ) {
     libwint::AOBasis ao_basis (h2, "STO-6G");
     ao_basis.calculateIntegrals();
 
-    hf::rhf::RHF rhf (ao_basis, h2.get_N(), 1.0e-06);
+    hf::rhf::RHF rhf (ao_basis, h2, 1.0e-06);
     rhf.solve();
 
 
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
     libwint::AOBasis ao_basis (h2, "6-31g**");
     ao_basis.calculateIntegrals();
 
-    hf::rhf::RHF rhf (ao_basis, h2.get_N(), 1.0e-06);
+    hf::rhf::RHF rhf (ao_basis, h2, 1.0e-06);
     rhf.solve();
 
 
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
     libwint::AOBasis ao_basis (lih, "STO-6G");
     ao_basis.calculateIntegrals();
 
-    hf::rhf::RHF rhf (ao_basis, lih.get_N(), 1.0e-06);
+    hf::rhf::RHF rhf (ao_basis, lih, 1.0e-06);
     rhf.solve();
 
 
@@ -173,52 +173,53 @@ BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( homo ) {
 
-    size_t K1 = 4;
-    size_t K2 = 3;
-
-    size_t N1 = 2;
-    size_t N2 = 4;
-    size_t N3 = 6;
-    size_t N4 = 8;
-    size_t N5 = 10;
-    size_t N_odd = 3;
-
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N1), 0);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N2), 1);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N3), 2);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N4), 3);
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K1, N5), std::invalid_argument);  // cannot place more than 8 electrons in 4 orbitals
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K1, N_odd), std::invalid_argument);  // the unrestricted case is not supported
-
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K2, N1), 0);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K2, N2), 1);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K2, N3), 2);
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K2, N4), std::invalid_argument);  // Cannot place more than 6 electrons in 3 orbitals
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K2, N_odd), std::invalid_argument);  // The unrestricted case is not supported
-}
-
-
-BOOST_AUTO_TEST_CASE ( lumo ) {
-
-    size_t K1 = 4;
-    size_t K2 = 3;
-
-    size_t N1 = 2;
-    size_t N2 = 4;
-    size_t N3 = 6;
-    size_t N4 = 8;
-    size_t N_odd = 3;
-
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K1, N1), 1);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K1, N2), 2);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K1, N3), 3);
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K1, N4), std::invalid_argument);  // There is no lumo for 8 electrons in 4 spatial orbitals
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K1, N_odd), std::invalid_argument);  // The unrestricted case is not supported
-
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K2, N1), 1);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K2, N2), 2);
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K2, N3), std::invalid_argument);  // There is no LUMO for 6 electrons in 3 spatial orbitals
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K2, N_odd), std::invalid_argument);  // The unrestricted case is not supported
-}
+//BOOST_AUTO_TEST_CASE ( homo ) {
+//
+//    size_t K1 = 4;
+//    size_t K2 = 3;
+//
+//    size_t N1 = 2;
+//    size_t N2 = 4;
+//    size_t N3 = 6;
+//    size_t N4 = 8;
+//    size_t N5 = 10;
+//    size_t N_odd = 3;
+//
+//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N1), 0);
+//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N2), 1);
+//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N3), 2);
+//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N4), 3);
+//    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K1, N5), std::invalid_argument);  // cannot place more than 8 electrons in 4 orbitals
+//    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K1, N_odd), std::invalid_argument);  // the unrestricted case is not supported
+//
+//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K2, N1), 0);
+//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K2, N2), 1);
+//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K2, N3), 2);
+//    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K2, N4), std::invalid_argument);  // Cannot place more than 6 electrons in 3 orbitals
+//    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K2, N_odd), std::invalid_argument);  // The unrestricted case is not supported
+//}
+//
+//
+//BOOST_AUTO_TEST_CASE ( lumo ) {
+//
+//    size_t K1 = 4;
+//    size_t K2 = 3;
+//
+//    size_t N1 = 2;
+//    size_t N2 = 4;
+//    size_t N3 = 6;
+//    size_t N4 = 8;
+//    size_t N_odd = 3;
+//
+//    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K1, N1), 1);
+//    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K1, N2), 2);
+//    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K1, N3), 3);
+//    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K1, N4), std::invalid_argument);  // There is no lumo for 8 electrons in 4 spatial orbitals
+//    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K1, N_odd), std::invalid_argument);  // The unrestricted case is not supported
+//
+//    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K2, N1), 1);
+//    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K2, N2), 2);
+//    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K2, N3), std::invalid_argument);  // There is no LUMO for 6 electrons in 3 spatial orbitals
+//    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K2, N_odd), std::invalid_argument);  // The unrestricted case is not supported
+//}

@@ -17,7 +17,11 @@ private:
     static const size_t MAX_NUMBER_OF_SCF_CYCLES = 128;
     const double scf_threshold;  // convergence threshold for the SCF procedure
     const libwint::AOBasis& ao_basis;
-    const size_t N;  // number of electrons
+    const libwint::Molecule& molecule;
+
+    const size_t K;  // shortcut to this->ao_basis.calculateNumberOfBasisFunctions()
+    const size_t N;  // shortcut to this->molecule.get_N()
+
 
     Eigen::VectorXd orbital_energies;  // energies of the spatial orbitals (i.e. eigenvalues of the Fock operator)
     Eigen::MatrixXd C_canonical;  // coefficient matrix linking the spatial orbitals to the underlying basis set
@@ -50,7 +54,7 @@ public:
     /**
      *  Constructor based on a given libwint::AOBasis @param: ao_basis, a number of electrons @param: N and an SCF-cycle @param: scf_threshold
      */
-    RHF(const libwint::AOBasis& ao_basis, size_t N, double scf_threshold);
+    RHF(const libwint::AOBasis& ao_basis, const libwint::Molecule& molecule, double scf_threshold);
 
 
     // Getters
@@ -68,12 +72,12 @@ public:
     /**
      *  Given a number of spatial orbitals @param: K and a number of electrons @param: N, calculated the index of the HOMO in the restricted case
      */
-    static size_t HOMOIndex(size_t K, size_t N);
+    size_t HOMOIndex();
 
     /**
      *  Given a number of spatial orbitals @param: K and a number of electrons @param: N, calculated the index of the LUMO in the restricted case
      */
-    static size_t LUMOIndex(size_t K, size_t N);
+    size_t LUMOIndex();
 };
 
 

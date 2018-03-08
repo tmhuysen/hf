@@ -14,10 +14,8 @@ namespace rhf {
  */
 Eigen::MatrixXd RHF::calculateP(const Eigen::MatrixXd& C) const {
 
-    size_t K = this->ao_basis.calculateNumberOfBasisFunctions();
-
     // Construct the occupancy matrix O
-    Eigen::MatrixXd O = Eigen::MatrixXd::Zero (K, K);
+    Eigen::MatrixXd O = Eigen::MatrixXd::Zero (this->K, this->K);
     O.topLeftCorner(this->N/2, this->N/2) = 2 * Eigen::MatrixXd::Identity(this->N/2, this->N/2);
 
 
@@ -87,14 +85,20 @@ double RHF::calculateElectronicEnergy(const Eigen::MatrixXd& P, const Eigen::Mat
 /**
  *  Constructor based on a given libwint::AOBasis @param: ao_basis, a number of electrons @param: N and an SCF-cycle @param: scf_threshold
  */
-RHF::RHF(const libwint::AOBasis& ao_basis, size_t N, double scf_threshold) :
+RHF::RHF(const libwint::AOBasis& ao_basis, const libwint::Molecule& molecule, double scf_threshold) :
     scf_threshold (scf_threshold),
     ao_basis (ao_basis),
-    N (N)
+    molecule (molecule),
+    K (this->ao_basis.calculateNumberOfBasisFunctions()),
+    N (this->molecule.get_N())
 {
 
     if ((this->N % 2) != 0) {
-        throw std::invalid_argument("You supplied an odd number of electrons to the RHF procedure.");
+        throw std::invalid_argument("The given molecule has an odd number of electrons, which is not compatible with an RFH calculation.");
+    }
+
+    if (this->N > 2 * this->K) {
+        throw std::invalid_argument("There are too many electrons in the molecule for the given number of spatial orbitals in the AOBasis.");
     }
 }
 
@@ -147,8 +151,6 @@ void RHF::solve() {
             Eigen::MatrixXd f_SO = libwint::transformations::transform_AO_to_SO(f_AO, C);
             assert(f_SO.isDiagonal());
 
-            std::cout << "The SCF algorithm has converged after " << iteration_counter << " iterations.\n" << std::endl;
-
             // After the calculation has converged, calculate the electronic energy
             this->electronic_energy = this->calculateElectronicEnergy(P, H_core, f_AO);
 
@@ -164,35 +166,29 @@ void RHF::solve() {
                 throw std::runtime_error("The SCF procedure did not converge.");
             }
         }
-    } // SCF cycle loop
+    }  // SCF cycle loop
 }
 
 
 /**
  *  Given a number of spatial orbitals @param: K and a number of electrons @param: N, calculated the index of the HOMO in the restricted case
  */
-size_t RHF::HOMOIndex(size_t K, size_t N) {
-    if (N % 2 != 0) {
-        throw std::invalid_argument("The unrestricted case is not supported.");
-    }
+size_t RHF::HOMOIndex() {
 
-    if (N > 2 * K) {
-        throw std::invalid_argument("Cannot place that many electrons N in K spatial orbitals.");
-    }
-
-    return N / 2 - 1;  // Need to subtract 1 because computer indices start at 0
+    return this->N / 2 - 1;  // need to subtract 1 because computer indices start at 0
 }
 
 
 /**
  *  Given a number of spatial orbitals @param: K and a number of electrons @param: N, calculated the index of the LUMO in the restricted case
  */
-size_t RHF::LUMOIndex(size_t K, size_t N) {
-    if (N >= 2 * K) {
+size_t RHF::LUMOIndex() {
+
+    if (this->N >= 2 * this->K) {
         throw std::invalid_argument("There is no LUMO for the given amount of electrons N and spatial orbitals K");
     }
 
-    return RHF::HOMOIndex(K, N) + 1;
+    return this->HOMOIndex() + 1;
 }
 
 
