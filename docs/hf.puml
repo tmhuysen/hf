@@ -21,25 +21,24 @@ namespace hf {
 
         class RHF {
             __ private members __
-                - const size_t {static} MAX_NO_SCF_ITERATIONS = 128
+                - const size_t {static} MAX_NUMBER_OF_SCF_CYCLES = 128
                 - const double scf_threshold
                 - const libwint::AOBasis& ao_basis
+                - const size_t N
 
                 - Eigen::VectorXd orbital_energies
                 - Eigen::MatrixXd C_canonical
                 - double electronic_energy
-                - double total_energy
             __ private methods __
                 - Eigen::MatrixXd **calculateP**(const Eigen::MatrixXd& C) const
                 - Eigen::MatrixXd **calculateG**(const Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei) const
                 - double **calculateElectronicEnergy**(const Eigen::MatrixXd& P, const Eigen::MatrixXd& H_core, const Eigen::MatrixXd& F) const
             == constructors ==
-                RHF(libwint::AOBasis& ao_basis, double scf_threshold)
+                RHF(libwint::AOBasis& ao_basis, size_t N, double scf_threshold)
             __ public methods __
                 + Eigen::VectorXd **get_orbital_energies**() const
                 + Eigen::MatrixXd **get_C_canonical**() const
                 + double **get_electronic_energy**() const
-                + double **get_total_energy**() const
 
                 + void **solve**()
 
