@@ -185,18 +185,18 @@ BOOST_AUTO_TEST_CASE ( homo ) {
     size_t N5 = 10;
     size_t N_odd = 3;
 
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K1, N1), 0);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K1, N2), 1);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K1, N3), 2);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K1, N4), 3);
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMO_index(K1, N5), std::invalid_argument);  // cannot place more than 8 electrons in 4 orbitals
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMO_index(K1, N_odd), std::invalid_argument);  // the unrestricted case is not supported
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N1), 0);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N2), 1);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N3), 2);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N4), 3);
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K1, N5), std::invalid_argument);  // cannot place more than 8 electrons in 4 orbitals
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K1, N_odd), std::invalid_argument);  // the unrestricted case is not supported
 
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K2, N1), 0);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K2, N2), 1);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMO_index(K2, N3), 2);
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMO_index(K2, N4), std::invalid_argument);  // Cannot place more than 6 electrons in 3 orbitals
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMO_index(K2, N_odd), std::invalid_argument);  // The unrestricted case is not supported
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K2, N1), 0);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K2, N2), 1);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K2, N3), 2);
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K2, N4), std::invalid_argument);  // Cannot place more than 6 electrons in 3 orbitals
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K2, N_odd), std::invalid_argument);  // The unrestricted case is not supported
 }
 
 
@@ -211,14 +211,14 @@ BOOST_AUTO_TEST_CASE ( lumo ) {
     size_t N4 = 8;
     size_t N_odd = 3;
 
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMO_index(K1, N1), 1);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMO_index(K1, N2), 2);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMO_index(K1, N3), 3);
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMO_index(K1, N4), std::invalid_argument);  // There is no lumo for 8 electrons in 4 spatial orbitals
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMO_index(K1, N_odd), std::invalid_argument);  // The unrestricted case is not supported
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K1, N1), 1);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K1, N2), 2);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K1, N3), 3);
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K1, N4), std::invalid_argument);  // There is no lumo for 8 electrons in 4 spatial orbitals
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K1, N_odd), std::invalid_argument);  // The unrestricted case is not supported
 
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMO_index(K2, N1), 1);
-    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMO_index(K2, N2), 2);
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMO_index(K2, N3), std::invalid_argument);  // There is no LUMO for 6 electrons in 3 spatial orbitals
-    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMO_index(K2, N_odd), std::invalid_argument);  // The unrestricted case is not supported
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K2, N1), 1);
+    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K2, N2), 2);
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K2, N3), std::invalid_argument);  // There is no LUMO for 6 electrons in 3 spatial orbitals
+    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K2, N_odd), std::invalid_argument);  // The unrestricted case is not supported
 }

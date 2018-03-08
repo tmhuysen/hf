@@ -171,7 +171,7 @@ void RHF::solve() {
 /**
  *  Given a number of spatial orbitals @param: K and a number of electrons @param: N, calculated the index of the HOMO in the restricted case
  */
-size_t RHF::HOMO_index(size_t K, size_t N) {
+size_t RHF::HOMOIndex(size_t K, size_t N) {
     if (N % 2 != 0) {
         throw std::invalid_argument("The unrestricted case is not supported.");
     }
@@ -187,12 +187,12 @@ size_t RHF::HOMO_index(size_t K, size_t N) {
 /**
  *  Given a number of spatial orbitals @param: K and a number of electrons @param: N, calculated the index of the LUMO in the restricted case
  */
-size_t RHF::LUMO_index(size_t K, size_t N) {
+size_t RHF::LUMOIndex(size_t K, size_t N) {
     if (N >= 2 * K) {
         throw std::invalid_argument("There is no LUMO for the given amount of electrons N and spatial orbitals K");
     }
 
-    return RHF::HOMO_index(K, N) + 1;
+    return RHF::HOMOIndex(K, N) + 1;
 }
 
 
