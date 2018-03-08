@@ -17,7 +17,6 @@ namespace libwint {
     class Molecule {
         __ public methods __
             + site_t **get_N** () const
-
     }
 
 
@@ -66,6 +65,8 @@ namespace hf {
 
 
 hf.rhf.RHF o--> libwint.AOBasis
+
+hf.rhf.RHF o--> libwint.Molecule
 
 hf.rhf.RHF ..> libwint.transformations
 
