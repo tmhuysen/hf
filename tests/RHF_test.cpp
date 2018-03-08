@@ -9,6 +9,25 @@
 
 
 
+BOOST_AUTO_TEST_CASE ( constructor ) {
+
+    // Check if we only accept even numbers of electrons
+    libwint::Molecule h2_cation ("../tests/ref_data/h2_szabo.xyz", +1);  // H2+
+    libwint::AOBasis ao_basis1 (h2_cation, "STO-3G");
+    ao_basis1.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
+
+    BOOST_CHECK_THROW(hf::rhf::RHF (h2_cation, ao_basis1, 1.0e-06), std::invalid_argument);
+
+
+    // Check if we don't accept molecules with too many electrons
+    libwint::Molecule h2_many_electrons ("../tests/ref_data/h2_szabo.xyz", -10);  // H2 10-
+    libwint::AOBasis ao_basis2 (h2_many_electrons, "STO-3G");
+    ao_basis2.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
+
+    BOOST_CHECK_THROW(hf::rhf::RHF (h2_many_electrons, ao_basis2, 1.0e-06), std::invalid_argument);
+}
+
+
 BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 
     // In this test case, we will follow section 3.5.2 in Szabo.
@@ -174,52 +193,31 @@ BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
 
 
 
-//BOOST_AUTO_TEST_CASE ( homo ) {
-//
-//    size_t K1 = 4;
-//    size_t K2 = 3;
-//
-//    size_t N1 = 2;
-//    size_t N2 = 4;
-//    size_t N3 = 6;
-//    size_t N4 = 8;
-//    size_t N5 = 10;
-//    size_t N_odd = 3;
-//
-//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N1), 0);
-//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N2), 1);
-//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N3), 2);
-//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K1, N4), 3);
-//    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K1, N5), std::invalid_argument);  // cannot place more than 8 electrons in 4 orbitals
-//    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K1, N_odd), std::invalid_argument);  // the unrestricted case is not supported
-//
-//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K2, N1), 0);
-//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K2, N2), 1);
-//    BOOST_CHECK_EQUAL(hf::rhf::RHF::HOMOIndex(K2, N3), 2);
-//    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K2, N4), std::invalid_argument);  // Cannot place more than 6 electrons in 3 orbitals
-//    BOOST_REQUIRE_THROW(hf::rhf::RHF::HOMOIndex(K2, N_odd), std::invalid_argument);  // The unrestricted case is not supported
-//}
-//
-//
-//BOOST_AUTO_TEST_CASE ( lumo ) {
-//
-//    size_t K1 = 4;
-//    size_t K2 = 3;
-//
-//    size_t N1 = 2;
-//    size_t N2 = 4;
-//    size_t N3 = 6;
-//    size_t N4 = 8;
-//    size_t N_odd = 3;
-//
-//    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K1, N1), 1);
-//    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K1, N2), 2);
-//    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K1, N3), 3);
-//    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K1, N4), std::invalid_argument);  // There is no lumo for 8 electrons in 4 spatial orbitals
-//    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K1, N_odd), std::invalid_argument);  // The unrestricted case is not supported
-//
-//    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K2, N1), 1);
-//    BOOST_CHECK_EQUAL(hf::rhf::RHF::LUMOIndex(K2, N2), 2);
-//    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K2, N3), std::invalid_argument);  // There is no LUMO for 6 electrons in 3 spatial orbitals
-//    BOOST_REQUIRE_THROW(hf::rhf::RHF::LUMOIndex(K2, N_odd), std::invalid_argument);  // The unrestricted case is not supported
-//}
+BOOST_AUTO_TEST_CASE ( homo ) {
+
+    // Create an RHF object to test the HOMOIndex function on
+    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
+    libwint::AOBasis ao_basis (water, "STO-3G");
+    ao_basis.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
+
+    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
+
+
+    // In this case, K=7 and N=10, so the index of the HOMO should be 4
+    BOOST_CHECK_EQUAL(rhf.HOMOIndex(), 4);
+}
+
+
+BOOST_AUTO_TEST_CASE ( lumo ) {
+
+    // Create an RHF object to test the LUMOIndex function on
+    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
+    libwint::AOBasis ao_basis (water, "STO-3G");
+    ao_basis.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
+
+    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
+
+
+    // In this case, K=7 and N=10, so the index of the LUMO should be 5
+    BOOST_CHECK_EQUAL(rhf.LUMOIndex(), 5);
+}
