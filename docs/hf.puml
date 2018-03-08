@@ -51,6 +51,7 @@ namespace hf {
                 **RHF**(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold)
             __ public methods __
                 + Eigen::VectorXd **get_orbital_energies**() const
+                + double **get_orbital_energies**(size_t index) const
                 + Eigen::MatrixXd **get_C_canonical**() const
                 + double **get_electronic_energy**() const
 

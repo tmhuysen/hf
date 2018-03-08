@@ -59,6 +59,7 @@ public:
 
     // Getters
     Eigen::VectorXd get_orbital_energies() const { return this->orbital_energies; }
+    double get_orbital_energies(size_t index) const { return this->orbital_energies(index); }
     Eigen::MatrixXd get_C_canonical() const { return this->C_canonical; }
     double get_electronic_energy() const { return this->electronic_energy; }
 
