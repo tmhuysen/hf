@@ -8,4 +8,7 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(Boost REQUIRED)
 
 # Find my own libint wrapper
-find_package(libwint 2.1.1 REQUIRED)
+find_package(libwint 3.0.0 REQUIRED)
+
+# Find cpputil
+find_package(cpputil 1.2.1 REQUIRED)

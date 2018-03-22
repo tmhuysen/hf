@@ -1,75 +1,64 @@
 #define BOOST_TEST_MODULE "SCFSolver"
 
 #include "RHF.hpp"
-#include "utility.hpp"
+
+#include <cpputil.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/included/unit_test.hpp>  // include this to get main(), otherwise the compiler will complain
 
 
-BOOST_AUTO_TEST_CASE ( reference ) {
 
-    // Specify some data, create a Molecule and a Basis
-    const std::string xyzfilename = "../tests/reference/h2_szabo.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
-    std::string basis_name = "STO-3G";
-    double threshold = 1.0e-06;
+BOOST_AUTO_TEST_CASE ( constructor ) {
 
-    libwint::Molecule h2 (xyzfilename);
-    libwint::Basis basis (h2, basis_name);
+    // Check if we only accept even numbers of electrons
+    libwint::Molecule h2_cation ("../tests/ref_data/h2_szabo.xyz", +1);  // H2+
+    libwint::AOBasis ao_basis1 (h2_cation, "STO-3G");
+    ao_basis1.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
 
-    // Create an SCFSolver instance - this automatically performs the SCF cycle (not that this is needed in this test)
-    hf::rhf::RHF rhf (basis, threshold);
+    BOOST_CHECK_THROW(hf::rhf::RHF (h2_cation, ao_basis1, 1.0e-06), std::invalid_argument);
 
-    // Test if a reference to the Basis object is made
-    BOOST_CHECK_EQUAL(&basis, &rhf.basis);
+
+    // Check if we don't accept molecules with too many electrons
+    libwint::Molecule h2_many_electrons ("../tests/ref_data/h2_szabo.xyz", -10);  // H2 10-
+    libwint::AOBasis ao_basis2 (h2_many_electrons, "STO-3G");
+    ao_basis2.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
+
+    BOOST_CHECK_THROW(hf::rhf::RHF (h2_many_electrons, ao_basis2, 1.0e-06), std::invalid_argument);
 }
 
 
 BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
+
     // In this test case, we will follow section 3.5.2 in Szabo.
+    double ref_total_energy = -1.1167;
 
-    // Specify the data
-    const std::string xyzfilename = "../tests/reference/h2_szabo.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
-    std::string basis_name = "STO-3G";
-    double threshold = 1.0e-06;
 
-    // Create a Molecule and a Basis
-    libwint::Molecule h2 (xyzfilename);
-    libwint::Basis basis (h2, basis_name);
+    // Create a Molecule and an AOBasis
+    libwint::Molecule h2 ("../tests/ref_data/h2_szabo.xyz");
+    libwint::AOBasis ao_basis (h2, "STO-3G");
+    ao_basis.calculateIntegrals();
 
     // Do the SCF cycle
-    hf::rhf::RHF rhf (basis, threshold);
+    hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
+    rhf.solve();
+    double total_energy = rhf.get_electronic_energy() + h2.calculateInternuclearRepulsionEnergy();
 
-
-    // The converged coefficient matrix is listed as
-    Eigen::MatrixXd P_converged_ref (2, 2);
-    double p11 = 1 / (1 + 0.6593);
-    P_converged_ref << p11, p11,
-                       p11, p11;
-
-    // Check the energy
-    BOOST_CHECK(std::abs(rhf.energy - (-1.1167)) < 1.0e-04); // Reference data from Szabo
+    std::cout << total_energy << std::endl;
+    BOOST_CHECK(std::abs(total_energy - ref_total_energy) < 1.0e-04);
 }
 
 
-BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
+BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
 
-    // Specify some data
-    const std::string xyzfilename = "../tests/reference/h2o.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
-    double threshold = 1.0e-06;
-    std::string basis_name = "STO-3G";
+    // We have some reference data from horton
+    double ref_total_energy = -74.942080055631;
 
-    libwint::Molecule water (xyzfilename);
-    libwint::Basis basis (water, basis_name);
-
-
-    // Supply the reference data from HORTON
-    double ref_energy = -74.942080055631;
-    Eigen::VectorXd ref_orbital_energies (7);  // 7 BF in STO-3G for water
+    Eigen::VectorXd ref_orbital_energies (7);  // the STO-3G basisset has 7 basis functions for water
     ref_orbital_energies << -20.26289322, -1.20969863, -0.54796582, -0.43652631, -0.38758791, 0.47762043, 0.5881361;
 
-    Eigen::MatrixXd C_ref (7, 7);
-    C_ref << -9.94434594e-01, -2.39158997e-01,  3.61117086e-17, -9.36837259e-02,  3.73303682e-31, -1.11639152e-01, -9.04958229e-17,
+    Eigen::MatrixXd ref_C (7, 7);
+    ref_C << -9.94434594e-01, -2.39158997e-01,  3.61117086e-17, -9.36837259e-02,  3.73303682e-31, -1.11639152e-01, -9.04958229e-17,
              -2.40970260e-02,  8.85736467e-01, -1.62817254e-16,  4.79589270e-01, -1.93821120e-30,  6.69575233e-01,  5.16088339e-16,
               1.59542752e-18,  5.29309704e-17, -6.07288675e-01, -1.49717339e-16,  8.94470461e-17, -8.85143477e-16,  9.19231270e-01,
              -3.16155527e-03,  8.58957413e-02,  2.89059171e-16, -7.47426286e-01,  2.81871324e-30,  7.38494291e-01,  6.90314422e-16,
@@ -78,118 +67,157 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g ) {
               4.59373756e-03,  1.44038811e-01,  4.52995183e-01, -3.29475784e-01, -2.16823939e-16, -7.09847234e-01,  7.32462496e-01;
 
 
-    // Do the SCF cycle
-    hf::rhf::RHF rhf (basis, threshold);
+    // Do our own RHF calculation
+    libwint::Molecule water ("../tests/ref_data/h2o.xyz");
+    libwint::AOBasis ao_basis (water, "STO-3G");
+    ao_basis.calculateIntegrals();
+
+    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
+    rhf.solve();
+
+    double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
 
     // Check the calculated results with the reference
-    BOOST_CHECK(std::abs(rhf.energy - ref_energy) < 1.0e-06);
-    BOOST_CHECK(hf::utility::are_equal_eigenvalues(ref_orbital_energies, rhf.orbital_energies, 1.0e-06));
-    BOOST_CHECK(hf::utility::are_equal_sets_eigenvectors(C_ref, rhf.C_canonical, 1.0e-05));
+    BOOST_CHECK(std::abs(total_energy - ref_total_energy) < 1.0e-06);
+    BOOST_CHECK(cpputil::linalg::areEqualEigenvalues(ref_orbital_energies, rhf.get_orbital_energies(), 1.0e-06));
+    BOOST_CHECK(cpputil::linalg::areEqualSetsOfEigenvectors(ref_C, rhf.get_C_canonical(), 1.0e-05));
 }
 
 
 BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 
     // This example is taken from (http://sirius.chem.vt.edu/wiki/doku.php?id=crawdad:programming:project3), but the input .xyz-file was converted to Angstrom.
+    double ref_total_energy = -74.9420799281920;
 
-    // Specify the input file, energy threshold and basis set
-    const std::string xyzfilename = "../tests/reference/h2o_crawdad.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
-    double threshold = 1.0e-06;
-    std::string basis_name = "STO-3G";
 
-    libwint::Molecule water (xyzfilename);
-    libwint::Basis basis (water, basis_name);
+    // Do our own RHF calculation
+    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
+    libwint::AOBasis ao_basis (water, "STO-3G");
+    ao_basis.calculateIntegrals();
 
 
     // Check if the internuclear distance between O and H is really 1.1 A (= 2.07869 bohr), as specified in the text
-    BOOST_CHECK(std::abs(libwint::distance(water.atoms[0], water.atoms[1]) - 2.07869) < 1.0e-3);
+    BOOST_REQUIRE(std::abs(water.calculateInternuclearDistance(0, 1) - 2.07869) < 1.0e-4);
+
 
     // Do the SCF cycle
-    hf::rhf::RHF rhf (basis, threshold);
+    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
+    rhf.solve();
+    double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
-    // Check the energy
-    BOOST_CHECK(std::abs(rhf.energy - (-74.9420799281920)) < threshold);  // Reference data from crawdad
+
+    BOOST_CHECK(std::abs(total_energy - ref_total_energy) < 1.0e-06);
 }
 
 
 BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 
     // This example is taken from (http://sirius.chem.vt.edu/wiki/doku.php?id=crawdad:programming:project3), but the input .xyz-file was converted to Angstrom.
+    double ref_total_energy = -39.726850324347;
 
-    // Specify the input file, energy threshold and basis set
-    const std::string xyzfilename = "../tests/reference/ch4_crawdad.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
-    double threshold = 1.0e-06;
-    std::string basis_name = "STO-3G";
-
-    libwint::Molecule methane (xyzfilename);
-    libwint::Basis basis (methane, basis_name);
-
+    // Do our own RHF calculation
+    libwint::Molecule methane ("../tests/ref_data/ch4_crawdad.xyz");
+    libwint::AOBasis ao_basis (methane, "STO-3G");
+    ao_basis.calculateIntegrals();
 
     // Check if the internuclear distance between C and H is really around 2.05 bohr, which is the bond distance Wikipedia (108.7 pm) specifies
-    BOOST_CHECK(std::abs(libwint::distance(methane.atoms[0], methane.atoms[1]) - 2.05) < 1.0e-1);
+    BOOST_CHECK(std::abs(methane.calculateInternuclearDistance(0, 1) - 2.05) < 1.0e-1);
+
 
     // Do the SCF cycle
-    hf::rhf::RHF rhf (basis, threshold);
+    hf::rhf::RHF rhf (methane, ao_basis, 1.0e-06);
+    rhf.solve();
+    double total_energy = rhf.get_electronic_energy() + methane.calculateInternuclearRepulsionEnergy();
 
-    // Check the energy
-    BOOST_CHECK(std::abs(rhf.energy - (-39.726850324347)) < threshold);
+
+    BOOST_CHECK(std::abs(total_energy - ref_total_energy) < 1.0e-06);
 }
 
 
 BOOST_AUTO_TEST_CASE ( h2_sto6g ) {
 
-    // We have some reference data from olsens: H2 with HF/STO-6G orbitals
-    double E_el_rhf_ref = -1.838434256;
+    // We have some reference data from olsens: H2@RHF//STO-6G orbitals
+    double ref_electronic_energy = -1.838434256;
 
-    // Test the H2 results
-    const std::string xyzfilename = "../tests/reference/h2_olsens.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
-    std::string basis_name = "STO-6G";
-    double threshold = 1.0e-06;
 
-    libwint::Molecule h2 (xyzfilename);
-    libwint::Basis basis (h2, basis_name);
-    hf::rhf::RHF rhf (basis, threshold);
+    // Do our own RHF calculation
+    libwint::Molecule h2 ("../tests/ref_data/h2_olsens.xyz");
+    libwint::AOBasis ao_basis (h2, "STO-6G");
+    ao_basis.calculateIntegrals();
 
-    double E_el_rhf = rhf.energy - rhf.basis.molecule.internuclear_repulsion();  // we only have reference data for the electronic repulsion
-    BOOST_CHECK(std::abs(E_el_rhf_ref - E_el_rhf) < 1.0e-06);
+    hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
+    rhf.solve();
+
+
+    BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
 }
 
 
 BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
 
-    // We have some reference data from olsens: H2 with HF/6-31G** orbitals
-    double E_el_rhf_ref = -1.84444667247;
+    // We have some reference data from olsens: H2@RHF//6-31G** orbitals
+    double ref_electronic_energy = -1.84444667247;
 
-    // Test the H2 results
-    const std::string xyzfilename = "../tests/reference/h2_olsens.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
-    std::string basis_name = "6-31g**";
-    double threshold = 1.0e-06;
 
-    libwint::Molecule h2 (xyzfilename);
-    libwint::Basis basis (h2, basis_name);
-    hf::rhf::RHF rhf (basis, threshold);
+    // Do our own RHF calculation
+    libwint::Molecule h2 ("../tests/ref_data/h2_olsens.xyz");
+    libwint::AOBasis ao_basis (h2, "6-31g**");
+    ao_basis.calculateIntegrals();
 
-    double E_el_rhf = rhf.energy - rhf.basis.molecule.internuclear_repulsion();  // we only have reference data for the electronic repulsion
-    BOOST_CHECK(std::abs(E_el_rhf_ref - E_el_rhf) < 1.0e-06);
-    std::cout << E_el_rhf << std::endl;
+    hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
+    rhf.solve();
+
+
+    BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
 }
 
 
 BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
 
-    // We have some reference data from olsens: LiH with HF/STO-6G orbitals
-    double E_el_rhf_ref = -8.9472891719;
+    // We have some reference data from olsens: LiH@RHF//STO-6G orbitals
+    double ref_electronic_energy = -8.9472891719;
 
-    // Test the LiH results
-    const std::string xyzfilename = "../tests/reference/lih_olsens.xyz";  // Specify the relative path to the input .xyz-file (w.r.t. the out-of-source build directory)
-    std::string basis_name = "sto-6g";
-    double threshold = 1.0e-06;
 
-    libwint::Molecule lih (xyzfilename);
-    libwint::Basis basis (lih, basis_name);
-    hf::rhf::RHF rhf (basis, threshold);
+    // Do our own RHF calculation
+    libwint::Molecule lih ("../tests/ref_data/lih_olsens.xyz");
+    libwint::AOBasis ao_basis (lih, "STO-6G");
+    ao_basis.calculateIntegrals();
 
-    double E_el_rhf = rhf.energy - rhf.basis.molecule.internuclear_repulsion();  // we only have reference data for the electronic repulsion
-    BOOST_CHECK(std::abs(E_el_rhf_ref - E_el_rhf) < 1.0e-06);
+    hf::rhf::RHF rhf (lih, ao_basis, 1.0e-06);
+    rhf.solve();
+
+
+    BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
+}
+
+
+
+BOOST_AUTO_TEST_CASE ( homo ) {
+
+    // Create an RHF object to test the HOMOIndex function on
+    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
+    libwint::AOBasis ao_basis (water, "STO-3G");
+    ao_basis.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
+
+    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
+
+
+    // In this case, K=7 and N=10, so the index of the HOMO should be 4
+    BOOST_CHECK_EQUAL(rhf.HOMOIndex(), 4);
+}
+
+
+BOOST_AUTO_TEST_CASE ( lumo ) {
+
+    // Create an RHF object to test the LUMOIndex function on
+    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
+    libwint::AOBasis ao_basis (water, "STO-3G");
+    ao_basis.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
+
+    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
+
+
+    // In this case, K=7 and N=10, so the index of the LUMO should be 5
+    BOOST_CHECK_EQUAL(rhf.LUMOIndex(), 5);
 }
