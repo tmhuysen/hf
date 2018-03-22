@@ -1,4 +1,4 @@
-# hf
+# hf v3.0.0
 
 [![Build Status](https://travis-ci.org/GQCG/hf.svg?branch=develop)](https://travis-ci.org/GQCG/hf)
 
