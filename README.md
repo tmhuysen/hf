@@ -1,4 +1,4 @@
-# hf
+# hf v3.0.0
 
 [![Build Status](https://travis-ci.org/GQCG/hf.svg?branch=develop)](https://travis-ci.org/GQCG/hf)
 
@@ -6,18 +6,18 @@ A C++ library that performs Hartree-Fock calculations using Eigen3 for matrix ma
 
 
 ## Dependencies
-[![libint2 Dependency](https://img.shields.io/badge/libint-2.3.1+-blue.svg)](https://github.com/evaleev/libint)
-[![Eigen3 Dependency](https://img.shields.io/badge/Eigen-3+-blue.svg)](http://eigen.tuxfamily.org/index.php?title=Main_Page)
-[![libwint Dependency](https://img.shields.io/badge/libwint-2.2.2+-blue.svg)](https://github.com/GQCG/libwint)
+[![libint2 Dependency](https://img.shields.io/badge/libint-3.0.0+-blue.svg)](https://github.com/evaleev/libint)
+[![Eigen3 Dependency](https://img.shields.io/badge/Eigen-3.3.4+-blue.svg)](http://eigen.tuxfamily.org/index.php?title=Main_Page)
+[![libwint Dependency](https://img.shields.io/badge/libwint-2.3.1+-blue.svg)](https://github.com/GQCG/libwint)
 
-You might have to copy the sto-6g.g94 (provided in `tests/reference_data/sto-6g.g94`) file to the relevant directory. In a default installation, the file should be copied to `/usr/local/libint/2.3.1/share/libint/2.3.1/basis/sto-6g.g94`.
+You might have to copy the sto-6g.g94 (provided in `docs/sto-6g.g94`) file to the relevant directory. In a default installation, the file should be copied to `/usr/local/libint/2.3.1/share/libint/2.3.1/basis/sto-6g.g94`.
 
 
 ## Installation
 To install this library:
-1. clone the master branch
+1. clone the master branch, which contains the latest release
 
-        git clone https://github.com/GQCG/hf.git
+        git clone https://github.com/GQCG/hf.git --branch master --single-branch
         cd hf
 
 2. perform an out-of-source cmake build:

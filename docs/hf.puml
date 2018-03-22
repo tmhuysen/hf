@@ -1,0 +1,76 @@
+@startuml
+
+
+namespace libwint {
+
+    class AOBasis {
+        __ public methods __
+            + Eigen::MatrixXd **get_S**() const
+            + Eigen::MatrixXd **get_T**() const
+            + Eigen::MatrixXd **get_V**() const
+            + Eigen::Tensor<double, 4> **get_g**() const
+
+            + size_t **calculateNumberOfBasisFunctions**() const
+    }
+
+
+    class Molecule {
+        __ public methods __
+            + site_t **get_N** () const
+    }
+
+
+    class transformations {
+        + Eigen::MatrixXd **transform_AO_to_SO**(Eigen::MatrixXd& f_AO, Eigen::MatrixXd& C)
+    }
+
+}
+
+
+namespace hf {
+    namespace rhf {
+
+        class RHF {
+            __ private members __
+                - const size_t {static} MAX_NUMBER_OF_SCF_CYCLES = 128
+                - bool is_converged = false
+                - const double scf_threshold
+
+                - const libwint::AOBasis& ao_basis
+                - const libwint::Molecule& molecule
+
+                - const size_t K
+                - const size_t N
+
+                - Eigen::VectorXd orbital_energies
+                - Eigen::MatrixXd C_canonical
+                - double electronic_energy
+            __ private methods __
+                - Eigen::MatrixXd **calculateP**(const Eigen::MatrixXd& C) const
+                - Eigen::MatrixXd **calculateG**(const Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei) const
+                - double **calculateElectronicEnergy**(const Eigen::MatrixXd& P, const Eigen::MatrixXd& H_core, const Eigen::MatrixXd& F) const
+            == constructors ==
+                **RHF**(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold)
+            __ public methods __
+                + Eigen::VectorXd **get_orbital_energies**() const
+                + double **get_orbital_energies**(size_t index) const
+                + Eigen::MatrixXd **get_C_canonical**() const
+                + double **get_electronic_energy**() const
+
+                + void **solve**()
+
+                + size_t **HOMOIndex**() const
+                + size_t **LUMOIndex**() const
+        }
+    }
+}
+
+
+
+hf.rhf.RHF o--> libwint.AOBasis
+
+hf.rhf.RHF o--> libwint.Molecule
+
+hf.rhf.RHF ..> libwint.transformations
+
+@enduml
