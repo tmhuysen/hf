@@ -76,12 +76,21 @@ install:
   - export LIBINT_DATA_PATH=/usr/local/libint/2.3.1/share/libint/2.3.1/basis
 
 
+  # Install the cpputil library
+  - git clone https://github.com/GQCG/cpputil.git --branch master --single-branch
+  - cd cpputil
+  - mkdir build && cd build
+  - cmake ..
+  - make && make test && sudo make install
+
+
   # Install the libint wrapper
   - mkdir /tmp/libwint && cd /tmp/libwint
-  - git clone https://github.com/GQCG/libwint.git
+  - git clone https://github.com/GQCG/libwint.git --branch master --single-branch
   - cd libwint
   - mkdir build && cd build
   - cmake .. && make && make test && sudo make install
+
 
 
 # Run the build script
