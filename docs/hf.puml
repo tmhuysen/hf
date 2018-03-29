@@ -50,7 +50,7 @@ namespace hf {
                 - Eigen::MatrixXd **calculateG**(const Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei) const
                 - double **calculateElectronicEnergy**(const Eigen::MatrixXd& P, const Eigen::MatrixXd& H_core, const Eigen::MatrixXd& F) const
             == constructors ==
-                **RHF**(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold, size_t MAX_CYCLES = 128)
+                **RHF**(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold = 1e-6 , size_t MAX_CYCLES = 128)
             __ public methods __
                 + Eigen::VectorXd **get_orbital_energies**() const
                 + double **get_orbital_energies**(size_t index) const
