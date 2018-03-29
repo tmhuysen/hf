@@ -32,7 +32,7 @@ namespace hf {
 
         class RHF {
             __ private members __
-                - const size_t {static} MAX_NUMBER_OF_SCF_CYCLES = 128
+                - const size_t MAX_NUMBER_OF_SCF_CYCLES = 128
                 - bool is_converged = false
                 - const double scf_threshold
 
@@ -50,7 +50,7 @@ namespace hf {
                 - Eigen::MatrixXd **calculateG**(const Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei) const
                 - double **calculateElectronicEnergy**(const Eigen::MatrixXd& P, const Eigen::MatrixXd& H_core, const Eigen::MatrixXd& F) const
             == constructors ==
-                **RHF**(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold)
+                **RHF**(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold, size_t MAX_CYCLES = 128)
             __ public methods __
                 + Eigen::VectorXd **get_orbital_energies**() const
                 + double **get_orbital_energies**(size_t index) const

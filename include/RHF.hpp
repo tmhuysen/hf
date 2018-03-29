@@ -14,7 +14,7 @@ namespace rhf {
 
 class RHF {
 private:
-    static const size_t MAX_NUMBER_OF_SCF_CYCLES = 128;
+    const size_t MAX_NUMBER_OF_SCF_CYCLES;
     bool is_converged = false;
 
     const double scf_threshold;  // convergence threshold for the SCF procedure
@@ -54,9 +54,9 @@ private:
 public:
     // Constructors
     /**
-     *  Constructor based on a given libwint::AOBasis @param: ao_basis, a molecule @param: molecule and an SCF-cycle @param: scf_threshold
+     *  Constructor based on a given libwint::AOBasis @param: ao_basis, a molecule @param: molecule and an SCF-cycle @param: scf_threshold, MAX_CYCLES
      */
-    RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold);
+    RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold, size_t MAX_CYCLES = 128);
 
 
     // Getters
