@@ -29,11 +29,51 @@ namespace libwint {
 
 namespace hf {
     namespace rhf {
+        namespace solver {
+
+
+            enum SolverType {
+                PLAIN
+                DIIS
+            }
+
+            abstract class BaseSCFSolver {
+                __ protected methods __
+                    # const size_t maximum_number_of_iterations
+                    # const double threshold
+
+                    # bool is_converged = false
+                    # Eigen::VectorXd orbital_energies
+                    # Eigen::MatrixXd C_canonical
+                == destructor ==
+                    virtual ~ **BaseSCFSolver**() = default
+                __ pure public virtual methods __
+                    void **solve**() = 0
+            }
+
+            PlainSCFSolver --|> BaseSCFSolver
+            class PlainSCFSolver {
+                == destructor ==
+                    **~PlainSCFSolver**() override = default
+                __ public methods __
+                    void **solve**() override
+            }
+
+
+            DIISSCFSolver --|> BaseSCFSolver
+            class DIISSCFSolver {
+                == destructor ==
+                    **~PlainSCFSolver**() override = default
+                __ public methods __
+                    void **solve**() override
+            }
+
+
+
+        }
 
         class RHF {
             __ private members __
-                - const size_t {static} MAX_NUMBER_OF_SCF_CYCLES = 128
-                - bool is_converged = false
                 - const double scf_threshold
 
                 - const libwint::AOBasis& ao_basis
@@ -42,9 +82,7 @@ namespace hf {
                 - const size_t K
                 - const size_t N
 
-                - Eigen::VectorXd orbital_energies
-                - Eigen::MatrixXd C_canonical
-                - double electronic_energy
+                - double electronic_energy = 0.0
             __ private methods __
                 - Eigen::MatrixXd **calculateP**(const Eigen::MatrixXd& C) const
                 - Eigen::MatrixXd **calculateG**(const Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei) const
@@ -57,7 +95,7 @@ namespace hf {
                 + Eigen::MatrixXd **get_C_canonical**() const
                 + double **get_electronic_energy**() const
 
-                + void **solve**()
+                + void **solve**(const hf::rhf::solver::SolverType& solver_type)
 
                 + size_t **HOMOIndex**() const
                 + size_t **LUMOIndex**() const
