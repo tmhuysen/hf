@@ -6,9 +6,12 @@ A C++ library that performs Hartree-Fock calculations using Eigen3 for matrix ma
 
 
 ## Dependencies
-[![libint2 Dependency](https://img.shields.io/badge/libint-3.0.0+-blue.svg)](https://github.com/evaleev/libint)
-[![Eigen3 Dependency](https://img.shields.io/badge/Eigen-3.3.4+-blue.svg)](http://eigen.tuxfamily.org/index.php?title=Main_Page)
-[![libwint Dependency](https://img.shields.io/badge/libwint-2.3.1+-blue.svg)](https://github.com/GQCG/libwint)
+[![Eigen3 Dependency](https://img.shields.io/badge/Eigen-3.3.4+-000000.svg)](http://eigen.tuxfamily.org/index.php?title=Main_Page)
+[![Boost Dependency](https://img.shields.io/badge/Boost-1.65.1+-000000.svg)](www.boost.org)
+[![libint2 Dependency](https://img.shields.io/badge/libint-2.3.1+-000000.svg)](https://github.com/evaleev/libint)
+
+[![cpputil Dependency](https://img.shields.io/badge/cpputil-1.2.1+-blue.svg)](https://github.com/GQCG/cpputil)
+[![libwint Dependency](https://img.shields.io/badge/libwint-3.0.0+-blue.svg)](https://github.com/GQCG/libwint)
 
 You might have to copy the sto-6g.g94 (provided in `docs/sto-6g.g94`) file to the relevant directory. In a default installation, the file should be copied to `/usr/local/libint/2.3.1/share/libint/2.3.1/basis/sto-6g.g94`.
 
@@ -35,6 +38,6 @@ To install this library:
 ## Usage
 Basic usage of this library can be found in the `tests` directory. If you use CMake in other projects, you can add the following CMake command to the CMakeLists.txt-file:
 
-    find_package(hf x.y.z)
+    find_package(hf 3.0.0)
 
 where `x.y.z` is the version number. CMake then provides the commands `hf_INCLUDE_DIRS` to be used in your `target_include_directories` and the library `hf` to be used in your `target_link_libraries`.
