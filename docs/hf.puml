@@ -42,6 +42,10 @@ namespace hf {
                     # const size_t maximum_number_of_iterations
                     # const double threshold
 
+                    # const Eigen::MatrixXd S
+                    # const std::function<Eigen::MatrixXd (const Eigen::VectorXd&)> calculateP
+                    # const std::function<Eigen::MatrixXd (const Eigen::VectorXd&, const Eigen::Tensor<double, 4>&)> calculateG
+
                     # bool is_converged = false
                     # Eigen::VectorXd orbital_energies
                     # Eigen::MatrixXd C_canonical
@@ -62,10 +66,13 @@ namespace hf {
 
             DIISSCFSolver --|> BaseSCFSolver
             class DIISSCFSolver {
+                __ private methods __
+                    - Eigen::MatrixXd S
                 == destructor ==
-                    **~PlainSCFSolver**() override = default
+                    **~DIISSSCFSolver**() override = default
                 __ public methods __
                     void **solve**() override
+                    void **calculateErrorVector**() override
             }
 
 
