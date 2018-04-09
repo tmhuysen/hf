@@ -3,10 +3,11 @@
 
 
 #include <string>
-
 #include <libwint.hpp>
-
-
+#include "SCFSolverType.hpp"
+#include "PlainSCFSolver.hpp"
+#include "DIISSCFSolver.hpp"
+#include "common.hpp"
 
 namespace hf {
 namespace rhf {
@@ -70,7 +71,7 @@ public:
     /**
      *  Solve the restricted Hartree-Fock equations (i.e. the Roothaan-Hall equations)
      */
-    void solve();
+    void solve(hf::solver::SCFSolverType solver_type);
 
     /**
      *  Given a number of spatial orbitals @param: K and a number of electrons @param: N, calculated the index of the HOMO in the restricted case
