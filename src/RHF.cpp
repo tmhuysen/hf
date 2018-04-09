@@ -175,7 +175,7 @@ void RHF::solve(hf::rhf::solver::SCFSolverType solver_type) {
         }
 
         case hf::rhf::solver::SCFSolverType::DIIS: {
-            auto DIIS_solver = new hf::rhf::solver::PlainSCFSolver(ao_basis.get_S(), H_core, ao_basis.get_g(),
+            auto DIIS_solver = new hf::rhf::solver::DIISSCFSolver(ao_basis.get_S(), H_core, ao_basis.get_g(),
                                                                    calculateP, calculateG, this->scf_threshold,
                                                                    this->MAX_NUMBER_OF_SCF_CYCLES);
             DIIS_solver->solve();

@@ -21,6 +21,7 @@ void DIISSCFSolver::solve() {
     Eigen::MatrixXd C = gsaes0.eigenvectors();
     Eigen::MatrixXd P = this->calculateP(C);
 
+
     size_t iteration_counter = 1;
     while (!this->is_converged) {
         // Calculate the G-matrix
@@ -47,26 +48,28 @@ void DIISSCFSolver::solve() {
             // Furthermore, add the orbital energies and the coefficient matrix to (this)
             this->orbital_energies = gsaes.eigenvalues();
             this->C_canonical = C;
+
+            std::cout<<std::endl<<"ITERATINOS : "<<iteration_counter<<std::endl;
         }
         else {  // not converged yet check for subspace collapse
             iteration_counter ++;
+
             this->fock_vector.emplace_back(f_AO);  // add fock matrix
-            this->error_vector.emplace_back((f_AO*P*this->S - this->S*P*f_AO));  // add error calculated according to Pulay
+            this->error_vector.emplace_back((f_AO*P_previous*this->S - this->S*P_previous*f_AO));  // add error calculated according to Pulay
 
             if(error_vector.size()==this->max_error_size){  // Collapse subspace
                 //  Initialize B matrix, representation off all errors
                 Eigen::MatrixXd B = -1*Eigen::MatrixXd::Ones(this->max_error_size+1,this->max_error_size+1);  // +1 for the multiplier
-                B(this->max_error_size+1,this->max_error_size+1) = 0;  // last address of the matrix is 0
+                B(this->max_error_size,this->max_error_size) = 0;  // last address of the matrix is 0
 
                 for(size_t i = 0; i<this->max_error_size;i++){
                     for(size_t j = 0; j < this->max_error_size;j++){
-                        B(i,j) = (this->error_vector[i]*this->error_vector[j]).trace();
+                        B(i,j) = (this->error_vector[i]*this->error_vector[j]).norm();
                     }
                 }
                 Eigen::VectorXd b = Eigen::VectorXd::Zero(this->max_error_size+1);  // +1 for the multiplier
                 b(this->max_error_size) = -1;  // last address is -1
                 Eigen::VectorXd coefficients = B.inverse()*b; // calculate the coefficients
-
                 // Recombine previous fock matrix into improved fock matrix
                 f_AO = Eigen::MatrixXd::Zero(this->S.cols(),this->S.cols());
                 for(size_t i = 0; i<max_error_size;i++){
@@ -74,8 +77,8 @@ void DIISSCFSolver::solve() {
                 }
 
                 // New C guess
-                Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes (f_AO, this->S);
-                C = gsaes.eigenvectors();
+                Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes2 (f_AO, this->S);
+                C = gsaes2.eigenvectors();
 
                 // Calculate an improved density matrix P from the improved coefficient matrix C
                 P = this->calculateP(C);
@@ -83,7 +86,6 @@ void DIISSCFSolver::solve() {
                 // Remove the oldest entries.
                 this->fock_vector.pop_front();
                 this->error_vector.pop_front();
-
             }
 
 
