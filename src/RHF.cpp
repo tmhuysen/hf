@@ -115,7 +115,7 @@ Eigen::VectorXd RHF::get_orbital_energies() const {
         throw std::runtime_error("The RHF procedure isn't converged yet and you are trying to get orbital energies.");
     }
 
-    return this->orbital_energies;
+    return this->SCF_solver_ptr->get_orbital_energies();
 }
 
 double RHF::get_orbital_energies(size_t index) const {
@@ -124,7 +124,7 @@ double RHF::get_orbital_energies(size_t index) const {
         throw std::runtime_error("The RHF procedure isn't converged yet and you are trying to get orbital energies.");
     }
 
-    return this->orbital_energies(index);
+    return this->SCF_solver_ptr->get_orbital_energies()(index);
 }
 
 Eigen::MatrixXd RHF::get_C_canonical() const {
@@ -133,7 +133,7 @@ Eigen::MatrixXd RHF::get_C_canonical() const {
         throw std::runtime_error("The RHF procedure isn't converged yet and you are trying to get the coefficient matrix.");
     }
 
-    return this->C_canonical;
+    return this->SCF_solver_ptr->get_C_canonical();
 }
 
 double RHF::get_electronic_energy() const {
@@ -164,22 +164,30 @@ void RHF::solve(hf::solver::SCFSolverType solver_type) {
     switch (solver_type) {
 
         case hf::solver::SCFSolverType::PLAIN: {
-            auto plain_solver = new hf::rhf::solver::PlainSCFSolver(ao_basis.get_S(),H_core,ao_basis.get_g(),calculateP,calculateG,this->scf_threshold,this->MAX_NUMBER_OF_SCF_CYCLES);
-            this->solveMatrixEigenvalueProblem(dense_solver);
-            this->eigensolver_ptr = dense_solver;  // prevent data from going out of scope
+            auto plain_solver = new hf::rhf::solver::PlainSCFSolver(this->ao_basis.get_S(), H_core, this->ao_basis.get_g(),
+                                                                    calculateP, calculateG, this->scf_threshold,
+                                                                    this->MAX_NUMBER_OF_SCF_CYCLES);
+            plain_solver->solve();
+            this->SCF_solver_ptr = plain_solver;  // prevent data from going out of scope
             // we are only assigning this->eigensolver_ptr now, because
             // this->solveMatrixEigenvalueProblem only accepts BaseMatrixSolver*
             break;
         }
 
         case hf::solver::SCFSolverType::DIIS: {
-            auto plain_solver = new hf::rhf::solver::PlainSCFSolver(ao_basis.get_S(),H_core,ao_basis.get_g(),calculateP,calculateG,this->scf_threshold,this->MAX_NUMBER_OF_SCF_CYCLES);
-            this->solveMatrixEigenvalueProblem(sparse_solver);
-            this->eigensolver_ptr = sparse_solver;  // prevent data from going out of scope
+            auto DIIS_solver = new hf::rhf::solver::PlainSCFSolver(ao_basis.get_S(), H_core, ao_basis.get_g(),
+                                                                   calculateP, calculateG, this->scf_threshold,
+                                                                   this->MAX_NUMBER_OF_SCF_CYCLES);
+            DIIS_solver->solve();
+            this->SCF_solver_ptr = DIIS_solver;  // prevent data from going out of scope
             // we are only assigning this->eigensolver_ptr now, because
             // this->solveMatrixEigenvalueProblem only accepts BaseMatrixSolver*
             break;
         }
+
+    }
+    Eigen::MatrixXd P = calculateP(get_C_canonical());
+    this->electronic_energy=calculateElectronicEnergy(P,H_core,H_core+calculateG(P,this->ao_basis.get_g()));
 
 
 
