@@ -12,10 +12,10 @@ namespace solver {
 
 class DIISSCFSolver: public BaseSCFSolver {
 private:
-    std::deque<Eigen::MatrixXd> fock_vector;
-    std::deque<Eigen::MatrixXd> error_vector;
+    std::deque<Eigen::MatrixXd> fock_vector;  // deque of fock matrix for recombination in subspace collapse
+    std::deque<Eigen::MatrixXd> error_vector;  // deque of errors for calculating the lineair recombination coefficients
 
-    const size_t max_error_size = 5;
+    const size_t max_error_size = 6;  // maximum size of the deques before subspace starts collapse.
 public:
     // CONSTRUCTOR
     /**
