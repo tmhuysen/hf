@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE "SCFSolver"
 
-#include "RHF.hpp"
+#include "hf.hpp"
 
 #include <cpputil.hpp>
 
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
-    rhf.solve();
+    rhf.solve( hf::solver::SCFSolverType::DIIS);
     double total_energy = rhf.get_electronic_energy() + h2.calculateInternuclearRepulsionEnergy();
 
     std::cout << total_energy << std::endl;
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
     ao_basis.calculateIntegrals();
 
     hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-    rhf.solve();
+    rhf.solve(hf::solver::SCFSolverType::DIIS);
 
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-    rhf.solve();
+    rhf.solve(hf::solver::SCFSolverType::DIIS);
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
 
@@ -127,11 +127,30 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (methane, ao_basis, 1.0e-06);
-    rhf.solve();
+    rhf.solve(hf::solver::SCFSolverType::DIIS);
     double total_energy = rhf.get_electronic_energy() + methane.calculateInternuclearRepulsionEnergy();
 
 
     BOOST_CHECK(std::abs(total_energy - ref_total_energy) < 1.0e-06);
+}
+
+
+BOOST_AUTO_TEST_CASE ( h2_sto6g ) {
+
+    // We have some reference data from olsens: H2@RHF//STO-6G orbitals
+    double ref_electronic_energy = -1.838434256;
+
+
+    // Do our own RHF calculation
+    libwint::Molecule h2 ("../tests/ref_data/h2_olsens.xyz");
+    libwint::AOBasis ao_basis (h2, "STO-6G");
+    ao_basis.calculateIntegrals();
+
+    hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
+    rhf.solve(hf::solver::SCFSolverType::DIIS);
+
+
+    BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
 }
 
 
@@ -147,11 +166,31 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
     ao_basis.calculateIntegrals();
 
     hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
-    rhf.solve();
+    rhf.solve(hf::solver::SCFSolverType::DIIS);
 
 
     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
 }
+
+
+BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
+
+    // We have some reference data from olsens: LiH@RHF//STO-6G orbitals
+    double ref_electronic_energy = -8.9472891719;
+
+
+    // Do our own RHF calculation
+    libwint::Molecule lih ("../tests/ref_data/lih_olsens.xyz");
+    libwint::AOBasis ao_basis (lih, "STO-6G");
+    ao_basis.calculateIntegrals();
+
+    hf::rhf::RHF rhf (lih, ao_basis, 1.0e-06);
+    rhf.solve(hf::solver::SCFSolverType::DIIS);
+
+
+    BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
+}
+
 
 
 BOOST_AUTO_TEST_CASE ( homo ) {
