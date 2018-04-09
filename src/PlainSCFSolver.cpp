@@ -48,6 +48,8 @@ void PlainSCFSolver::solve() {
             // Furthermore, add the orbital energies and the coefficient matrix to (this)
             this->orbital_energies = gsaes.eigenvalues();
             this->C_canonical = C;
+
+            std::cout<<std::endl<<"ITERATINOS : "<<iteration_counter<<std::endl;
         }
         else {  // not converged yet
             iteration_counter ++;
