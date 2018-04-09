@@ -28,6 +28,13 @@ protected:
     Eigen::MatrixXd C_canonical;
 
 
+    // PROTECTED CONSTRUCTORS
+    /**
+     *  Protected constructor to initialize the const @member dim by @param dim.
+     */
+    explicit BaseSCFSolver(Eigen::MatrixXd S, double threshold = 1e-6, size_t maximum_number_of_iterations = 128);
+
+
 public:
     // DESTRUCTOR
     virtual ~BaseSCFSolver() = default;
