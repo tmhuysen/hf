@@ -48,34 +48,36 @@ void DIISSCFSolver::solve() {
             this->orbital_energies = gsaes.eigenvalues();
             this->C_canonical = C;
         }
-        else {  // not converged yet
+        else {  // not converged yet check for subspace collapse
             iteration_counter ++;
-            this->fock_vector.emplace_back(f_AO);
-            this->error_vector.emplace_back((f_AO*P*this->S - this->S*P*f_AO));
+            this->fock_vector.emplace_back(f_AO);  // add fock matrix
+            this->error_vector.emplace_back((f_AO*P*this->S - this->S*P*f_AO));  // add error calculated according to Pulay
 
-            if(error_vector.size()>this->max_error_size){  // Collapse subspace
-                //  Initialize B matrix
-                Eigen::MatrixXd B = -1*Eigen::MatrixXd::Ones(this->max_error_size+2,this->max_error_size+2);  // +2 from error_vector will be +1 max_error_size, and +1 for the multiplier
+            if(error_vector.size()==this->max_error_size){  // Collapse subspace
+                //  Initialize B matrix, representation off all errors
+                Eigen::MatrixXd B = -1*Eigen::MatrixXd::Ones(this->max_error_size+1,this->max_error_size+1);  // +1 for the multiplier
                 B(this->max_error_size+1,this->max_error_size+1) = 0;  // last address of the matrix is 0
 
-                for(size_t i = 0; i<this->max_error_size+1;i++){
-                    for(size_t j = 0; j < this->max_error_size+1;j++){
+                for(size_t i = 0; i<this->max_error_size;i++){
+                    for(size_t j = 0; j < this->max_error_size;j++){
                         B(i,j) = (this->error_vector[i]*this->error_vector[j]).trace();
                     }
                 }
-                Eigen::VectorXd b = Eigen::VectorXd::Zero(this->max_error_size+2);
-                b(this->max_error_size+1) = -1;
-                Eigen::VectorXd coefficients = B.inverse()*b;
+                Eigen::VectorXd b = Eigen::VectorXd::Zero(this->max_error_size+1);  // +1 for the multiplier
+                b(this->max_error_size) = -1;  // last address is -1
+                Eigen::VectorXd coefficients = B.inverse()*b; // calculate the coefficients
+
+                // Recombine previous fock matrix into improved fock matrix
                 f_AO = Eigen::MatrixXd::Zero(this->S.cols(),this->S.cols());
-                for(size_t i = 0; i<max_error_size+1;i++){
+                for(size_t i = 0; i<max_error_size;i++){
                     f_AO += coefficients[i]*fock_vector[i];
                 }
 
+                // New C guess
                 Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes (f_AO, this->S);
                 C = gsaes.eigenvectors();
 
                 // Calculate an improved density matrix P from the improved coefficient matrix C
-                Eigen::MatrixXd P_previous = P; // We will store the previous density matrix
                 P = this->calculateP(C);
 
                 // Remove the oldest entries.

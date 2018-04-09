@@ -26,14 +26,7 @@ private:
     const size_t K;  // shortcut to this->ao_basis.calculateNumberOfBasisFunctions()
     const size_t N;  // shortcut to this->molecule.get_N()
 
-
-    //Eigen::VectorXd orbital_energies;  // energies of the spatial orbitals (i.e. eigenvalues of the Fock operator)
-    //Eigen::MatrixXd C_canonical;  // coefficient matrix linking the spatial orbitals to the underlying basis set
-                                  // every column represents a spatial orbital in terms of its AOs
-                                  // the coefficient matrix is canonical, which means that the Fock matrix in this basis is diagonal
-
     double electronic_energy;  // the converged energy
-
 
 
     // Methods

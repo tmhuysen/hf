@@ -18,15 +18,17 @@ protected:
     const size_t maximum_number_of_iterations;
     const double threshold;
 
-    const Eigen::MatrixXd S;
-    const Eigen::MatrixXd H_core;
-    const Eigen::Tensor<double ,4> g;
-    const hf::DensityFunction calculateP;
-    const hf::TwoElectronMatrixFunction calculateG;
+    const Eigen::MatrixXd S;  // Overlap integral matrix of the basis functions
+    const Eigen::MatrixXd H_core;  // One electron integral matrix of the basis functions
+    const Eigen::Tensor<double ,4> g;  // Two electron integral matrix of the basis functions
+    const hf::DensityFunction calculateP;  // Function that calculates the density
+    const hf::TwoElectronMatrixFunction calculateG;  // Function that contracts the Two electron integrals with the density
 
     bool is_converged = false;
-    Eigen::VectorXd orbital_energies;
-    Eigen::MatrixXd C_canonical;
+    Eigen::VectorXd orbital_energies;  // energies of the spatial orbitals (i.e. eigenvalues of the Fock operator)
+    Eigen::MatrixXd C_canonical;  // coefficient matrix linking the spatial orbitals to the underlying basis set
+    // every column represents a spatial orbital in terms of its AOs
+    // the coefficient matrix is canonical, which means that the Fock matrix in this basis is diagonal
 
 
     // PROTECTED CONSTRUCTORS
