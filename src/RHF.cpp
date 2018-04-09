@@ -170,59 +170,36 @@ double RHF::get_electronic_energy() const {
 /**
  *  Solve the restricted Hartree-Fock equations (i.e. the Roothaan-Hall equations)
  */
-void RHF::solve() {
+void RHF::solve(hf::solver::SCFSolverType solver_type) {
 
     // Calculate H_core
     Eigen::MatrixXd H_core = this->ao_basis.get_T() + this->ao_basis.get_V();
+    hf::DensityFunction calculateP = [this] (const Eigen::MatrixXd& x) { return this->calculateP(x)};
+    hf::TwoElectronMatrixFunction calculateG = [this] (const Eigen::MatrixXd & x, const Eigen::Tensor<double, 4> & y) { return this->calculateG(x,y)};
 
-    // Solve the generalized eigenvalue problem for H_core to obtain a guess for the density matrix P
-    //  H_core should be self-adjoint
-    //  S should be positive definite
-    Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (H_core, this->ao_basis.get_S());
-    Eigen::MatrixXd C = gsaes0.eigenvectors();
-    Eigen::MatrixXd P = this->calculateP(C);
+    switch (solver_type) {
 
-    size_t iteration_counter = 1;
-    while (!this->is_converged) {
-        // Calculate the G-matrix
-        Eigen::MatrixXd G = this->calculateG(P, this->ao_basis.get_g());
-
-        // Calculate the Fock matrix
-        Eigen::MatrixXd f_AO = H_core + G;
-
-        // Solve the Roothaan equation (generalized eigenvalue problem)
-        Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes (f_AO, this->ao_basis.get_S());
-        C = gsaes.eigenvectors();
-
-        // Calculate an improved density matrix P from the improved coefficient matrix C
-        Eigen::MatrixXd P_previous = P; // We will store the previous density matrix
-        P = this->calculateP(C);
-
-        // Check for convergence on the density matrix P
-        if ((P - P_previous).norm() <= this->scf_threshold) {
-            this->is_converged = true;
-
-            // After the SCF procedure, we end up with canonical spatial orbitals, i.e. the Fock matrix should be diagonal in this basis
-            // Let's check if this is the case, within double float precision
-            Eigen::MatrixXd f_SO = libwint::transformations::transform_AO_to_SO(f_AO, C);
-            assert(f_SO.isDiagonal());
-
-            // After the calculation has converged, calculate the electronic energy
-            this->electronic_energy = this->calculateElectronicEnergy(P, H_core, f_AO);
-
-            // Furthermore, add the orbital energies and the coefficient matrix to (this)
-            this->orbital_energies = gsaes.eigenvalues();
-            this->C_canonical = C;
+        case hf::solver::SCFSolverType::PLAIN: {
+            auto plain_solver = new hf::rhf::solver::PlainSCFSolver(ao_basis.get_S(),H_core,ao_basis.get_g(),calculateP,calculateG,this->scf_threshold,this->MAX_NUMBER_OF_SCF_CYCLES);
+            this->solveMatrixEigenvalueProblem(dense_solver);
+            this->eigensolver_ptr = dense_solver;  // prevent data from going out of scope
+            // we are only assigning this->eigensolver_ptr now, because
+            // this->solveMatrixEigenvalueProblem only accepts BaseMatrixSolver*
+            break;
         }
-        else {  // not converged yet
-            iteration_counter ++;
 
-            // If we reach more than this->MAX_NUMBER_OF_SCF_CYCLES, the system is considered not to be converging
-            if (iteration_counter >= this->MAX_NUMBER_OF_SCF_CYCLES) {
-                throw std::runtime_error("The SCF procedure did not converge.");
-            }
+        case hf::solver::SCFSolverType::DIIS: {
+            auto plain_solver = new hf::rhf::solver::PlainSCFSolver(ao_basis.get_S(),H_core,ao_basis.get_g(),calculateP,calculateG,this->scf_threshold,this->MAX_NUMBER_OF_SCF_CYCLES);
+            this->solveMatrixEigenvalueProblem(sparse_solver);
+            this->eigensolver_ptr = sparse_solver;  // prevent data from going out of scope
+            // we are only assigning this->eigensolver_ptr now, because
+            // this->solveMatrixEigenvalueProblem only accepts BaseMatrixSolver*
+            break;
         }
-    }  // SCF cycle loop
+
+
+
+
 }
 
 
