@@ -174,8 +174,8 @@ void RHF::solve(hf::solver::SCFSolverType solver_type) {
 
     // Calculate H_core
     Eigen::MatrixXd H_core = this->ao_basis.get_T() + this->ao_basis.get_V();
-    hf::DensityFunction calculateP = [this] (const Eigen::MatrixXd& x) { return this->calculateP(x)};
-    hf::TwoElectronMatrixFunction calculateG = [this] (const Eigen::MatrixXd & x, const Eigen::Tensor<double, 4> & y) { return this->calculateG(x,y)};
+    hf::DensityFunction calculateP = [this] (const Eigen::MatrixXd& x) { return this->calculateP(x);};
+    hf::TwoElectronMatrixFunction calculateG = [this] (const Eigen::MatrixXd & x, const Eigen::Tensor<double, 4> & y) { return this->calculateG(x,y);};
 
     switch (solver_type) {
 
@@ -202,8 +202,10 @@ void RHF::solve(hf::solver::SCFSolverType solver_type) {
         }
 
     }
+    this->is_converged = true;
     Eigen::MatrixXd P = calculateP(get_C_canonical());
     this->electronic_energy=calculateElectronicEnergy(P,H_core,H_core+calculateG(P,this->ao_basis.get_g()));
+
 
 
 
