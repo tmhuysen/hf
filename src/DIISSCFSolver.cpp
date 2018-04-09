@@ -28,6 +28,33 @@ void DIISSCFSolver::solve() {
         Eigen::MatrixXd G = this->calculateG(P, this->g);
         // Calculate the Fock matrix
         Eigen::MatrixXd f_AO = H_core + G;
+
+        // Fill deques for DIIS procedure
+        this->fock_vector.emplace_back(f_AO);  // add fock matrix
+        this->error_vector.emplace_back((f_AO*P*this->S - this->S*P*f_AO));  // add error matrix
+        if(error_vector.size()==this->max_error_size){  // Collapse subspace
+            //  Initialize B matrix, representation off all errors
+            Eigen::MatrixXd B = -1*Eigen::MatrixXd::Ones(this->max_error_size+1,this->max_error_size+1);  // +1 for the multiplier
+            B(this->max_error_size,this->max_error_size) = 0;  // last address of the matrix is 0
+
+            for(size_t i = 0; i<this->max_error_size;i++){
+                for(size_t j = 0; j < this->max_error_size;j++){
+                    B(i,j) = (this->error_vector[i]*this->error_vector[j]).trace();
+                }
+            }
+            Eigen::VectorXd b = Eigen::VectorXd::Zero(this->max_error_size+1);  // +1 for the multiplier
+            b(this->max_error_size) = -1;  // last address is -1
+            Eigen::VectorXd coefficients = B.inverse()*b; // calculate the coefficients
+            // Recombine previous fock matrix into improved fock matrix
+            f_AO = Eigen::MatrixXd::Zero(this->S.cols(),this->S.cols());
+            for(size_t i = 0; i<max_error_size;i++){
+                f_AO += coefficients[i]*fock_vector[i];
+            }
+
+            // Remove the oldest entries. So we collapse every iteration
+            this->fock_vector.pop_front();
+            this->error_vector.pop_front();
+        }
         // Solve the Roothaan equation (generalized eigenvalue problem)
         Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes (f_AO, this->S);
         C = gsaes.eigenvectors();
@@ -51,45 +78,8 @@ void DIISSCFSolver::solve() {
 
             std::cout<<std::endl<<"ITERATINOS : "<<iteration_counter<<std::endl;
         }
-        else {  // not converged yet check for subspace collapse
+        else {
             iteration_counter ++;
-
-            this->fock_vector.emplace_back(f_AO);  // add fock matrix
-            this->error_vector.emplace_back((f_AO*P_previous*this->S - this->S*P_previous*f_AO));  // add error calculated according to Pulay
-
-            if(error_vector.size()==this->max_error_size){  // Collapse subspace
-                //  Initialize B matrix, representation off all errors
-                Eigen::MatrixXd B = -1*Eigen::MatrixXd::Ones(this->max_error_size+1,this->max_error_size+1);  // +1 for the multiplier
-                B(this->max_error_size,this->max_error_size) = 0;  // last address of the matrix is 0
-
-                for(size_t i = 0; i<this->max_error_size;i++){
-                    for(size_t j = 0; j < this->max_error_size;j++){
-                        B(i,j) = (this->error_vector[i]*this->error_vector[j]).norm();
-                    }
-                }
-                Eigen::VectorXd b = Eigen::VectorXd::Zero(this->max_error_size+1);  // +1 for the multiplier
-                b(this->max_error_size) = -1;  // last address is -1
-                Eigen::VectorXd coefficients = B.inverse()*b; // calculate the coefficients
-                // Recombine previous fock matrix into improved fock matrix
-                f_AO = Eigen::MatrixXd::Zero(this->S.cols(),this->S.cols());
-                for(size_t i = 0; i<max_error_size;i++){
-                    f_AO += coefficients[i]*fock_vector[i];
-                }
-
-                // New C guess
-                Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes2 (f_AO, this->S);
-                C = gsaes2.eigenvectors();
-
-                // Calculate an improved density matrix P from the improved coefficient matrix C
-                P = this->calculateP(C);
-
-                // Remove the oldest entries.
-                this->fock_vector.pop_front();
-                this->error_vector.pop_front();
-            }
-
-
-
             // If we reach more than this->maximum_number_of_iterations, the system is considered not to be converging
             if (iteration_counter >= this->maximum_number_of_iterations) {
                 throw std::runtime_error("The SCF procedure did not converge.");
