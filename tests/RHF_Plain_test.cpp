@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
-    rhf.solve(hf::solver::SCFSolverType::PLAIN);
+    rhf.solve(hf::rhf::solver::SCFSolverType::PLAIN);
     double total_energy = rhf.get_electronic_energy() + h2.calculateInternuclearRepulsionEnergy();
 
     std::cout << total_energy << std::endl;
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
     ao_basis.calculateIntegrals();
 
     hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-    rhf.solve(hf::solver::SCFSolverType::PLAIN);
+    rhf.solve(hf::rhf::solver::SCFSolverType::PLAIN);
 
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-    rhf.solve(hf::solver::SCFSolverType::PLAIN);
+    rhf.solve(hf::rhf::solver::SCFSolverType::PLAIN);
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
 
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (methane, ao_basis, 1.0e-06);
-    rhf.solve( hf::solver::SCFSolverType::PLAIN);
+    rhf.solve( hf::rhf::solver::SCFSolverType::PLAIN);
     double total_energy = rhf.get_electronic_energy() + methane.calculateInternuclearRepulsionEnergy();
 
 
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto6g ) {
     ao_basis.calculateIntegrals();
 
     hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
-    rhf.solve( hf::solver::SCFSolverType::PLAIN);
+    rhf.solve( hf::rhf::solver::SCFSolverType::PLAIN);
 
 
     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
     ao_basis.calculateIntegrals();
 
     hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
-    rhf.solve( hf::solver::SCFSolverType::PLAIN);
+    rhf.solve( hf::rhf::solver::SCFSolverType::PLAIN);
 
 
     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
     ao_basis.calculateIntegrals();
 
     hf::rhf::RHF rhf (lih, ao_basis, 1.0e-06);
-    rhf.solve( hf::solver::SCFSolverType::PLAIN);
+    rhf.solve( hf::rhf::solver::SCFSolverType::PLAIN);
 
 
     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
