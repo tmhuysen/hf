@@ -13,8 +13,10 @@ public:
     /**
      *   Constructor based on the dimension @param dim of the eigenvalue problem.
      */
-    explicit PlainSCFSolver(Eigen::MatrixXd S, double threshold = 1e-6, size_t maximum_number_of_iterations = 128);
-
+    explicit PlainSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
+                            const hf::DensityFunction calculateP,
+                            const hf::TwoElectronMatrixFunction calculateG,
+                            double threshold = 1e-6, size_t maximum_number_of_iterations = 128);
 
     // DESTRUCTOR
     ~PlainSCFSolver() override = default;

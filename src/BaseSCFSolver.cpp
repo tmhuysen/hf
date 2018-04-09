@@ -28,6 +28,14 @@ Eigen::MatrixXd BaseSCFSolver::get_C_canonical() const {
     }
 }
 
+BaseSCFSolver::BaseSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g, const hf::DensityFunction calculateP,
+                             const hf::TwoElectronMatrixFunction calculateG, double threshold,
+                             size_t maximum_number_of_iterations) : S(S), H_core(H_core), g(g), calculateP(calculateP),
+                                                                    calculateG(calculateG),threshold(threshold),
+                                                                    maximum_number_of_iterations(maximum_number_of_iterations) {
+
+}
+
 
 } // solver
 } // rhf

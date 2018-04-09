@@ -3,9 +3,8 @@
 
 
 
-#include <Eigen/Dense>
-#include <unsupported/Eigen/CXX11/Tensor>
-
+#include "common.hpp"
+#include <libwint.hpp>
 
 
 
@@ -20,8 +19,10 @@ protected:
     const double threshold;
 
     const Eigen::MatrixXd S;
-    std::function<Eigen::MatrixXd(const Eigen::VectorXd &)> calculateP;
-    std::function<Eigen::MatrixXd(const Eigen::VectorXd &, const Eigen::Tensor<double, 4> &)> calculateG;
+    const Eigen::MatrixXd H_core;
+    const Eigen::Tensor<double ,4> g;
+    const hf::DensityFunction calculateP;
+    const hf::TwoElectronMatrixFunction calculateG;
 
     bool is_converged = false;
     Eigen::VectorXd orbital_energies;
@@ -32,7 +33,10 @@ protected:
     /**
      *  Protected constructor to initialize the const @member dim by @param dim.
      */
-    explicit BaseSCFSolver(Eigen::MatrixXd S, double threshold = 1e-6, size_t maximum_number_of_iterations = 128);
+    explicit BaseSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
+                           const hf::DensityFunction calculateP,
+                           const hf::TwoElectronMatrixFunction calculateG,
+                           double threshold = 1e-6, size_t maximum_number_of_iterations = 128);
 
 
 public:
