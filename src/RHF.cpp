@@ -83,14 +83,15 @@ double RHF::calculateElectronicEnergy(const Eigen::MatrixXd& P, const Eigen::Mat
  */
 
 /**
- *  Constructor based on a given libwint::AOBasis @param: ao_basis, a number of electrons @param: N and an SCF-cycle @param: scf_threshold
+ *  Constructor based on a given libwint::AOBasis @param: ao_basis, a number of electrons @param: N and an SCF-cycle @param: scf_threshold, MAX_CYCLES
  */
-RHF::RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold) :
+RHF::RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold, size_t MAX_CYCLES) :
     scf_threshold (scf_threshold),
     ao_basis (ao_basis),
     molecule (molecule),
     K (this->ao_basis.calculateNumberOfBasisFunctions()),
-    N (this->molecule.get_N())
+    N (this->molecule.get_N()),
+    MAX_NUMBER_OF_SCF_CYCLES (MAX_CYCLES)
 {
 
     if ((this->N % 2) != 0) {
