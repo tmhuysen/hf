@@ -16,7 +16,7 @@ namespace solver {
 class BaseSCFSolver {
 protected:
     const size_t maximum_number_of_iterations;
-    const double threshold;
+    const double threshold;  // convergence threshold for the SCF procedure
 
     const Eigen::MatrixXd S;  // Overlap integral matrix of the basis functions
     const Eigen::MatrixXd H_core;  // One electron integral matrix of the basis functions
@@ -33,12 +33,13 @@ protected:
 
     // PROTECTED CONSTRUCTORS
     /**
-     *  Protected constructor to initialize the const @member dim by @param dim.
+     *  Protected constructor to initialize the const S, H_core, g, calculateP, calculateG, threshold and maximum_number_of_iterations.
      */
     explicit BaseSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
                            const hf::DensityFunction calculateP,
                            const hf::TwoElectronMatrixFunction calculateG,
                            double threshold = 1e-6, size_t maximum_number_of_iterations = 128);
+
 
 
 public:
@@ -62,6 +63,7 @@ public:
     Eigen::VectorXd get_orbital_energies() const;
     Eigen::MatrixXd get_C_canonical() const;
 };
+
 
 
 } // solver
