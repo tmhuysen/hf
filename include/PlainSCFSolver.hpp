@@ -11,7 +11,7 @@ class PlainSCFSolver: public BaseSCFSolver {
 public:
     // CONSTRUCTOR
     /**
-     *   Constructor based on the dimension @param dim of the eigenvalue problem.
+     *  Constructor to initialize the const S, H_core, g, calculateP, calculateG, threshold and maximum_number_of_iterations.
      */
     explicit PlainSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
                             const hf::DensityFunction calculateP,
@@ -32,9 +32,6 @@ public:
      *      - @member orbital_energies
      */
      void solve() override;
-
-
-
 };
 
 } // solver

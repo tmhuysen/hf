@@ -1,26 +1,48 @@
 #include "DIISSCFSolver.hpp"
+
+
 namespace hf {
 namespace rhf {
 namespace solver {
 
 
+/*
+ * CONSTRUCTORS
+ */
+
+/**
+ *  Constructor to initialize the const S, H_core, g, calculateP, calculateG, threshold and maximum_number_of_iterations.
+ */
 DIISSCFSolver::DIISSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double, 4> g,
                              const hf::DensityFunction calculateP, const hf::TwoElectronMatrixFunction calculateG,
-                             double threshold, size_t maximum_number_of_iterations) : BaseSCFSolver(S, H_core, g,
-                                                                                                    calculateP,
-                                                                                                    calculateG,
-                                                                                                    threshold,
-                                                                                                    maximum_number_of_iterations) {
-    this->fock_vector = {};
-    this->error_vector = {};
-
+                             double threshold, size_t maximum_number_of_iterations) :
+        BaseSCFSolver(S, H_core, g, calculateP, calculateG, threshold, maximum_number_of_iterations) {
 }
 
+
+
+/*
+ * PUBLIC METHODS
+ */
+
+/**
+ *  Execute the SCF procedure. direct inversion of the iterative subspace.
+ *
+ *  If successful, it sets
+ *      - @member is_converged to true
+ *      - @member C_canonical
+ *      - @member orbital_energies
+ */
 void DIISSCFSolver::solve() {
+    // Initialize error and fock vector for the DIIS procedure
+    this->fock_vector = {};
+    this->error_vector = {};
+    // Solve the generalized eigenvalue problem for H_core to obtain a guess for the density matrix P
+    //  H_core should be self-adjoint
+    //  S should be positive definite
     Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (this->H_core,this->S);
     Eigen::MatrixXd C = gsaes0.eigenvectors();
     Eigen::MatrixXd P = this->calculateP(C);
-
 
     size_t iteration_counter = 1;
     while (!this->is_converged) {
@@ -76,7 +98,7 @@ void DIISSCFSolver::solve() {
             this->orbital_energies = gsaes.eigenvalues();
             this->C_canonical = C;
 
-            std::cout<<std::endl<<"ITERATINOS : "<<iteration_counter<<std::endl;
+            std::cout<<std::endl<<"SCF ITERATIONS : "<<iteration_counter<<std::endl;
         }
         else {
             iteration_counter ++;
@@ -86,8 +108,9 @@ void DIISSCFSolver::solve() {
             }
         }
     }  // SCF cycle loop
-
 }
+
+
 } // solver
 } // rhf
 } // hf

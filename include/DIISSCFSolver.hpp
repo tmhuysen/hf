@@ -19,12 +19,13 @@ private:
 public:
     // CONSTRUCTOR
     /**
-     *   Constructor based on the dimension @param dim of the eigenvalue problem.
+     *  Constructor to initialize the const S, H_core, g, calculateP, calculateG, threshold and maximum_number_of_iterations.
      */
     explicit DIISSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
                             const hf::DensityFunction calculateP,
                             const hf::TwoElectronMatrixFunction calculateG,
                             double threshold = 1e-6, size_t maximum_number_of_iterations = 128);
+
 
     // DESTRUCTOR
     ~DIISSCFSolver() override = default;
@@ -32,7 +33,7 @@ public:
 
     // PUBLIC METHODS
     /**
-     *  Execute the SCF procedure.
+     *  Execute the SCF procedure. Using the direct inversion of the iterative subspace.
      *
      *  If successful, it sets
      *      - @member is_converged to true
@@ -44,6 +45,7 @@ public:
 
 
 };
+
 
 } // solver
 } // rhf
