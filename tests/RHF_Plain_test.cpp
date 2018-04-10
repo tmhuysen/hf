@@ -182,3 +182,18 @@ BOOST_AUTO_TEST_CASE ( lumo ) {
     // In this case, K=7 and N=10, so the index of the LUMO should be 5
     BOOST_CHECK_EQUAL(rhf.LUMOIndex(), 5);
 }
+
+
+BOOST_AUTO_TEST_CASE ( covergence_test ) {
+
+    // Test to see far apart NO converges
+
+    // Do our own RHF calculation
+    libwint::Molecule lih ("../tests/ref_data/NO.xyz",1);
+    libwint::AOBasis ao_basis (lih, "STO-6G");
+    ao_basis.calculateIntegrals();
+
+    hf::rhf::RHF rhf (lih, ao_basis, 1.0e-06);
+    // Plain solver should not converge
+    BOOST_CHECK_THROW(rhf.solve(hf::rhf::solver::SCFSolverType::PLAIN);, std::runtime_error);
+}
