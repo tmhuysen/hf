@@ -42,11 +42,6 @@ public:
      *      - @member orbital_energies
      */
     void solve() override;
-
-    double calculateElectronicEnergy(const Eigen::MatrixXd& P, const Eigen::MatrixXd& H_core, const Eigen::MatrixXd& F) const;
-
-
-
 };
 
 

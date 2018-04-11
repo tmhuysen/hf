@@ -1,8 +1,5 @@
 #include "DIISSCFSolver.hpp"
-#include <iostream>
-#include <iomanip>
-#include <cmath>
-#include <limits>
+
 
 namespace hf {
 namespace rhf {
@@ -46,50 +43,39 @@ void DIISSCFSolver::solve() {
     Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (this->H_core,this->S);
     Eigen::MatrixXd C = gsaes0.eigenvectors();
     Eigen::MatrixXd P = this->calculateP(C);
-    //this->fock_vector.emplace_back(H_core);  // add fock matrix
-    //this->error_vector.emplace_back((H_core*P*this->S - this->S*P*H_core));
-    double E = this->calculateElectronicEnergy(P,H_core,H_core);
+
     size_t iteration_counter = 1;
     while (!this->is_converged) {
-        std::cout<<std::setprecision(16);
-        std::cout<<iteration_counter<<" E :"<<E<<std::endl;
         // Calculate the G-matrix
         Eigen::MatrixXd G = this->calculateG(P, this->g);
         // Calculate the Fock matrix
         Eigen::MatrixXd f_AO = H_core + G;
 
-        double E_prev = E;
-
         // Fill deques for DIIS procedure
-        this->fock_vector.emplace_back(P);  // add fock matrix
-        //this->error_vector.emplace_back((f_AO*P*this->S - this->S*P*f_AO));  // add error matrix
+        this->fock_vector.emplace_back(f_AO);  // add fock matrix
         this->error_vector.emplace_back((f_AO*P*this->S - this->S*P*f_AO));  // add error matrix
-        if(true){  // Collapse subspace
+        if(error_vector.size()==this->max_error_size){  // Collapse subspace
             //  Initialize B matrix, representation off all errors
-            Eigen::MatrixXd B = -1*Eigen::MatrixXd::Ones(error_vector.size()+1,error_vector.size()+1);  // +1 for the multiplier
-            B(error_vector.size(),error_vector.size()) = 0;  // last address of the matrix is 0
+            Eigen::MatrixXd B = -1*Eigen::MatrixXd::Ones(this->max_error_size+1,this->max_error_size+1);  // +1 for the multiplier
+            B(this->max_error_size,this->max_error_size) = 0;  // last address of the matrix is 0
 
-            for(size_t i = 0; i<error_vector.size();i++){
-                for(size_t j = 0; j < error_vector.size();j++){
+            for(size_t i = 0; i<this->max_error_size;i++){
+                for(size_t j = 0; j < this->max_error_size;j++){
                     B(i,j) = (this->error_vector[i]*this->error_vector[j]).trace();
                 }
             }
-            Eigen::VectorXd b = Eigen::VectorXd::Zero(error_vector.size()+1);  // +1 for the multiplier
-            b(error_vector.size()) = -1;  // last address is -1
+            Eigen::VectorXd b = Eigen::VectorXd::Zero(this->max_error_size+1);  // +1 for the multiplier
+            b(this->max_error_size) = -1;  // last address is -1
             Eigen::VectorXd coefficients = B.inverse()*b; // calculate the coefficients
             // Recombine previous fock matrix into improved fock matrix
-            P = Eigen::MatrixXd::Zero(this->S.cols(),this->S.cols());
-            for(size_t i = 0; i<error_vector.size();i++){
-                P += coefficients[i]*fock_vector[i];
+            f_AO = Eigen::MatrixXd::Zero(this->S.cols(),this->S.cols());
+            for(size_t i = 0; i<max_error_size;i++){
+                f_AO += coefficients[i]*fock_vector[i];
             }
-            if(error_vector.size()==this->max_error_size){
-                this->fock_vector.pop_front();
-                this->error_vector.pop_front();
-            }
-            Eigen::MatrixXd G = this->calculateG(P, this->g);
-            // Calculate the Fock matrix
-            f_AO = H_core + G;
 
+            // Remove the oldest entries. So we collapse every iteration
+            this->fock_vector.pop_front();
+            this->error_vector.pop_front();
         }
         // Solve the Roothaan equation (generalized eigenvalue problem)
         Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes (f_AO, this->S);
@@ -98,10 +84,9 @@ void DIISSCFSolver::solve() {
         // Calculate an improved density matrix P from the improved coefficient matrix C
         Eigen::MatrixXd P_previous = P; // We will store the previous density matrix
         P = this->calculateP(C);
-        E = this->calculateElectronicEnergy(P,H_core,f_AO);
 
         // Check for convergence on the density matrix P
-        if (std::abs(E_prev- E) <= this->threshold) {
+        if ((P - P_previous).norm() <= this->threshold) {
             this->is_converged = true;
 
             // After the SCF procedure, we end up with canonical spatial orbitals, i.e. the Fock matrix should be diagonal in this basis
@@ -123,28 +108,6 @@ void DIISSCFSolver::solve() {
             }
         }
     }  // SCF cycle loop
-}
-
-double DIISSCFSolver::calculateElectronicEnergy(const Eigen::MatrixXd& P, const Eigen::MatrixXd& H_core, const Eigen::MatrixXd& F) const{
-
-    // First, calculate the sum of H_core and F (this saves a contraction)
-    Eigen::MatrixXd Z = H_core + F;
-
-    // Convert the matrices Z and P to an Eigen::Tensor<double, 2> P_tensor, as contractions are only implemented for Eigen::Tensors
-    Eigen::TensorMap<Eigen::Tensor<const double, 2>> P_tensor (P.data(), P.rows(), P.cols());
-    Eigen::TensorMap<Eigen::Tensor<double, 2>> Z_tensor (Z.data(), P.rows(), P.cols());
-
-    // Specify the contraction pair
-    // To calculate the electronic energy, we must perform a double contraction
-    //      0.5 P(nu mu) Z(mu nu)
-    Eigen::array<Eigen::IndexPair<int>, 2> contraction_pair = {Eigen::IndexPair<int>(0, 1), Eigen::IndexPair<int>(1, 0)};
-
-    // Calculate the double contraction (with prefactor 0.5)
-    Eigen::Tensor<double, 0> contraction = 0.5 * P_tensor.contract(Z_tensor, contraction_pair);
-
-    // As the double contraction of two matrices is a scalar (a tensor of rank 0), we can access the value as (0).
-    return contraction(0);
-
 }
 
 
