@@ -98,7 +98,7 @@ void DIISSCFSolver::solve() {
             this->orbital_energies = gsaes.eigenvalues();
             this->C_canonical = C;
 
-            std::cout<<std::endl<<"SCF ITERATIONS : "<<iteration_counter<<std::endl;
+            //std::cout<<std::endl<<"SCF ITERATIONS : "<<iteration_counter<<std::endl;
         }
         else {
             iteration_counter ++;

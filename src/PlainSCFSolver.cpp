@@ -66,7 +66,7 @@ void PlainSCFSolver::solve() {
             this->orbital_energies = gsaes.eigenvalues();
             this->C_canonical = C;
 
-            std::cout<<std::endl<<"SCF ITERATIONS : "<<iteration_counter<<std::endl;
+            //std::cout<<std::endl<<"SCF ITERATIONS : "<<iteration_counter<<std::endl;
         } else {  // not converged yet
             iteration_counter ++;
 
