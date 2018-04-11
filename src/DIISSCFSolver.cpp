@@ -56,20 +56,20 @@ void DIISSCFSolver::solve() {
         this->error_vector.emplace_back((f_AO*P*this->S - this->S*P*f_AO));  // add error matrix
         if(error_vector.size()==this->max_error_size){  // Collapse subspace
             //  Initialize B matrix, representation off all errors
-            Eigen::MatrixXd B = -1*Eigen::MatrixXd::Ones(this->max_error_size+1,this->max_error_size+1);  // +1 for the multiplier
-            B(this->max_error_size,this->max_error_size) = 0;  // last address of the matrix is 0
+            Eigen::MatrixXd B = -1*Eigen::MatrixXd::Ones(error_vector.size()+1,error_vector.size()+1);  // +1 for the multiplier
+            B(error_vector.size(),error_vector.size()) = 0;  // last address of the matrix is 0
 
-            for(size_t i = 0; i<this->max_error_size;i++){
-                for(size_t j = 0; j < this->max_error_size;j++){
+            for(size_t i = 0; i<error_vector.size();i++){
+                for(size_t j = 0; j < error_vector.size();j++){
                     B(i,j) = (this->error_vector[i]*this->error_vector[j]).trace();
                 }
             }
-            Eigen::VectorXd b = Eigen::VectorXd::Zero(this->max_error_size+1);  // +1 for the multiplier
-            b(this->max_error_size) = -1;  // last address is -1
+            Eigen::VectorXd b = Eigen::VectorXd::Zero(error_vector.size()+1);  // +1 for the multiplier
+            b(error_vector.size()) = -1;  // last address is -1
             Eigen::VectorXd coefficients = B.inverse()*b; // calculate the coefficients
             // Recombine previous fock matrix into improved fock matrix
             f_AO = Eigen::MatrixXd::Zero(this->S.cols(),this->S.cols());
-            for(size_t i = 0; i<max_error_size;i++){
+            for(size_t i = 0; i<error_vector.size();i++){
                 f_AO += coefficients[i]*fock_vector[i];
             }
 
