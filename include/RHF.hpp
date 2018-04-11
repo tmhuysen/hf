@@ -15,7 +15,7 @@ namespace rhf {
 
 
 class RHF {
-private:
+protected:
     const size_t MAX_NUMBER_OF_SCF_CYCLES;
     bool is_converged = false;
     const double scf_threshold;  // convergence threshold for the SCF procedure
@@ -57,7 +57,7 @@ public:
 
 
     // DESTRUCTOR
-    ~RHF(){delete(this->SCF_solver_ptr);}
+    virtual ~RHF(){delete(this->SCF_solver_ptr);}
 
 
     // Getters

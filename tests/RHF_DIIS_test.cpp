@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 
 
     // Do the SCF cycle
-    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
+    hf::rhf::RHF rhf (water, ao_basis, 1.0e-12);
     rhf.solve(hf::rhf::solver::SCFSolverType::DIIS);
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
@@ -235,4 +235,19 @@ BOOST_AUTO_TEST_CASE ( covergence_test ) {
     // DIIS should converge
     BOOST_CHECK_NO_THROW(rhf.solve(hf::rhf::solver::SCFSolverType::DIIS));
 
+}
+
+BOOST_AUTO_TEST_CASE ( NN_test_3 ) {
+    // Create a Molecule and an AOBasis
+    libwint::Molecule N2 ("../tests/ref_data/NN_2.xyz");
+    libwint::AOBasis ao_basis (N2, "STO-3G");
+    ao_basis.calculateIntegrals();
+
+    // Do the SCF cycle
+    hf::rhf::RHF rhfc (N2, ao_basis, 1.0e-09);
+
+    rhfc.solve( hf::rhf::solver::SCFSolverType::DIIS);
+    double total_energy = rhfc.get_electronic_energy() + N2.calculateInternuclearRepulsionEnergy();
+    std::cout<<std::setprecision(16);
+    std::cout << total_energy << std::endl;
 }
