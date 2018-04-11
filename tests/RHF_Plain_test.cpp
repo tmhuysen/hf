@@ -236,19 +236,3 @@ BOOST_AUTO_TEST_CASE ( covergence_test ) {
     // Plain solver should not converge
     BOOST_CHECK_THROW(rhf.solve(hf::rhf::solver::SCFSolverType::PLAIN);, std::runtime_error);
 }
-
-
-BOOST_AUTO_TEST_CASE ( NN_test ) {
-    // Create a Molecule and an AOBasis
-    libwint::Molecule N2 ("../tests/ref_data/NN_2.xyz");
-    libwint::AOBasis ao_basis (N2, "STO-3G");
-    ao_basis.calculateIntegrals();
-
-    // Do the SCF cycle
-    hf::rhf::RHF rhfc (N2, ao_basis, 1.0e-9);
-
-    rhfc.solve( hf::rhf::solver::SCFSolverType::PLAIN);
-    double total_energy = rhfc.get_electronic_energy() + N2.calculateInternuclearRepulsionEnergy();
-    std::cout<<std::setprecision(16);
-    std::cout << total_energy << std::endl;
-}
