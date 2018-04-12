@@ -65,7 +65,7 @@ RHFC::RHFC(const libwint::Molecule &molecule, const libwint::AOBasis &ao_basis, 
 void RHFC::solve(hf::rhf::solver::SCFSolverType solver_type, std::vector<size_t> AO_set, double multiplier) {
     // Calculate H_core
     Eigen::MatrixXd H_core = this->ao_basis.get_T() + this->ao_basis.get_V();
-    Eigen::MatrixXd mod_core = H_core + multiplier*this->calculateGA(AO_set);
+    Eigen::MatrixXd mod_core = H_core - multiplier*this->calculateGA(AO_set);
     hf::DensityFunction calculateP = [this] (const Eigen::MatrixXd& x) { return this->calculateP(x);};
     hf::TwoElectronMatrixFunction calculateG = [this] (const Eigen::MatrixXd & x, const Eigen::Tensor<double, 4> & y) { return this->calculateG(x,y);};
 
