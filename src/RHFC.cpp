@@ -17,8 +17,6 @@ Eigen::MatrixXd RHFC::calculateGA(std::vector<size_t> AO_set) const {
         for(size_t p : AO_set){
             GA(i,p) += 0.5 * this->ao_basis.get_S()(i,p);
             GA(p,i) += 0.5 * this->ao_basis.get_S()(p,i);
-
-
         }
     }
     return GA;
@@ -28,15 +26,15 @@ Eigen::MatrixXd RHFC::calculateGA(std::vector<size_t> AO_set) const {
 
 
 /**
- *  Given the RHF AO density matrix @param: P calculate the mulliken population
+ *  Given the RHF AO density matrix @param: P calculate the mulliken population for a set of AO's
  */
 double RHFC::calculatePopulation(const Eigen::MatrixXd &P, std::vector<size_t> AO_set) const {
     Eigen::MatrixXd PS = P*this->ao_basis.get_S();
-    double pop = 0;
+    double population = 0;
     for(size_t p : AO_set){
-        pop += PS(p,p);
+        population += PS(p,p);
     }
-    return pop;
+    return population;
 }
 
 

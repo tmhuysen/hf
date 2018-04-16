@@ -10,7 +10,7 @@ namespace rhf {
 
 class RHFC : public RHF {
 private:
-    double population_set;
+    double population_set;  // Population for a
 
     /**
      *  Calculates GA for AO_set
@@ -45,7 +45,7 @@ public:
     
     
     // GETTERS
-    double getPopulation_set() const { return population_set; }
+    double get_population_set() const { return population_set; }
 
 
 };
