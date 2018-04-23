@@ -40,4 +40,4 @@ Basic usage of this library can be found in the `tests` directory. If you use CM
 
     find_package(hf 3.0.0)
 
-where `x.y.z` is the version number. CMake then provides the commands `hf_INCLUDE_DIRS` to be used in your `target_include_directories` and the library `hf` to be used in your `target_link_libraries`.
+CMake then provides the commands `hf_INCLUDE_DIRS` to be used in your `target_include_directories` and the library `hf` to be used in your `target_link_libraries`.
