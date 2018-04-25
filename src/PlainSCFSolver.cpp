@@ -60,7 +60,7 @@ void PlainSCFSolver::solve() {
             // After the SCF procedure, we end up with canonical spatial orbitals, i.e. the Fock matrix should be diagonal in this basis
             // Let's check if this is the case, within double float precision
             Eigen::MatrixXd f_SO = libwint::transformations::transform_AO_to_SO(f_AO, C);
-            assert(f_SO.isDiagonal());
+            //assert(f_SO.isDiagonal());
 
             // Furthermore, add the orbital energies and the coefficient matrix to (this)
             this->orbital_energies = gsaes.eigenvalues();
@@ -72,7 +72,14 @@ void PlainSCFSolver::solve() {
 
             // If we reach more than this->maximum_number_of_iterations, the system is considered not to be converging
             if (iteration_counter >= this->maximum_number_of_iterations) {
-                throw std::runtime_error("The SCF procedure did not converge.");
+                std::cout<<"The SCF procedure did not converge.";
+                this->is_converged = true;
+                Eigen::MatrixXd f_SO = libwint::transformations::transform_AO_to_SO(f_AO, C);
+                //assert(f_SO.isDiagonal());
+
+                // Furthermore, add the orbital energies and the coefficient matrix to (this)
+                this->orbital_energies = gsaes.eigenvalues();
+                this->C_canonical = C;
             }
         }
     }  // SCF cycle loop

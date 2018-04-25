@@ -1,0 +1,1 @@
+/opt/local/bin/clang++  -O3 -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/RHF_DIIS_test.dir/RHF_DIIS_test.cpp.o  -o RHF_DIIS_test ../src/libhf.a /usr/local/cpputil/lib/libcpputil.a /usr/local/libwint/lib/libwint.a /usr/local/libint/2.3.1/lib/libint2.a 

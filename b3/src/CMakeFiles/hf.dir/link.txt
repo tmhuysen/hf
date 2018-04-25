@@ -1,0 +1,2 @@
+/opt/local/bin/ar qc libhf.a  CMakeFiles/hf.dir/BaseSCFSolver.cpp.o CMakeFiles/hf.dir/DIISSCFSolver.cpp.o CMakeFiles/hf.dir/PlainSCFSolver.cpp.o CMakeFiles/hf.dir/RHF.cpp.o CMakeFiles/hf.dir/RHFC.cpp.o
+/opt/local/bin/ranlib libhf.a

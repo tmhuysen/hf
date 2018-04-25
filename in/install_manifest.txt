@@ -1,0 +1,14 @@
+/usr/local/hf/lib/libhf.a
+/usr/local/hf/include/BaseSCFSolver.hpp
+/usr/local/hf/include/DIISSCFSolver.hpp
+/usr/local/hf/include/PlainSCFSolver.hpp
+/usr/local/hf/include/RHF.hpp
+/usr/local/hf/include/RHFC.hpp
+/usr/local/hf/include/SCFSolverType.hpp
+/usr/local/hf/include/common.hpp
+/usr/local/hf/include/hf.hpp
+/usr/local/hf/include/version.hpp
+/usr/local/hf/cmake/hfTargets.cmake
+/usr/local/hf/cmake/hfTargets-release.cmake
+/usr/local/hf/cmake/hfConfig.cmake
+/usr/local/hf/cmake/hfConfigVersion.cmake
