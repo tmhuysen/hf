@@ -61,7 +61,7 @@ void DIISSCFSolver::solve() {
 
             for(size_t i = 0; i<error_vector.size();i++){
                 for(size_t j = 0; j < error_vector.size();j++){
-                    B(i,j) = (this->error_vector[i]*this->error_vector[j]).trace();
+                    B(i,j) = (this->error_vector[i].tranpose()*this->error_vector[j]).trace();
                 }
             }
             Eigen::VectorXd b = Eigen::VectorXd::Zero(error_vector.size()+1);  // +1 for the multiplier
