@@ -87,7 +87,7 @@ public:
     /**
      *  Solve the restricted Hartree-Fock equations (i.e. the Roothaan-Hall equations)
      */
-    void solve(hf::rhf::solver::SCFSolverType solver_type);
+    void solve(hf::rhf::solver::SCFSolverType solver_type = hf::rhf::solver::SCFSolverType::PLAIN);
 
     /**
      *  Given a number of spatial orbitals @param: K and a number of electrons @param: N, calculated the index of the HOMO in the restricted case
