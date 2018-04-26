@@ -135,23 +135,23 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( h2_sto6g ) {
+// BOOST_AUTO_TEST_CASE ( h2_sto6g ) {
 
-    // We have some reference data from olsens: H2@RHF//STO-6G orbitals
-    double ref_electronic_energy = -1.838434256;
-
-
-    // Do our own RHF calculation
-    libwint::Molecule h2 ("../tests/ref_data/h2_olsens.xyz");
-    libwint::AOBasis ao_basis (h2, "STO-6G");
-    ao_basis.calculateIntegrals();
-
-    hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
-    rhf.solve();
+//     // We have some reference data from olsens: H2@RHF//STO-6G orbitals
+//     double ref_electronic_energy = -1.838434256;
 
 
-    BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
-}
+//     // Do our own RHF calculation
+//     libwint::Molecule h2 ("../tests/ref_data/h2_olsens.xyz");
+//     libwint::AOBasis ao_basis (h2, "STO-6G");
+//     ao_basis.calculateIntegrals();
+
+//     hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
+//     rhf.solve();
+
+
+//     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
+// }
 
 
 BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
@@ -173,23 +173,23 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
+// BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
 
-    // We have some reference data from olsens: LiH@RHF//STO-6G orbitals
-    double ref_electronic_energy = -8.9472891719;
-
-
-    // Do our own RHF calculation
-    libwint::Molecule lih ("../tests/ref_data/lih_olsens.xyz");
-    libwint::AOBasis ao_basis (lih, "STO-6G");
-    ao_basis.calculateIntegrals();
-
-    hf::rhf::RHF rhf (lih, ao_basis, 1.0e-06);
-    rhf.solve();
+//     // We have some reference data from olsens: LiH@RHF//STO-6G orbitals
+//     double ref_electronic_energy = -8.9472891719;
 
 
-    BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
-}
+//     // Do our own RHF calculation
+//     libwint::Molecule lih ("../tests/ref_data/lih_olsens.xyz");
+//     libwint::AOBasis ao_basis (lih, "STO-6G");
+//     ao_basis.calculateIntegrals();
+
+//     hf::rhf::RHF rhf (lih, ao_basis, 1.0e-06);
+//     rhf.solve();
+
+
+//     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
+// }
 
 
 
