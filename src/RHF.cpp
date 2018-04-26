@@ -154,7 +154,7 @@ double RHF::get_electronic_energy() const {
 /**
  *  Solve the restricted Hartree-Fock equations (i.e. the Roothaan-Hall equations)
  */
-void RHF::solve(hf::rhf::solver::SCFSolverType solver_type) {
+void RHF::solve(hf::rhf::solver::SCFSolverType solver_type ) {
 
     // Calculate H_core
     Eigen::MatrixXd H_core = this->ao_basis.get_T() + this->ao_basis.get_V();

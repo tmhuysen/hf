@@ -224,14 +224,15 @@ BOOST_AUTO_TEST_CASE ( lumo ) {
 
 BOOST_AUTO_TEST_CASE ( covergence_test ) {
 
-    // Test to see far apart NO converges
+    // Test to see far apart NO+ converges
 
     // Do our own RHF calculation
-    libwint::Molecule lih ("../tests/ref_data/NO.xyz",1);
-    libwint::AOBasis ao_basis (lih, "STO-6G");
+    libwint::Molecule NO ("../tests/ref_data/NO.xyz",1);
+    libwint::AOBasis ao_basis (NO, "STO-3G");
     ao_basis.calculateIntegrals();
 
-    hf::rhf::RHF rhf (lih, ao_basis, 1.0e-06);
+    hf::rhf::RHF rhf (NO, ao_basis, 1.0e-06);
+
     // DIIS should converge
     BOOST_CHECK_NO_THROW(rhf.solve(hf::rhf::solver::SCFSolverType::DIIS));
 
