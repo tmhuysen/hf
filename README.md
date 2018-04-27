@@ -13,8 +13,6 @@ A C++ library that performs Hartree-Fock calculations using Eigen3 for matrix ma
 [![cpputil Dependency](https://img.shields.io/badge/cpputil-1.2.1+-blue.svg)](https://github.com/GQCG/cpputil)
 [![libwint Dependency](https://img.shields.io/badge/libwint-3.0.0+-blue.svg)](https://github.com/GQCG/libwint)
 
-You might have to copy the sto-6g.g94 (provided in `docs/sto-6g.g94`) file to the relevant directory. In a default installation, the file should be copied to `/usr/local/libint/2.3.1/share/libint/2.3.1/basis/sto-6g.g94`.
-
 
 ## Installation
 To install this library:
