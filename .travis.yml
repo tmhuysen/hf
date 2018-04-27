@@ -65,8 +65,6 @@ install:
       ./autogen.sh
       mkdir build && cd build
       ../configure CXXFLAGS=-I${BOOST_ROOT}
-
-  #   2. Generate and compile the libint library
       make export
       tar -xvzf libint-2.3.1.tgz
       cd libint-2.3.1
@@ -109,5 +107,5 @@ script:
 
 cache:
   directories:
-  - /tmp/libint
+    - /tmp/libint
   
