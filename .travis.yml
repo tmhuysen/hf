@@ -57,7 +57,7 @@ install:
   # Installing libint consists of two parts: compiling the libint compiler and compiling the libint library.
   #   1. Compile the libint compiler
   - |
-    if [ ! -d /tmp/libint ]; then
+    if [ ! -d /tmp/libint/libint-2.3.1 ]; then
       mkdir /tmp/libint && cd /tmp/libint
       curl -OL "https://github.com/evaleev/libint/archive/v2.3.1.tar.gz"
       tar -xvzf v2.3.1.tar.gz
@@ -72,7 +72,7 @@ install:
       make
       sudo make install
     else
-      cd /tmp/libint
+      cd /tmp/libint/libint-2.3.1/build/libint-2.3.1
       sudo make install
     fi
 
