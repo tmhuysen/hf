@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE "SCFSolver"
+#define BOOST_TEST_MODULE "SCFDIISSolver"
 
 #include "hf.hpp"
 
@@ -192,36 +192,6 @@ BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
 }
 
 
-
-BOOST_AUTO_TEST_CASE ( homo ) {
-
-    // Create an RHF object to test the HOMOIndex function on
-    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
-    libwint::AOBasis ao_basis (water, "STO-3G");
-    ao_basis.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-
-
-    // In this case, K=7 and N=10, so the index of the HOMO should be 4
-    BOOST_CHECK_EQUAL(rhf.HOMOIndex(), 4);
-}
-
-
-BOOST_AUTO_TEST_CASE ( lumo ) {
-
-    // Create an RHF object to test the LUMOIndex function on
-    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
-    libwint::AOBasis ao_basis (water, "STO-3G");
-    ao_basis.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-
-
-    // In this case, K=7 and N=10, so the index of the LUMO should be 5
-    BOOST_CHECK_EQUAL(rhf.LUMOIndex(), 5);
-}
-
 BOOST_AUTO_TEST_CASE ( covergence_test ) {
 
     // Test to see far apart NO+ converges
@@ -230,10 +200,8 @@ BOOST_AUTO_TEST_CASE ( covergence_test ) {
     libwint::Molecule NO ("../tests/ref_data/NO.xyz",1);
     libwint::AOBasis ao_basis (NO, "STO-3G");
     ao_basis.calculateIntegrals();
-
     hf::rhf::RHF rhf (NO, ao_basis, 1.0e-06);
 
     // DIIS should converge
     BOOST_CHECK_NO_THROW(rhf.solve(hf::rhf::solver::SCFSolverType::DIIS));
-
 }
