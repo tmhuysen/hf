@@ -9,25 +9,6 @@
 
 
 
-BOOST_AUTO_TEST_CASE ( constructor ) {
-
-    // Check if we only accept even numbers of electrons
-    libwint::Molecule h2_cation ("../tests/ref_data/h2_szabo.xyz", +1);  // H2+
-    libwint::AOBasis ao_basis1 (h2_cation, "STO-3G");
-    ao_basis1.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    BOOST_CHECK_THROW(hf::rhf::RHF (h2_cation, ao_basis1, 1.0e-06), std::invalid_argument);
-
-
-    // Check if we don't accept molecules with too many electrons
-    libwint::Molecule h2_many_electrons ("../tests/ref_data/h2_szabo.xyz", -10);  // H2 10-
-    libwint::AOBasis ao_basis2 (h2_many_electrons, "STO-3G");
-    ao_basis2.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    BOOST_CHECK_THROW(hf::rhf::RHF (h2_many_electrons, ao_basis2, 1.0e-06), std::invalid_argument);
-}
-
-
 BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 
     // In this test case, we will follow section 3.5.2 in Szabo.
@@ -59,12 +40,12 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
 
     Eigen::MatrixXd ref_C (7, 7);
     ref_C << -9.94434594e-01, -2.39158997e-01,  3.61117086e-17, -9.36837259e-02,  3.73303682e-31, -1.11639152e-01, -9.04958229e-17,
-             -2.40970260e-02,  8.85736467e-01, -1.62817254e-16,  4.79589270e-01, -1.93821120e-30,  6.69575233e-01,  5.16088339e-16,
-              1.59542752e-18,  5.29309704e-17, -6.07288675e-01, -1.49717339e-16,  8.94470461e-17, -8.85143477e-16,  9.19231270e-01,
-             -3.16155527e-03,  8.58957413e-02,  2.89059171e-16, -7.47426286e-01,  2.81871324e-30,  7.38494291e-01,  6.90314422e-16,
-              6.65079968e-35,  1.16150362e-32, -2.22044605e-16, -4.06685146e-30, -1.00000000e+00, -1.78495825e-31,  2.22044605e-16,
-              4.59373756e-03,  1.44038811e-01, -4.52995183e-01, -3.29475784e-01,  2.16823939e-16, -7.09847234e-01, -7.32462496e-01,
-              4.59373756e-03,  1.44038811e-01,  4.52995183e-01, -3.29475784e-01, -2.16823939e-16, -7.09847234e-01,  7.32462496e-01;
+            -2.40970260e-02,  8.85736467e-01, -1.62817254e-16,  4.79589270e-01, -1.93821120e-30,  6.69575233e-01,  5.16088339e-16,
+            1.59542752e-18,  5.29309704e-17, -6.07288675e-01, -1.49717339e-16,  8.94470461e-17, -8.85143477e-16,  9.19231270e-01,
+            -3.16155527e-03,  8.58957413e-02,  2.89059171e-16, -7.47426286e-01,  2.81871324e-30,  7.38494291e-01,  6.90314422e-16,
+            6.65079968e-35,  1.16150362e-32, -2.22044605e-16, -4.06685146e-30, -1.00000000e+00, -1.78495825e-31,  2.22044605e-16,
+            4.59373756e-03,  1.44038811e-01, -4.52995183e-01, -3.29475784e-01,  2.16823939e-16, -7.09847234e-01, -7.32462496e-01,
+            4.59373756e-03,  1.44038811e-01,  4.52995183e-01, -3.29475784e-01, -2.16823939e-16, -7.09847234e-01,  7.32462496e-01;
 
 
     // Do our own RHF calculation
@@ -192,35 +173,6 @@ BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
 }
 
 
-
-BOOST_AUTO_TEST_CASE ( homo ) {
-
-    // Create an RHF object to test the HOMOIndex function on
-    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
-    libwint::AOBasis ao_basis (water, "STO-3G");
-    ao_basis.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-
-
-    // In this case, K=7 and N=10, so the index of the HOMO should be 4
-    BOOST_CHECK_EQUAL(rhf.HOMOIndex(), 4);
-}
-
-
-BOOST_AUTO_TEST_CASE ( lumo ) {
-
-    // Create an RHF object to test the LUMOIndex function on
-    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
-    libwint::AOBasis ao_basis (water, "STO-3G");
-    ao_basis.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-
-
-    // In this case, K=7 and N=10, so the index of the LUMO should be 5
-    BOOST_CHECK_EQUAL(rhf.LUMOIndex(), 5);
-}
 
 BOOST_AUTO_TEST_CASE ( covergence_test ) {
 
