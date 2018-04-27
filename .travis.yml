@@ -54,8 +54,7 @@ install:
 
 
   # We can't install libint2 (2.2.0+) through APT.
-  # Installing libint consists of two parts: compiling the libint compiler and compiling the libint library.
-  #   1. Compile the libint compiler
+  # Since compiling libint2 takes around 15 minutes on Travis, it is a good idea to cache it (see also below)
   - |
     if [ ! -d /tmp/libint/libint-2.3.1 ]; then
       mkdir -p /tmp/libint && cd /tmp/libint
@@ -107,6 +106,5 @@ script:
   - make && make test && sudo make install
 
 cache:
-  directories:
+  directories:  # add the libint compilation to the cache
     - /tmp/libint
-  
