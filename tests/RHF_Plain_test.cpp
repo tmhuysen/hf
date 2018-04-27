@@ -1,31 +1,12 @@
-#define BOOST_TEST_MODULE "SCFSolver"
+#define BOOST_TEST_MODULE "SCFPLAINSolver"
 
-#include "RHF.hpp"
+#include "hf.hpp"
 
 #include <cpputil.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/included/unit_test.hpp>  // include this to get main(), otherwise the compiler will complain
 
-
-
-BOOST_AUTO_TEST_CASE ( constructor ) {
-
-    // Check if we only accept even numbers of electrons
-    libwint::Molecule h2_cation ("../tests/ref_data/h2_szabo.xyz", +1);  // H2+
-    libwint::AOBasis ao_basis1 (h2_cation, "STO-3G");
-    ao_basis1.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    BOOST_CHECK_THROW(hf::rhf::RHF (h2_cation, ao_basis1, 1.0e-06), std::invalid_argument);
-
-
-    // Check if we don't accept molecules with too many electrons
-    libwint::Molecule h2_many_electrons ("../tests/ref_data/h2_szabo.xyz", -10);  // H2 10-
-    libwint::AOBasis ao_basis2 (h2_many_electrons, "STO-3G");
-    ao_basis2.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    BOOST_CHECK_THROW(hf::rhf::RHF (h2_many_electrons, ao_basis2, 1.0e-06), std::invalid_argument);
-}
 
 
 BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
@@ -135,25 +116,6 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( h2_sto6g ) {
-
-    // We have some reference data from olsens: H2@RHF//STO-6G orbitals
-    double ref_electronic_energy = -1.838434256;
-
-
-    // Do our own RHF calculation
-    libwint::Molecule h2 ("../tests/ref_data/h2_olsens.xyz");
-    libwint::AOBasis ao_basis (h2, "STO-6G");
-    ao_basis.calculateIntegrals();
-
-    hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
-    rhf.solve( hf::rhf::solver::SCFSolverType::PLAIN);
-
-
-    BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
-}
-
-
 BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
 
     // We have some reference data from olsens: H2@RHF//6-31G** orbitals
@@ -173,56 +135,6 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( lih_sto6g ) {
-
-    // We have some reference data from olsens: LiH@RHF//STO-6G orbitals
-    double ref_electronic_energy = -8.9472891719;
-
-
-    // Do our own RHF calculation
-    libwint::Molecule lih ("../tests/ref_data/lih_olsens.xyz");
-    libwint::AOBasis ao_basis (lih, "STO-6G");
-    ao_basis.calculateIntegrals();
-
-    hf::rhf::RHF rhf (lih, ao_basis, 1.0e-06);
-    rhf.solve( hf::rhf::solver::SCFSolverType::PLAIN);
-
-
-    BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
-}
-
-
-
-BOOST_AUTO_TEST_CASE ( homo ) {
-
-    // Create an RHF object to test the HOMOIndex function on
-    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
-    libwint::AOBasis ao_basis (water, "STO-3G");
-    ao_basis.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-
-
-    // In this case, K=7 and N=10, so the index of the HOMO should be 4
-    BOOST_CHECK_EQUAL(rhf.HOMOIndex(), 4);
-}
-
-
-BOOST_AUTO_TEST_CASE ( lumo ) {
-
-    // Create an RHF object to test the LUMOIndex function on
-    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
-    libwint::AOBasis ao_basis (water, "STO-3G");
-    ao_basis.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-
-
-    // In this case, K=7 and N=10, so the index of the LUMO should be 5
-    BOOST_CHECK_EQUAL(rhf.LUMOIndex(), 5);
-}
-
-
 BOOST_AUTO_TEST_CASE ( covergence_test ) {
 
     // Test to see far apart NO+ converges
@@ -231,8 +143,8 @@ BOOST_AUTO_TEST_CASE ( covergence_test ) {
     libwint::Molecule NO ("../tests/ref_data/NO.xyz",1);
     libwint::AOBasis ao_basis (NO, "STO-3G");
     ao_basis.calculateIntegrals();
-
     hf::rhf::RHF rhf (NO, ao_basis, 1.0e-06);
-    // Plain solver should not converge
+
+    // PLAIN solver should not converge
     BOOST_CHECK_THROW(rhf.solve(hf::rhf::solver::SCFSolverType::PLAIN);, std::runtime_error);
 }
