@@ -17,13 +17,12 @@ endif()
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
+message(STATUS "Building ${LIBRARY_NAME} for ${CMAKE_BUILD_TYPE}")
+
+
 
 # Set CMake variables
 include(${CMAKE_SOURCE_DIR}/cmake/SetCMakeEnvironment.cmake)
-
-
-
-message(STATUS "Building ${LIBRARY_NAME} for ${CMAKE_BUILD_TYPE}")
 
 
 
