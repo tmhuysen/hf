@@ -56,21 +56,27 @@ install:
   # We can't install libint2 (2.2.0+) through APT.
   # Installing libint consists of two parts: compiling the libint compiler and compiling the libint library.
   #   1. Compile the libint compiler
-  - mkdir /tmp/libint && cd /tmp/libint
-  - curl -OL "https://github.com/evaleev/libint/archive/v2.3.1.tar.gz"
-  - tar -xvzf v2.3.1.tar.gz
-  - cd libint-2.3.1
-  - ./autogen.sh
-  - mkdir build && cd build
-  - ../configure CXXFLAGS=-I${BOOST_ROOT}
+  - |
+    if [ ! -d /tmp/libint ]; then
+      mkdir /tmp/libint && cd /tmp/libint
+      curl -OL "https://github.com/evaleev/libint/archive/v2.3.1.tar.gz"
+      tar -xvzf v2.3.1.tar.gz
+      cd libint-2.3.1
+      ./autogen.sh
+      mkdir build && cd build
+      ../configure CXXFLAGS=-I${BOOST_ROOT}
 
   #   2. Generate and compile the libint library
-  - make export
-  - tar -xvzf libint-2.3.1.tgz
-  - cd libint-2.3.1
-  - ./configure CXXFLAGS=-I${BOOST_ROOT}
-  - make
-  - sudo make install
+      make export
+      tar -xvzf libint-2.3.1.tgz
+      cd libint-2.3.1
+      ./configure CXXFLAGS=-I${BOOST_ROOT}
+      make
+      sudo make install
+    else
+      cd /tmp/libint
+      sudo make install
+    fi
 
   # Finally, since libint often complains about reading the basis sets, specify a LIBINT_DATA_PATH to help libint find the files.
   - export LIBINT_DATA_PATH=/usr/local/libint/2.3.1/share/libint/2.3.1/basis
@@ -100,3 +106,8 @@ script:
   - mkdir build && cd build
   - cmake ..
   - make && make test && sudo make install
+
+cache:
+  directories:
+  - /tmp/libint
+  
