@@ -135,7 +135,6 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
 }
 
 
-
 BOOST_AUTO_TEST_CASE ( covergence_test ) {
 
     // Test to see far apart NO+ converges
