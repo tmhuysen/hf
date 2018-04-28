@@ -16,8 +16,8 @@ namespace solver {
 DIISSCFSolver::DIISSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double, 4> g,
                              const hf::DensityFunction calculateP, const hf::TwoElectronMatrixFunction calculateG,
                              double threshold, size_t maximum_number_of_iterations) :
-        BaseSCFSolver(S, H_core, g, calculateP, calculateG, threshold, maximum_number_of_iterations) {
-}
+    BaseSCFSolver(S, H_core, g, calculateP, calculateG, threshold, maximum_number_of_iterations)
+{}
 
 
 
@@ -26,7 +26,7 @@ DIISSCFSolver::DIISSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_co
  */
 
 /**
- *  Execute the SCF procedure. direct inversion of the iterative subspace.
+ *  Execute the SCF procedure using DIIS (direct inversion of the iterative subspace).
  *
  *  If successful, it sets
  *      - @member is_converged to true
@@ -34,9 +34,12 @@ DIISSCFSolver::DIISSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_co
  *      - @member orbital_energies
  */
 void DIISSCFSolver::solve() {
+
     // Initialize error and fock vector for the DIIS procedure
-    this->fock_vector = {};
-    this->error_vector = {};
+    this->fock_matrix_deque = {};
+    this->error_matrix_deque = {};
+
+
     // Solve the generalized eigenvalue problem for H_core to obtain a guess for the density matrix P
     //  H_core should be self-adjoint
     //  S should be positive definite
@@ -44,39 +47,58 @@ void DIISSCFSolver::solve() {
     Eigen::MatrixXd C = gsaes0.eigenvectors();
     Eigen::MatrixXd P = this->calculateP(C);
 
+
     size_t iteration_counter = 1;
     while (!this->is_converged) {
         // Calculate the G-matrix
         Eigen::MatrixXd G = this->calculateG(P, this->g);
         // Calculate the Fock matrix
-        Eigen::MatrixXd f_AO = H_core + G;
+        Eigen::MatrixXd f_AO = this->H_core + G;
 
-        // Fill deques for DIIS procedure
-        this->fock_vector.emplace_back(f_AO);  // add fock matrix
-        this->error_vector.emplace_back((f_AO*P*this->S - this->S*P*f_AO));  // add error matrix
-        if(error_vector.size()==this->max_error_size){  // Collapse subspace
-            //  Initialize B matrix, representation off all errors
-            Eigen::MatrixXd B = -1*Eigen::MatrixXd::Ones(error_vector.size()+1,error_vector.size()+1);  // +1 for the multiplier
-            B(error_vector.size(),error_vector.size()) = 0;  // last address of the matrix is 0
 
-            for(size_t i = 0; i<error_vector.size();i++){
-                for(size_t j = 0; j < error_vector.size();j++){
-                    B(i,j) = (this->error_vector[i].transpose()*this->error_vector[j]).trace();
+        // Update deques for the DIIS procedure
+        this->fock_matrix_deque.emplace_back(f_AO);
+
+        Eigen::MatrixXd error_matrix = f_AO * P * this->S - this->S * P * f_AO;
+        this->error_matrix_deque.emplace_back(error_matrix);
+
+
+        // Collapse the subspace, if needed
+        size_t n = error_matrix_deque.size();  // n is the current subspace dimension
+        if (n == this->maximum_subspace_dimension) {
+
+            // Initialize the augmented B matrix
+            Eigen::MatrixXd B = -1 * Eigen::MatrixXd::Ones(n+1,n+1);  // +1 for the multiplier
+            B(n,n) = 0;
+
+            for (size_t i = 0; i < n; i++) {
+                for (size_t j = 0; j < n; j++) {
+                    // B(i,j) = Tr(e_i^T e_j)
+                    B(i,j) = (this->error_matrix_deque[i].transpose() * this->error_matrix_deque[j]).trace();
                 }
             }
-            Eigen::VectorXd b = Eigen::VectorXd::Zero(error_vector.size()+1);  // +1 for the multiplier
-            b(error_vector.size()) = -1;  // last address is -1
-            Eigen::VectorXd coefficients = B.inverse()*b; // calculate the coefficients
-            // Recombine previous fock matrix into improved fock matrix
+
+            // Initialize the RHS of the system of equations
+            Eigen::VectorXd b = Eigen::VectorXd::Zero(n+1);  // +1 for the multiplier
+            b(n) = -1;  // the last entry of b is accessed through n: dimension of b is n+1 - 1 because of computers
+
+
+            // Solve the DIIS non-linear equations
+            Eigen::VectorXd y = B.inverse() * b;
+
+
+            // Use the coefficients that are in y to construct 'the best' Fock matrix as a linear combination of previous Fock matrices
             f_AO = Eigen::MatrixXd::Zero(this->S.cols(),this->S.cols());
-            for(size_t i = 0; i<error_vector.size();i++){
-                f_AO += coefficients[i]*fock_vector[i];
+            for (size_t i = 0; i < n; i++) {  // n is the dimension of the subspace (not equal to the size of the augmented B matrix)
+                f_AO += y(i) * this->fock_matrix_deque[i];
             }
 
-            // Remove the oldest entries. So we collapse every iteration
-            this->fock_vector.pop_front();
-            this->error_vector.pop_front();
-        }
+            // Remove the oldest entries, which means that we collapse every iteration once the dimension is large enough
+            this->fock_matrix_deque.pop_front();
+            this->error_matrix_deque.pop_front();
+        }  // DIIS
+
+
         // Solve the Roothaan equation (generalized eigenvalue problem)
         Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes (f_AO, this->S);
         C = gsaes.eigenvectors();
@@ -97,9 +119,8 @@ void DIISSCFSolver::solve() {
             // Furthermore, add the orbital energies and the coefficient matrix to (this)
             this->orbital_energies = gsaes.eigenvalues();
             this->C_canonical = C;
-
-            std::cout<<std::endl<<"SCF ITERATIONS : "<<iteration_counter<<std::endl;
         }
+
         else {
             iteration_counter ++;
             // If we reach more than this->maximum_number_of_iterations, the system is considered not to be converging
@@ -111,6 +132,6 @@ void DIISSCFSolver::solve() {
 }
 
 
-} // solver
-} // rhf
-} // hf
+}  // namespace solver
+}  // namespace rhf
+}  // namespace hf

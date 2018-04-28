@@ -32,7 +32,7 @@ namespace rhf {
 
 class RHF {
 private:
-    const size_t MAX_NUMBER_OF_SCF_CYCLES;
+    const size_t maximum_number_of_iterations;
     bool is_converged = false;
     const double scf_threshold;  // convergence threshold for the SCF procedure
 
@@ -40,20 +40,20 @@ private:
     const libwint::AOBasis& ao_basis;
     const libwint::Molecule& molecule;
 
-    const size_t K;  // shortcut to this->ao_basis.calculateNumberOfBasisFunctions()
-    const size_t N;  // shortcut to this->molecule.get_N()
+    const size_t K;  // number of basis functions (=number of spatial orbitals)
+    const size_t N;  // number of electrons
 
     double electronic_energy;  // the converged energy
 
 
-    // Methods
+    // PRIVATE METHODS
     /**
      *  Given a coefficient matrix @param: C, and the number of electrons N, calculate the RHF AO density matrix P
      */
     Eigen::MatrixXd calculateP(const Eigen::MatrixXd& C) const;
 
     /**
-     *  Given the RHF AO density matrix @param: P, and the two-electron integrals @param g in chemist's notation, calculate the RHF G-matrix
+     *  Given the RHF AO density matrix @param: P, and the two-electron integrals @param g in chemist's notation, calculate the RHF G-matrix (the two-electron part of the Fock matrix)
      */
     Eigen::MatrixXd calculateG(const Eigen::MatrixXd& P, const Eigen::Tensor<double, 4>& g) const;
 
@@ -65,27 +65,27 @@ private:
 
 
 public:
-    // Constructors
+    // CONSTRUCTORS
     /**
-     *  Constructor based on a given libwint::AOBasis @param: ao_basis, a molecule @param: molecule and an SCF-cycle @param: scf_threshold, MAX_CYCLES
+     *  Constructor based on a @param molecule, @param ao_basis, @param scf_threshold and a @param maximum_number_of_iterations.
      */
-    RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold = 1e-6, size_t MAX_CYCLES = 128);
+    RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold = 1.0e-6, size_t maximum_number_of_iterations = 128);
 
 
     // DESTRUCTOR
-    ~RHF(){delete(this->SCF_solver_ptr);}
+    ~RHF();
 
 
-    // Getters
+    // GETTERS
     Eigen::VectorXd get_orbital_energies() const;
     double get_orbital_energies(size_t index) const;
     Eigen::MatrixXd get_C_canonical() const;
     double get_electronic_energy() const;
 
 
-    // Methods
+    // PUBLIC METHODS
     /**
-     *  Solve the restricted Hartree-Fock equations (i.e. the Roothaan-Hall equations)
+     *  Solve the restricted Hartree-Fock equations (i.e. the Roothaan-Hall equations). On default, a plain SCF solver is used.
      */
     void solve(hf::rhf::solver::SCFSolverType solver_type = hf::rhf::solver::SCFSolverType::PLAIN);
 

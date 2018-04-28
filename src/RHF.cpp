@@ -17,6 +17,7 @@
 #include "RHF.hpp"
 
 
+
 namespace hf {
 namespace rhf {
 
@@ -99,15 +100,15 @@ double RHF::calculateElectronicEnergy(const Eigen::MatrixXd& P, const Eigen::Mat
  */
 
 /**
- *  Constructor based on a given libwint::AOBasis @param: ao_basis, a number of electrons @param: N and an SCF-cycle @param: scf_threshold, MAX_CYCLES
+ *  Constructor based on a @param molecule, @param ao_basis, @param scf_threshold and a @param maximum_number_of_iterations.
  */
-RHF::RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold, size_t MAX_CYCLES) :
+RHF::RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold, size_t maximum_number_of_iterations) :
     scf_threshold (scf_threshold),
     ao_basis (ao_basis),
     molecule (molecule),
     K (this->ao_basis.calculateNumberOfBasisFunctions()),
     N (this->molecule.get_N()),
-    MAX_NUMBER_OF_SCF_CYCLES (MAX_CYCLES)
+    maximum_number_of_iterations (maximum_number_of_iterations)
 {
 
     if ((this->N % 2) != 0) {
@@ -117,6 +118,15 @@ RHF::RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, do
     if (this->N > 2 * this->K) {
         throw std::invalid_argument("There are too many electrons in the molecule for the given number of spatial orbitals in the AOBasis.");
     }
+}
+
+
+
+/*
+ *  DESTRUCTORS
+ */
+RHF::~RHF() {
+    delete this->SCF_solver_ptr;
 }
 
 
@@ -168,48 +178,42 @@ double RHF::get_electronic_energy() const {
  */
 
 /**
- *  Solve the restricted Hartree-Fock equations (i.e. the Roothaan-Hall equations)
+ *  Solve the restricted Hartree-Fock equations (i.e. the Roothaan-Hall equations). On default, a plain SCF solver is used.
  */
 void RHF::solve(hf::rhf::solver::SCFSolverType solver_type ) {
 
-    // Calculate H_core
+    // Before everything, we need to calculate H_core
     Eigen::MatrixXd H_core = this->ao_basis.get_T() + this->ao_basis.get_V();
-    hf::DensityFunction calculateP = [this] (const Eigen::MatrixXd& x) { return this->calculateP(x);};
-    hf::TwoElectronMatrixFunction calculateG = [this] (const Eigen::MatrixXd & x, const Eigen::Tensor<double, 4> & y) { return this->calculateG(x,y);};
+
+    hf::DensityFunction calculateP = [this] (const Eigen::MatrixXd& x) { return this->calculateP(x); };
+    hf::TwoElectronMatrixFunction calculateG = [this] (const Eigen::MatrixXd& x, const Eigen::Tensor<double, 4>& y) { return this->calculateG(x,y); };
 
     switch (solver_type) {
 
         case hf::rhf::solver::SCFSolverType::PLAIN: {
-            auto plain_solver = new hf::rhf::solver::PlainSCFSolver(this->ao_basis.get_S(), H_core, this->ao_basis.get_g(),
-                                                                    calculateP, calculateG, this->scf_threshold,
-                                                                    this->MAX_NUMBER_OF_SCF_CYCLES);
-            plain_solver->solve();
-            this->SCF_solver_ptr = plain_solver;  // prevent data from going out of scope
-            // we are only assigning this->eigensolver_ptr now, because
-            // this->solveMatrixEigenvalueProblem only accepts BaseMatrixSolver*
+            this->SCF_solver_ptr = new hf::rhf::solver::PlainSCFSolver(this->ao_basis.get_S(), H_core, this->ao_basis.get_g(),
+                                                                       calculateP, calculateG, this->scf_threshold,
+                                                                       this->maximum_number_of_iterations);
+            this->SCF_solver_ptr->solve();
             break;
         }
 
         case hf::rhf::solver::SCFSolverType::DIIS: {
-            auto DIIS_solver = new hf::rhf::solver::DIISSCFSolver(ao_basis.get_S(), H_core, ao_basis.get_g(),
-                                                                   calculateP, calculateG, this->scf_threshold,
-                                                                   this->MAX_NUMBER_OF_SCF_CYCLES);
-            DIIS_solver->solve();
-            this->SCF_solver_ptr = DIIS_solver;  // prevent data from going out of scope
-            // we are only assigning this->eigensolver_ptr now, because
-            // this->solveMatrixEigenvalueProblem only accepts BaseMatrixSolver*
+            this->SCF_solver_ptr = new hf::rhf::solver::DIISSCFSolver(ao_basis.get_S(), H_core, ao_basis.get_g(),
+                                                                      calculateP, calculateG, this->scf_threshold,
+                                                                      this->maximum_number_of_iterations);
+            this->SCF_solver_ptr->solve();
             break;
         }
 
     }
+
     this->is_converged = true;
-    Eigen::MatrixXd P = calculateP(get_C_canonical());
-    this->electronic_energy=calculateElectronicEnergy(P,H_core,H_core+calculateG(P,this->ao_basis.get_g()));
 
-
-
-
-
+    // Calculate the converged electronic energy
+    Eigen::MatrixXd P = this->calculateP(this->SCF_solver_ptr->get_C_canonical());  // AO density matrix
+    Eigen::MatrixXd F = H_core + this->calculateG(P, this->ao_basis.get_g());  // AO Fock matrix
+    this->electronic_energy = calculateElectronicEnergy(P, H_core, F);
 }
 
 

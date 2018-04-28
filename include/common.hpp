@@ -4,7 +4,9 @@
 #include <Eigen/Dense>
 #include <unsupported/Eigen/CXX11/Tensor>
 
-namespace hf{
+
+
+namespace hf {
 
 
 /*
@@ -14,7 +16,9 @@ namespace hf{
 typedef std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> DensityFunction;
 typedef std::function<Eigen::MatrixXd(const Eigen::MatrixXd &, const Eigen::Tensor<double, 4> &)> TwoElectronMatrixFunction;
 
-}
+
+}  // namespace hf
 
 
-#endif //HF_COMMON_HPP
+
+#endif  // HF_COMMON_HPP

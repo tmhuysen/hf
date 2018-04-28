@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE "SCFDIISSolver"
+#define BOOST_TEST_MODULE "SCFPLAINSolver"
 
 #include "hf.hpp"
 
@@ -9,7 +9,7 @@
 
 
 
-BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
+BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo_plain ) {
 
     // In this test case, we will follow section 3.5.2 in Szabo.
     double ref_total_energy = -1.1167;
@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
-    rhf.solve( hf::rhf::solver::SCFSolverType::DIIS);
+    rhf.solve(hf::rhf::solver::SCFSolverType::PLAIN);
     double total_energy = rhf.get_electronic_energy() + h2.calculateInternuclearRepulsionEnergy();
 
     std::cout << total_energy << std::endl;
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
+BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton_plain ) {
 
     // We have some reference data from horton
     double ref_total_energy = -74.942080055631;
@@ -40,12 +40,12 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
 
     Eigen::MatrixXd ref_C (7, 7);
     ref_C << -9.94434594e-01, -2.39158997e-01,  3.61117086e-17, -9.36837259e-02,  3.73303682e-31, -1.11639152e-01, -9.04958229e-17,
-            -2.40970260e-02,  8.85736467e-01, -1.62817254e-16,  4.79589270e-01, -1.93821120e-30,  6.69575233e-01,  5.16088339e-16,
-            1.59542752e-18,  5.29309704e-17, -6.07288675e-01, -1.49717339e-16,  8.94470461e-17, -8.85143477e-16,  9.19231270e-01,
-            -3.16155527e-03,  8.58957413e-02,  2.89059171e-16, -7.47426286e-01,  2.81871324e-30,  7.38494291e-01,  6.90314422e-16,
-            6.65079968e-35,  1.16150362e-32, -2.22044605e-16, -4.06685146e-30, -1.00000000e+00, -1.78495825e-31,  2.22044605e-16,
-            4.59373756e-03,  1.44038811e-01, -4.52995183e-01, -3.29475784e-01,  2.16823939e-16, -7.09847234e-01, -7.32462496e-01,
-            4.59373756e-03,  1.44038811e-01,  4.52995183e-01, -3.29475784e-01, -2.16823939e-16, -7.09847234e-01,  7.32462496e-01;
+             -2.40970260e-02,  8.85736467e-01, -1.62817254e-16,  4.79589270e-01, -1.93821120e-30,  6.69575233e-01,  5.16088339e-16,
+              1.59542752e-18,  5.29309704e-17, -6.07288675e-01, -1.49717339e-16,  8.94470461e-17, -8.85143477e-16,  9.19231270e-01,
+             -3.16155527e-03,  8.58957413e-02,  2.89059171e-16, -7.47426286e-01,  2.81871324e-30,  7.38494291e-01,  6.90314422e-16,
+              6.65079968e-35,  1.16150362e-32, -2.22044605e-16, -4.06685146e-30, -1.00000000e+00, -1.78495825e-31,  2.22044605e-16,
+              4.59373756e-03,  1.44038811e-01, -4.52995183e-01, -3.29475784e-01,  2.16823939e-16, -7.09847234e-01, -7.32462496e-01,
+              4.59373756e-03,  1.44038811e-01,  4.52995183e-01, -3.29475784e-01, -2.16823939e-16, -7.09847234e-01,  7.32462496e-01;
 
 
     // Do our own RHF calculation
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
     ao_basis.calculateIntegrals();
 
     hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-    rhf.solve(hf::rhf::solver::SCFSolverType::DIIS);
+    rhf.solve(hf::rhf::solver::SCFSolverType::PLAIN);
 
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
+BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g_plain ) {
 
     // This example is taken from (http://sirius.chem.vt.edu/wiki/doku.php?id=crawdad:programming:project3), but the input .xyz-file was converted to Angstrom.
     double ref_total_energy = -74.9420799281920;
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-    rhf.solve(hf::rhf::solver::SCFSolverType::DIIS);
+    rhf.solve(hf::rhf::solver::SCFSolverType::PLAIN);
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
 
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
+BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g_plain ) {
 
     // This example is taken from (http://sirius.chem.vt.edu/wiki/doku.php?id=crawdad:programming:project3), but the input .xyz-file was converted to Angstrom.
     double ref_total_energy = -39.726850324347;
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (methane, ao_basis, 1.0e-06);
-    rhf.solve(hf::rhf::solver::SCFSolverType::DIIS);
+    rhf.solve( hf::rhf::solver::SCFSolverType::PLAIN);
     double total_energy = rhf.get_electronic_energy() + methane.calculateInternuclearRepulsionEnergy();
 
 
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
+BOOST_AUTO_TEST_CASE ( h2_631gdp_plain ) {
 
     // We have some reference data from olsens: H2@RHF//6-31G** orbitals
     double ref_electronic_energy = -1.84444667247;
@@ -128,23 +128,23 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
     ao_basis.calculateIntegrals();
 
     hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
-    rhf.solve(hf::rhf::solver::SCFSolverType::DIIS);
+    rhf.solve( hf::rhf::solver::SCFSolverType::PLAIN);
 
 
     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
 }
 
 
-BOOST_AUTO_TEST_CASE ( covergence_test ) {
+BOOST_AUTO_TEST_CASE ( NO_plus_convergence_plain ) {
 
     // Test to see far apart NO+ converges
 
     // Do our own RHF calculation
-    libwint::Molecule NO ("../tests/ref_data/NO.xyz",1);
+    libwint::Molecule NO ("../tests/ref_data/NO.xyz", 1);  // +1 for a cation
     libwint::AOBasis ao_basis (NO, "STO-3G");
     ao_basis.calculateIntegrals();
     hf::rhf::RHF rhf (NO, ao_basis, 1.0e-06);
 
-    // DIIS should converge
-    BOOST_CHECK_NO_THROW(rhf.solve(hf::rhf::solver::SCFSolverType::DIIS));
+    // PLAIN solver should not converge
+    BOOST_CHECK_THROW(rhf.solve(hf::rhf::solver::SCFSolverType::PLAIN);, std::runtime_error);
 }

@@ -6,25 +6,32 @@
 #include "BaseSCFSolver.hpp"
 
 
+
 namespace hf {
 namespace rhf {
 namespace solver {
 
+
 class DIISSCFSolver: public BaseSCFSolver {
 private:
-    std::deque<Eigen::MatrixXd> fock_vector;  // deque of fock matrix for recombination in subspace collapse
-    std::deque<Eigen::MatrixXd> error_vector;  // deque of errors for calculating the lineair recombination coefficients
+    const size_t maximum_subspace_dimension = 6;  // maximum subspace size before collapsing
 
-    const size_t max_error_size = 6;  // maximum size of the deques before subspace starts collapse.
+    std::deque<Eigen::MatrixXd> fock_matrix_deque;  // deque of fock matrices used in the DIIS algorithm
+    std::deque<Eigen::MatrixXd> error_matrix_deque;  // deque of error matrices used in the DIIS algorithm
+
+
+
 public:
     // CONSTRUCTOR
     /**
-     *  Constructor to initialize the const S, H_core, g, calculateP, calculateG, threshold and maximum_number_of_iterations.
+     *  Constructor based on a given (AO) overlap matrix @param S, one-electron integrals @param H_core, two-electron
+     *  integrals @param g, the function @param calculateP, the function calculateG, an SCF convergence threshold
+     *  @param threshold and a @param maximum_number_of_iterations.
      */
     explicit DIISSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
                             const hf::DensityFunction calculateP,
                             const hf::TwoElectronMatrixFunction calculateG,
-                            double threshold = 1e-6, size_t maximum_number_of_iterations = 128);
+                            double threshold = 1.0e-6, size_t maximum_number_of_iterations = 128);
 
 
     // DESTRUCTOR
@@ -33,7 +40,7 @@ public:
 
     // PUBLIC METHODS
     /**
-     *  Execute the SCF procedure. Using the direct inversion of the iterative subspace.
+     *  Execute the SCF procedure using DIIS (direct inversion of the iterative subspace).
      *
      *  If successful, it sets
      *      - @member is_converged to true
@@ -41,15 +48,12 @@ public:
      *      - @member orbital_energies
      */
     void solve() override;
-
-
-
 };
 
 
-} // solver
-} // rhf
-} // hf
+}  // namespace solver
+}  // namespace rhf
+}  // namespace hf
 
 
-#endif //HF_DIISSCFSOLVER_HPP
+#endif  // HF_DIISSCFSOLVER_HPP
