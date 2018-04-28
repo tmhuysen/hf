@@ -1,4 +1,4 @@
-# hf v3.0.0
+# hf v3.0.1
 
 [![Build Status](https://travis-ci.org/GQCG/hf.svg?branch=develop)](https://travis-ci.org/GQCG/hf)
 
@@ -36,6 +36,6 @@ To install this library:
 ## Usage
 Basic usage of this library can be found in the `tests` directory. If you use CMake in other projects, you can add the following CMake command to the CMakeLists.txt-file:
 
-    find_package(hf 3.0.0)
+    find_package(hf 3.0.1)
 
 CMake then provides the commands `hf_INCLUDE_DIRS` to be used in your `target_include_directories` and the library `hf` to be used in your `target_link_libraries`.
