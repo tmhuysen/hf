@@ -133,18 +133,3 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp_plain ) {
 
     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
 }
-
-
-BOOST_AUTO_TEST_CASE ( NO_plus_convergence_plain ) {
-
-    // Test to see far apart NO+ converges
-
-    // Do our own RHF calculation
-    libwint::Molecule NO ("../tests/ref_data/NO.xyz", 1);  // +1 for a cation
-    libwint::AOBasis ao_basis (NO, "STO-3G");
-    ao_basis.calculateIntegrals();
-    hf::rhf::RHF rhf (NO, ao_basis, 1.0e-06);
-
-    // PLAIN solver should not converge
-    BOOST_CHECK_THROW(rhf.solve(hf::rhf::solver::SCFSolverType::PLAIN);, std::runtime_error);
-}

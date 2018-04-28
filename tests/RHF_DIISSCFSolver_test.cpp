@@ -133,18 +133,3 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp_diis ) {
 
     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
 }
-
-
-BOOST_AUTO_TEST_CASE ( NO_cation_convergence_diis ) {
-
-    // Test to see far apart NO+ converges
-
-    // Do our own RHF calculation
-    libwint::Molecule NO ("../tests/ref_data/NO.xyz", 1);  // +1 for a cation
-    libwint::AOBasis ao_basis (NO, "STO-3G");
-    ao_basis.calculateIntegrals();
-    hf::rhf::RHF rhf (NO, ao_basis, 1.0e-06);
-
-    // DIIS should converge
-    BOOST_CHECK_NO_THROW(rhf.solve(hf::rhf::solver::SCFSolverType::DIIS));
-}
