@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 
 # Specify the project, its version and the used language
 project(hf
-        VERSION 3.0.0
+        VERSION 3.0.1
         LANGUAGES CXX)
 
 # To enable the C++11 standard, we have to add flags like -std=gnu+11 or so. CMake can take care of this:
@@ -22,7 +22,13 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 include(${CMAKE_SOURCE_DIR}/cmake/SetCMakeEnvironment.cmake)
 
 
-# Find all required packages
+
+message(STATUS "Building ${LIBRARY_NAME} for ${CMAKE_BUILD_TYPE}")
+
+
+
+# Find all required packages. Update CMake's MODULE_PATH to let CMake know that we have supplied our own FindXXX.cmake files in the cmake directory
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/FindPackages.cmake)
 
 
