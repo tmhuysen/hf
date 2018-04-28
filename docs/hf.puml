@@ -53,9 +53,8 @@ namespace hf {
                     # Eigen::MatrixXd C_canonical
                 == constructors ==
                     **BaseSCFSolver**(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
-                                                                const hf::DensityFunction calculateP,
-                                                                const hf::TwoElectronMatrixFunction calculateG,
-                                                                double threshold = 1e-6, size_t maximum_number_of_iterations = 128)
+                                      const hf::DensityFunction calculateP, const hf::TwoElectronMatrixFunction calculateG,
+                                      double threshold = 1e-6, size_t maximum_number_of_iterations = 128)
                 == destructor ==
                    virtual ~ **BaseSCFSolver**() = default
                 __ pure public virtual methods __
@@ -63,17 +62,14 @@ namespace hf {
                 __ public methods __
                    + Eigen::VectorXd get_orbital_energies() const
                    + Eigen::MatrixXd get_C_canonical() const
-
             }
 
             PlainSCFSolver --|> BaseSCFSolver
             class PlainSCFSolver {
                 == constructors ==
                     **PlainSCFSolver**(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
-                                                                const hf::DensityFunction calculateP,
-                                                                const hf::TwoElectronMatrixFunction calculateG,
-                                                                double threshold = 1e-6, size_t maximum_number_of_iterations = 128)
-
+                                       const hf::DensityFunction calculateP, const hf::TwoElectronMatrixFunction calculateG,
+                                       double threshold = 1e-6, size_t maximum_number_of_iterations = 128)
                 == destructor ==
                     **~PlainSCFSolver**() override = default
                 __ public methods __
@@ -92,19 +88,14 @@ namespace hf {
                     - Eigen::MatrixXd S
                 == constructors ==
                      **DIISSCFSolver**(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
-                                                                const hf::DensityFunction calculateP,
-                                                                const hf::TwoElectronMatrixFunction calculateG,
-                                                                double threshold = 1e-6, size_t maximum_number_of_iterations = 128)
-
+                                       const hf::DensityFunction calculateP, const hf::TwoElectronMatrixFunction calculateG,
+                                       double threshold = 1e-6, size_t maximum_number_of_iterations = 128)
                 == destructor ==
                     **~DIISSSCFSolver**() override = default
                 __ public methods __
                     void **solve**() override
                     /' void **calculateErrorVector**() override  <= currently logistical issue here'/
             }
-
-
-
         }
 
         class RHF {
