@@ -1,5 +1,7 @@
 #include "PlainSCFSolver.hpp"
 
+
+
 namespace hf {
 namespace rhf {
 namespace solver {
@@ -10,12 +12,16 @@ namespace solver {
  */
 
 /**
- *  Constructor to initialize the const S, H_core, g, calculateP, calculateG, threshold and maximum_number_of_iterations.
+ *  Constructor based on a given (AO) overlap matrix @param S, one-electron integrals @param H_core, two-electron
+ *  integrals @param g, the function @param calculateP, the function calculateG, an SCF convergence threshold
+ *  @param threshold and a @param maximum_number_of_iterations.
  */
-PlainSCFSolver::PlainSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g, const hf::DensityFunction calculateP,
-                               const hf::TwoElectronMatrixFunction calculateG, double threshold,
-                               size_t maximum_number_of_iterations) :
-        BaseSCFSolver(S, H_core, g, calculateP, calculateG, threshold, maximum_number_of_iterations) {}
+PlainSCFSolver::PlainSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
+                               const hf::DensityFunction calculateP, const hf::TwoElectronMatrixFunction calculateG,
+                               double threshold, size_t maximum_number_of_iterations
+                               ) :
+    BaseSCFSolver(S, H_core, g, calculateP, calculateG, threshold, maximum_number_of_iterations)
+{}
 
 
 
@@ -32,7 +38,7 @@ PlainSCFSolver::PlainSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_
  *      - @member orbital_energies
  */
 void PlainSCFSolver::solve() {
-    // Solve the generalized eigenvalue problem for H_core to obtain a guess for the density matrix P
+    // Solve the generalized eigenvalue problem for H_core to obtain an initial guess for the density matrix P
     //  H_core should be self-adjoint
     //  S should be positive definite
     Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (this->H_core,this->S);
@@ -44,7 +50,7 @@ void PlainSCFSolver::solve() {
         // Calculate the G-matrix
         Eigen::MatrixXd G = this->calculateG(P, this->g);
         // Calculate the Fock matrix
-        Eigen::MatrixXd f_AO = H_core + G;
+        Eigen::MatrixXd f_AO = this->H_core + G;
         // Solve the Roothaan equation (generalized eigenvalue problem)
         Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes (f_AO, this->S);
         C = gsaes.eigenvectors();

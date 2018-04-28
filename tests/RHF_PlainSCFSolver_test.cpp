@@ -9,7 +9,7 @@
 
 
 
-BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
+BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo_plain ) {
 
     // In this test case, we will follow section 3.5.2 in Szabo.
     double ref_total_energy = -1.1167;
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
+BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton_plain ) {
 
     // We have some reference data from horton
     double ref_total_energy = -74.942080055631;
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
+BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g_plain ) {
 
     // This example is taken from (http://sirius.chem.vt.edu/wiki/doku.php?id=crawdad:programming:project3), but the input .xyz-file was converted to Angstrom.
     double ref_total_energy = -74.9420799281920;
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
+BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g_plain ) {
 
     // This example is taken from (http://sirius.chem.vt.edu/wiki/doku.php?id=crawdad:programming:project3), but the input .xyz-file was converted to Angstrom.
     double ref_total_energy = -39.726850324347;
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
+BOOST_AUTO_TEST_CASE ( h2_631gdp_plain ) {
 
     // We have some reference data from olsens: H2@RHF//6-31G** orbitals
     double ref_electronic_energy = -1.84444667247;
@@ -135,12 +135,12 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( covergence_test ) {
+BOOST_AUTO_TEST_CASE ( NO_plus_convergence_plain ) {
 
     // Test to see far apart NO+ converges
 
     // Do our own RHF calculation
-    libwint::Molecule NO ("../tests/ref_data/NO.xyz",1);
+    libwint::Molecule NO ("../tests/ref_data/NO.xyz", 1);  // +1 for a cation
     libwint::AOBasis ao_basis (NO, "STO-3G");
     ao_basis.calculateIntegrals();
     hf::rhf::RHF rhf (NO, ao_basis, 1.0e-06);

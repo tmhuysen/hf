@@ -3,20 +3,24 @@
 
 #include "BaseSCFSolver.hpp"
 
+
+
 namespace hf {
 namespace rhf {
 namespace solver {
+
 
 class PlainSCFSolver: public BaseSCFSolver {
 public:
     // CONSTRUCTOR
     /**
-     *  Constructor to initialize the const S, H_core, g, calculateP, calculateG, threshold and maximum_number_of_iterations.
+     *  Constructor based on a given (AO) overlap matrix @param S, one-electron integrals @param H_core, two-electron
+     *  integrals @param g, the function @param calculateP, the function calculateG, an SCF convergence threshold
+     *  @param threshold and a @param maximum_number_of_iterations.
      */
-    explicit PlainSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
-                            const hf::DensityFunction calculateP,
-                            const hf::TwoElectronMatrixFunction calculateG,
-                            double threshold = 1e-6, size_t maximum_number_of_iterations = 128);
+    PlainSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
+                   const hf::DensityFunction calculateP, const hf::TwoElectronMatrixFunction calculateG,
+                   double threshold = 1.0e-6, size_t maximum_number_of_iterations = 128);
 
     // DESTRUCTOR
     ~PlainSCFSolver() override = default;
@@ -34,8 +38,11 @@ public:
      void solve() override;
 };
 
-} // solver
-} // rhf
-} // hf
 
-#endif //HF_PLAINSCFSOLVER_HPP
+}  // namespace solver
+}  // namespace rhf
+}  // namespace hf
+
+
+
+#endif  // HF_PLAINSCFSOLVER_HPP

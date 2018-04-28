@@ -1,7 +1,8 @@
 #ifndef HF_SCFSOLVERTYPE_HPP
 #define HF_SCFSOLVERTYPE_HPP
 
-namespace hf{
+
+namespace hf {
 namespace rhf {
 namespace solver {
 
@@ -21,4 +22,4 @@ enum class SCFSolverType {
 
 
 
-#endif //HF_SCFSOLVERTYPE_HPP
+#endif  // HF_SCFSOLVERTYPE_HPP

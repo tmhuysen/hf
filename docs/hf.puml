@@ -84,10 +84,10 @@ namespace hf {
             DIISSCFSolver --|> BaseSCFSolver
             class DIISSCFSolver {
                 __ private members __
-                    - std::deque<Eigen::MatrixXd> fock_vector
-                    - std::deque<Eigen::MatrixXd> error_vector
+                    - std::deque<Eigen::MatrixXd> fock_matrix_deque
+                    - std::deque<Eigen::MatrixXd> error_matrix_deque
 
-                    - const size_t max_error_size = 6
+                    - const size_t maximum_subspace_dimension = 6
                 __ private methods __
                     - Eigen::MatrixXd S
                 == constructors ==
@@ -109,7 +109,7 @@ namespace hf {
 
         class RHF {
             __ private members __
-                - const size_t MAX_NUMBER_OF_SCF_CYCLES = 128
+                - const size_t maximum_number_of_iterations = 128
                 - bool is_converged = false
                 - const double scf_threshold
 
