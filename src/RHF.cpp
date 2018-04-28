@@ -180,7 +180,7 @@ double RHF::get_electronic_energy() const {
 /**
  *  Solve the restricted Hartree-Fock equations (i.e. the Roothaan-Hall equations). On default, a plain SCF solver is used.
  */
-void RHF::solve(hf::rhf::solver::SCFSolverType solver_type ) {
+void RHF::solve(hf::rhf::solver::SCFSolverType solver_type) {
 
     // Before everything, we need to calculate H_core
     Eigen::MatrixXd H_core = this->ao_basis.get_T() + this->ao_basis.get_V();
@@ -199,7 +199,7 @@ void RHF::solve(hf::rhf::solver::SCFSolverType solver_type ) {
         }
 
         case hf::rhf::solver::SCFSolverType::DIIS: {
-            this->SCF_solver_ptr = new hf::rhf::solver::DIISSCFSolver(ao_basis.get_S(), H_core, ao_basis.get_g(),
+            this->SCF_solver_ptr = new hf::rhf::solver::DIISSCFSolver(this->ao_basis.get_S(), H_core, this->ao_basis.get_g(),
                                                                       calculateP, calculateG, this->scf_threshold,
                                                                       this->maximum_number_of_iterations);
             this->SCF_solver_ptr->solve();
