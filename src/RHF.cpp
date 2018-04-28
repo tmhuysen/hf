@@ -17,6 +17,7 @@
 #include "RHF.hpp"
 
 
+
 namespace hf {
 namespace rhf {
 
@@ -99,14 +100,15 @@ double RHF::calculateElectronicEnergy(const Eigen::MatrixXd& P, const Eigen::Mat
  */
 
 /**
- *  Constructor based on a given libwint::AOBasis @param: ao_basis, a number of electrons @param: N and an SCF-cycle @param: scf_threshold
+ *  Constructor based on a @param molecule, @param ao_basis, @param scf_threshold and a @param maximum_number_of_iterations.
  */
-RHF::RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold) :
+RHF::RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold, size_t maximum_number_of_iterations) :
     scf_threshold (scf_threshold),
     ao_basis (ao_basis),
     molecule (molecule),
     K (this->ao_basis.calculateNumberOfBasisFunctions()),
-    N (this->molecule.get_N())
+    N (this->molecule.get_N()),
+    maximum_number_of_iterations (maximum_number_of_iterations)
 {
 
     if ((this->N % 2) != 0) {
@@ -121,6 +123,15 @@ RHF::RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, do
 
 
 /*
+ *  DESTRUCTORS
+ */
+RHF::~RHF() {
+    delete this->SCF_solver_ptr;
+}
+
+
+
+/*
  *  GETTERS
  */
 
@@ -130,7 +141,7 @@ Eigen::VectorXd RHF::get_orbital_energies() const {
         throw std::runtime_error("The RHF procedure isn't converged yet and you are trying to get orbital energies.");
     }
 
-    return this->orbital_energies;
+    return this->SCF_solver_ptr->get_orbital_energies();
 }
 
 double RHF::get_orbital_energies(size_t index) const {
@@ -139,7 +150,7 @@ double RHF::get_orbital_energies(size_t index) const {
         throw std::runtime_error("The RHF procedure isn't converged yet and you are trying to get orbital energies.");
     }
 
-    return this->orbital_energies(index);
+    return this->SCF_solver_ptr->get_orbital_energies()(index);
 }
 
 Eigen::MatrixXd RHF::get_C_canonical() const {
@@ -148,7 +159,7 @@ Eigen::MatrixXd RHF::get_C_canonical() const {
         throw std::runtime_error("The RHF procedure isn't converged yet and you are trying to get the coefficient matrix.");
     }
 
-    return this->C_canonical;
+    return this->SCF_solver_ptr->get_C_canonical();
 }
 
 double RHF::get_electronic_energy() const {
@@ -167,61 +178,42 @@ double RHF::get_electronic_energy() const {
  */
 
 /**
- *  Solve the restricted Hartree-Fock equations (i.e. the Roothaan-Hall equations)
+ *  Solve the restricted Hartree-Fock equations (i.e. the Roothaan-Hall equations). On default, a plain SCF solver is used.
  */
-void RHF::solve() {
+void RHF::solve(hf::rhf::solver::SCFSolverType solver_type) {
 
-    // Calculate H_core
+    // Before everything, we need to calculate H_core
     Eigen::MatrixXd H_core = this->ao_basis.get_T() + this->ao_basis.get_V();
 
-    // Solve the generalized eigenvalue problem for H_core to obtain a guess for the density matrix P
-    //  H_core should be self-adjoint
-    //  S should be positive definite
-    Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (H_core, this->ao_basis.get_S());
-    Eigen::MatrixXd C = gsaes0.eigenvectors();
-    Eigen::MatrixXd P = this->calculateP(C);
+    hf::DensityFunction calculateP = [this] (const Eigen::MatrixXd& x) { return this->calculateP(x); };
+    hf::TwoElectronMatrixFunction calculateG = [this] (const Eigen::MatrixXd& x, const Eigen::Tensor<double, 4>& y) { return this->calculateG(x,y); };
 
-    size_t iteration_counter = 1;
-    while (!this->is_converged) {
-        // Calculate the G-matrix
-        Eigen::MatrixXd G = this->calculateG(P, this->ao_basis.get_g());
+    switch (solver_type) {
 
-        // Calculate the Fock matrix
-        Eigen::MatrixXd f_AO = H_core + G;
-
-        // Solve the Roothaan equation (generalized eigenvalue problem)
-        Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes (f_AO, this->ao_basis.get_S());
-        C = gsaes.eigenvectors();
-
-        // Calculate an improved density matrix P from the improved coefficient matrix C
-        Eigen::MatrixXd P_previous = P; // We will store the previous density matrix
-        P = this->calculateP(C);
-
-        // Check for convergence on the density matrix P
-        if ((P - P_previous).norm() <= this->scf_threshold) {
-            this->is_converged = true;
-
-            // After the SCF procedure, we end up with canonical spatial orbitals, i.e. the Fock matrix should be diagonal in this basis
-            // Let's check if this is the case, within double float precision
-            Eigen::MatrixXd f_SO = libwint::transformations::transform_AO_to_SO(f_AO, C);
-            assert(f_SO.isDiagonal());
-
-            // After the calculation has converged, calculate the electronic energy
-            this->electronic_energy = this->calculateElectronicEnergy(P, H_core, f_AO);
-
-            // Furthermore, add the orbital energies and the coefficient matrix to (this)
-            this->orbital_energies = gsaes.eigenvalues();
-            this->C_canonical = C;
+        case hf::rhf::solver::SCFSolverType::PLAIN: {
+            this->SCF_solver_ptr = new hf::rhf::solver::PlainSCFSolver(this->ao_basis.get_S(), H_core, this->ao_basis.get_g(),
+                                                                       calculateP, calculateG, this->scf_threshold,
+                                                                       this->maximum_number_of_iterations);
+            this->SCF_solver_ptr->solve();
+            break;
         }
-        else {  // not converged yet
-            iteration_counter ++;
 
-            // If we reach more than this->MAX_NUMBER_OF_SCF_CYCLES, the system is considered not to be converging
-            if (iteration_counter >= this->MAX_NUMBER_OF_SCF_CYCLES) {
-                throw std::runtime_error("The SCF procedure did not converge.");
-            }
+        case hf::rhf::solver::SCFSolverType::DIIS: {
+            this->SCF_solver_ptr = new hf::rhf::solver::DIISSCFSolver(this->ao_basis.get_S(), H_core, this->ao_basis.get_g(),
+                                                                      calculateP, calculateG, this->scf_threshold,
+                                                                      this->maximum_number_of_iterations);
+            this->SCF_solver_ptr->solve();
+            break;
         }
-    }  // SCF cycle loop
+
+    }
+
+    this->is_converged = true;
+
+    // Calculate the converged electronic energy
+    Eigen::MatrixXd P = this->calculateP(this->SCF_solver_ptr->get_C_canonical());  // AO density matrix
+    Eigen::MatrixXd F = H_core + this->calculateG(P, this->ao_basis.get_g());  // AO Fock matrix
+    this->electronic_energy = calculateElectronicEnergy(P, H_core, F);
 }
 
 

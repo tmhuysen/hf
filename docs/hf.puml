@@ -29,10 +29,78 @@ namespace libwint {
 
 namespace hf {
     namespace rhf {
+        namespace solver {
+
+
+            enum SolverType {
+                PLAIN
+                DIIS
+            }
+
+            abstract class BaseSCFSolver {
+                __ protected members __
+                    # const size_t maximum_number_of_iterations
+                    # const double threshold
+
+                    # const Eigen::MatrixXd S
+                    # const Eigen::MatrixXd H_core
+                    # const Eigen::Tensor<double ,4> g
+                    # const hf::DensityFunction calculateP
+                    # const hf::TwoElectronMatrixFunction calculateG
+
+                    # bool is_converged = false
+                    # Eigen::VectorXd orbital_energies
+                    # Eigen::MatrixXd C_canonical
+                == constructors ==
+                    **BaseSCFSolver**(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
+                                      const hf::DensityFunction calculateP, const hf::TwoElectronMatrixFunction calculateG,
+                                      double threshold = 1e-6, size_t maximum_number_of_iterations = 128)
+                == destructor ==
+                   virtual ~ **BaseSCFSolver**() = default
+                __ pure public virtual methods __
+                   + void **solve**() = 0
+                __ public methods __
+                   + Eigen::VectorXd get_orbital_energies() const
+                   + Eigen::MatrixXd get_C_canonical() const
+            }
+
+            PlainSCFSolver --|> BaseSCFSolver
+            class PlainSCFSolver {
+                == constructors ==
+                    **PlainSCFSolver**(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
+                                       const hf::DensityFunction calculateP, const hf::TwoElectronMatrixFunction calculateG,
+                                       double threshold = 1e-6, size_t maximum_number_of_iterations = 128)
+                == destructor ==
+                    **~PlainSCFSolver**() override = default
+                __ public methods __
+                    + void **solve**() override
+            }
+
+
+            DIISSCFSolver --|> BaseSCFSolver
+            class DIISSCFSolver {
+                __ private members __
+                    - std::deque<Eigen::MatrixXd> fock_matrix_deque
+                    - std::deque<Eigen::MatrixXd> error_matrix_deque
+
+                    - const size_t maximum_subspace_dimension = 6
+                __ private methods __
+                    - Eigen::MatrixXd S
+                == constructors ==
+                     **DIISSCFSolver**(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
+                                       const hf::DensityFunction calculateP, const hf::TwoElectronMatrixFunction calculateG,
+                                       double threshold = 1e-6, size_t maximum_number_of_iterations = 128)
+                == destructor ==
+                    **~DIISSSCFSolver**() override = default
+                __ public methods __
+                    void **solve**() override
+                    /' void **calculateErrorVector**() override  <= currently logistical issue here'/
+            }
+        }
 
         class RHF {
             __ private members __
-                - const size_t {static} MAX_NUMBER_OF_SCF_CYCLES = 128
+                - const size_t maximum_number_of_iterations = 128
                 - bool is_converged = false
                 - const double scf_threshold
 
@@ -42,22 +110,20 @@ namespace hf {
                 - const size_t K
                 - const size_t N
 
-                - Eigen::VectorXd orbital_energies
-                - Eigen::MatrixXd C_canonical
-                - double electronic_energy
+                - double electronic_energy = 0.0
             __ private methods __
                 - Eigen::MatrixXd **calculateP**(const Eigen::MatrixXd& C) const
                 - Eigen::MatrixXd **calculateG**(const Eigen::MatrixXd& P, Eigen::Tensor<double, 4>& tei) const
                 - double **calculateElectronicEnergy**(const Eigen::MatrixXd& P, const Eigen::MatrixXd& H_core, const Eigen::MatrixXd& F) const
             == constructors ==
-                **RHF**(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold)
+                **RHF**(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, double scf_threshold = 1e-6 , size_t MAX_CYCLES = 128)
             __ public methods __
                 + Eigen::VectorXd **get_orbital_energies**() const
                 + double **get_orbital_energies**(size_t index) const
                 + Eigen::MatrixXd **get_C_canonical**() const
                 + double **get_electronic_energy**() const
 
-                + void **solve**()
+                + void **solve**(const hf::rhf::solver::SolverType& solver_type)
 
                 + size_t **HOMOIndex**() const
                 + size_t **LUMOIndex**() const

@@ -14,21 +14,28 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with GQCG-hf.  If not, see <http://www.gnu.org/licenses/>.
-#ifndef HF_HF_HPP
-#define HF_HF_HPP
+#ifndef HF_SCFSOLVERTYPE_HPP
+#define HF_SCFSOLVERTYPE_HPP
+
+
+namespace hf {
+namespace rhf {
+namespace solver {
+
+
+/**
+ *  An enum class for the implemented SCF solver types.
+ */
+enum class SCFSolverType {
+    PLAIN,
+    DIIS
+};
+
+
+}  // namespace solver
+}  // namespace rhf
+}  // namespace hf
 
 
 
-// This header file acts as a collective header file
-
-#include "BaseSCFSolver.hpp"
-#include "common.hpp"
-#include "DIISSCFSolver.hpp"
-#include "PlainSCFSolver.hpp"
-#include "RHF.hpp"
-#include "SCFSolverType.hpp"
-#include "version.hpp"
-
-
-
-#endif  // HF_HF_HPP
+#endif  // HF_SCFSOLVERTYPE_HPP

@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE "SCFSolver"
+#define BOOST_TEST_MODULE "SCFDIISSolver"
 
-#include "RHF.hpp"
+#include "hf.hpp"
 
 #include <cpputil.hpp>
 
@@ -9,26 +9,7 @@
 
 
 
-BOOST_AUTO_TEST_CASE ( constructor ) {
-
-    // Check if we only accept even numbers of electrons
-    libwint::Molecule h2_cation ("../tests/ref_data/h2_szabo.xyz", +1);  // H2+
-    libwint::AOBasis ao_basis1 (h2_cation, "STO-3G");
-    ao_basis1.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    BOOST_CHECK_THROW(hf::rhf::RHF (h2_cation, ao_basis1, 1.0e-06), std::invalid_argument);
-
-
-    // Check if we don't accept molecules with too many electrons
-    libwint::Molecule h2_many_electrons ("../tests/ref_data/h2_szabo.xyz", -10);  // H2 10-
-    libwint::AOBasis ao_basis2 (h2_many_electrons, "STO-3G");
-    ao_basis2.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    BOOST_CHECK_THROW(hf::rhf::RHF (h2_many_electrons, ao_basis2, 1.0e-06), std::invalid_argument);
-}
-
-
-BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
+BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo_diis ) {
 
     // In this test case, we will follow section 3.5.2 in Szabo.
     double ref_total_energy = -1.1167;
@@ -41,7 +22,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
-    rhf.solve();
+    rhf.solve( hf::rhf::solver::SCFSolverType::DIIS);
     double total_energy = rhf.get_electronic_energy() + h2.calculateInternuclearRepulsionEnergy();
 
     std::cout << total_energy << std::endl;
@@ -49,7 +30,7 @@ BOOST_AUTO_TEST_CASE ( h2_sto3g_szabo ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
+BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton_diis ) {
 
     // We have some reference data from horton
     double ref_total_energy = -74.942080055631;
@@ -73,7 +54,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
     ao_basis.calculateIntegrals();
 
     hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-    rhf.solve();
+    rhf.solve(hf::rhf::solver::SCFSolverType::DIIS);
 
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
@@ -85,7 +66,7 @@ BOOST_AUTO_TEST_CASE ( h2o_sto3g_horton ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
+BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g_diis ) {
 
     // This example is taken from (http://sirius.chem.vt.edu/wiki/doku.php?id=crawdad:programming:project3), but the input .xyz-file was converted to Angstrom.
     double ref_total_energy = -74.9420799281920;
@@ -103,7 +84,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-    rhf.solve();
+    rhf.solve(hf::rhf::solver::SCFSolverType::DIIS);
     double total_energy = rhf.get_electronic_energy() + water.calculateInternuclearRepulsionEnergy();
 
 
@@ -111,7 +92,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_h2o_sto3g ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
+BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g_diis ) {
 
     // This example is taken from (http://sirius.chem.vt.edu/wiki/doku.php?id=crawdad:programming:project3), but the input .xyz-file was converted to Angstrom.
     double ref_total_energy = -39.726850324347;
@@ -127,7 +108,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 
     // Do the SCF cycle
     hf::rhf::RHF rhf (methane, ao_basis, 1.0e-06);
-    rhf.solve();
+    rhf.solve(hf::rhf::solver::SCFSolverType::DIIS);
     double total_energy = rhf.get_electronic_energy() + methane.calculateInternuclearRepulsionEnergy();
 
 
@@ -135,7 +116,7 @@ BOOST_AUTO_TEST_CASE ( crawdad_ch4_sto3g ) {
 }
 
 
-BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
+BOOST_AUTO_TEST_CASE ( h2_631gdp_diis ) {
 
     // We have some reference data from olsens: H2@RHF//6-31G** orbitals
     double ref_electronic_energy = -1.84444667247;
@@ -147,38 +128,8 @@ BOOST_AUTO_TEST_CASE ( h2_631gdp ) {
     ao_basis.calculateIntegrals();
 
     hf::rhf::RHF rhf (h2, ao_basis, 1.0e-06);
-    rhf.solve();
+    rhf.solve(hf::rhf::solver::SCFSolverType::DIIS);
 
 
     BOOST_CHECK(std::abs(rhf.get_electronic_energy() - ref_electronic_energy) < 1.0e-06);
-}
-
-
-BOOST_AUTO_TEST_CASE ( homo ) {
-
-    // Create an RHF object to test the HOMOIndex function on
-    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
-    libwint::AOBasis ao_basis (water, "STO-3G");
-    ao_basis.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-
-
-    // In this case, K=7 and N=10, so the index of the HOMO should be 4
-    BOOST_CHECK_EQUAL(rhf.HOMOIndex(), 4);
-}
-
-
-BOOST_AUTO_TEST_CASE ( lumo ) {
-
-    // Create an RHF object to test the LUMOIndex function on
-    libwint::Molecule water ("../tests/ref_data/h2o_crawdad.xyz");
-    libwint::AOBasis ao_basis (water, "STO-3G");
-    ao_basis.calculateOverlapIntegrals();  // need to calculate one of the integrals to be able to access the number of basis functions
-
-    hf::rhf::RHF rhf (water, ao_basis, 1.0e-06);
-
-
-    // In this case, K=7 and N=10, so the index of the LUMO should be 5
-    BOOST_CHECK_EQUAL(rhf.LUMOIndex(), 5);
 }

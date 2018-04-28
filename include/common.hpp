@@ -14,21 +14,27 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with GQCG-hf.  If not, see <http://www.gnu.org/licenses/>.
-#ifndef HF_HF_HPP
-#define HF_HF_HPP
+#ifndef HF_COMMON_HPP
+#define HF_COMMON_HPP
+
+#include <Eigen/Dense>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 
 
-// This header file acts as a collective header file
-
-#include "BaseSCFSolver.hpp"
-#include "common.hpp"
-#include "DIISSCFSolver.hpp"
-#include "PlainSCFSolver.hpp"
-#include "RHF.hpp"
-#include "SCFSolverType.hpp"
-#include "version.hpp"
+namespace hf {
 
 
+/*
+ * TYPEDEFS
+ */
 
-#endif  // HF_HF_HPP
+typedef std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> DensityFunction;
+typedef std::function<Eigen::MatrixXd(const Eigen::MatrixXd &, const Eigen::Tensor<double, 4> &)> TwoElectronMatrixFunction;
+
+
+}  // namespace hf
+
+
+
+#endif  // HF_COMMON_HPP
