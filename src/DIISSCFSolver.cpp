@@ -31,7 +31,8 @@ namespace solver {
  */
 DIISSCFSolver::DIISSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double, 4> g,
                              const hf::DensityFunction calculateP, const hf::TwoElectronMatrixFunction calculateG,
-                             double threshold, size_t maximum_number_of_iterations) :
+                             double threshold, size_t maximum_number_of_iterations, size_t maximum_subspace_dimension) :
+    maximum_subspace_dimension(maximum_subspace_dimension),
     BaseSCFSolver(S, H_core, g, calculateP, calculateG, threshold, maximum_number_of_iterations)
 {}
 
@@ -51,7 +52,7 @@ DIISSCFSolver::DIISSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_co
  */
 void DIISSCFSolver::solve() {
 
-    // Initialize error and fock vector for the DIIS procedure
+    // Initialize error_matrix and fock_matrix deques for the DIIS procedure
     this->fock_matrix_deque = {};
     this->error_matrix_deque = {};
 

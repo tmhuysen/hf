@@ -30,7 +30,7 @@ namespace solver {
 
 class DIISSCFSolver: public BaseSCFSolver {
 private:
-    const size_t maximum_subspace_dimension = 6;  // maximum subspace size before collapsing
+    const size_t maximum_subspace_dimension;  // maximum subspace size before collapsing
 
     std::deque<Eigen::MatrixXd> fock_matrix_deque;  // deque of fock matrices used in the DIIS algorithm
     std::deque<Eigen::MatrixXd> error_matrix_deque;  // deque of error matrices used in the DIIS algorithm
@@ -47,7 +47,7 @@ public:
     explicit DIISSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_core, const Eigen::Tensor<double ,4> g,
                             const hf::DensityFunction calculateP,
                             const hf::TwoElectronMatrixFunction calculateG,
-                            double threshold = 1.0e-6, size_t maximum_number_of_iterations = 128);
+                            double threshold = 1.0e-6, size_t maximum_number_of_iterations = 128, size_t maximum_subspace_dimension = 6);
 
 
     // DESTRUCTOR
