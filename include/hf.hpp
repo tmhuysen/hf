@@ -21,7 +21,12 @@
 
 // This header file acts as a collective header file
 
+#include "BaseSCFSolver.hpp"
+#include "common.hpp"
+#include "DIISSCFSolver.hpp"
+#include "PlainSCFSolver.hpp"
 #include "RHF.hpp"
+#include "SCFSolverType.hpp"
 #include "version.hpp"
 
 
