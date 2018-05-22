@@ -23,8 +23,6 @@ private:
     double calculatePopulation(const Eigen::MatrixXd& P,std::vector<size_t> AO_set) const;
 
 
-
-
 public:
     // Constructors
     /**
@@ -41,8 +39,9 @@ public:
     /**
      *  Solve the restricted Hartree-Fock equations (i.e. the Roothaan-Hall equations)
      */
-    void solve(hf::rhf::solver::SCFSolverType solver_type, std::vector<size_t> AO_set, double constraint );
-    
+    void solve(hf::rhf::solver::SCFSolverType solver_type, std::vector<size_t> AO_set, double constraint);
+    void solve(hf::rhf::solver::SCFSolverType solver_type, std::vector<size_t> AO_set, double constraint, Eigen::MatrixXd C_guess );
+
     
     // GETTERS
     double get_population_set() const { return population_set; }

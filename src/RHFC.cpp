@@ -100,6 +100,44 @@ void RHFC::solve(hf::rhf::solver::SCFSolverType solver_type, std::vector<size_t>
     this->population_set = calculatePopulation(P, AO_set);
 }
 
+void RHFC::solve(hf::rhf::solver::SCFSolverType solver_type, std::vector<size_t> AO_set, double multiplier, Eigen::MatrixXd C_guess) {
+    // Calculate H_core
+    Eigen::MatrixXd H_core = this->ao_basis.get_T() + this->ao_basis.get_V();
+    Eigen::MatrixXd mod_core = H_core - multiplier*this->calculateGA(AO_set);
+    this->C_guess = C_guess;
+    hf::DensityFunction calculateP = [this] (const Eigen::MatrixXd& x) { return this->calculateP(x);};
+    hf::TwoElectronMatrixFunction calculateG = [this] (const Eigen::MatrixXd & x, const Eigen::Tensor<double, 4> & y) { return this->calculateG(x,y);};
+    switch (solver_type) {
+
+        case hf::rhf::solver::SCFSolverType::PLAIN: {
+            auto plain_solver = new hf::rhf::solver::PlainSCFSolver(this->ao_basis.get_S(), mod_core, this->ao_basis.get_g(),
+                                                                    calculateP, calculateG, this->scf_threshold,
+                                                                    this->MAX_NUMBER_OF_SCF_CYCLES);
+            plain_solver->solve(C_guess);
+            this->SCF_solver_ptr = plain_solver;  // prevent data from going out of scope
+            // we are only assigning this->eigensolver_ptr now, because
+            // this->solveMatrixEigenvalueProblem only accepts BaseMatrixSolver*
+            break;
+        }
+
+        case hf::rhf::solver::SCFSolverType::DIIS: {
+            auto DIIS_solver = new hf::rhf::solver::DIISSCFSolver(this->ao_basis.get_S(), mod_core, this->ao_basis.get_g(),
+                                                                  calculateP, calculateG, this->scf_threshold,
+                                                                  this->MAX_NUMBER_OF_SCF_CYCLES);
+            DIIS_solver->solve(C_guess);
+            this->SCF_solver_ptr = DIIS_solver;  // prevent data from going out of scope
+            // we are only assigning this->eigensolver_ptr now, because
+            // this->solveMatrixEigenvalueProblem only accepts BaseMatrixSolver*
+            break;
+        }
+
+    }
+    this->is_converged = true;
+    Eigen::MatrixXd P = calculateP(get_C_canonical());
+    this->electronic_energy=calculateElectronicEnergy(P,H_core,H_core+calculateG(P,this->ao_basis.get_g()));
+    this->population_set = calculatePopulation(P, AO_set);
+}
+
 
 
 }  // namespace rhf
