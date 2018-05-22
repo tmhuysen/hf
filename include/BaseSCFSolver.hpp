@@ -56,7 +56,7 @@ public:
      *      - @member C_canonical
      *      - @member orbital_energies
      */
-    virtual void solve() = 0;
+    virtual void solve(Eigen::MatrixXd C_guess) = 0;
 
 
     // GETTERS

@@ -29,6 +29,7 @@ protected:
 
     double electronic_energy;  // the converged energy
 
+    Eigen::MatrixXd C_guess;
 
     // Methods
     /**

@@ -101,6 +101,10 @@ RHF::RHF(const libwint::Molecule& molecule, const libwint::AOBasis& ao_basis, do
     if (this->N > 2 * this->K) {
         throw std::invalid_argument("There are too many electrons in the molecule for the given number of spatial orbitals in the AOBasis.");
     }
+
+    Eigen::MatrixXd H_core = this->ao_basis.get_T() + this->ao_basis.get_V();
+    Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (H_core,this->ao_basis.get_S());
+    this->C_guess = gsaes0.eigenvectors();
 }
 
 
@@ -167,7 +171,7 @@ void RHF::solve(hf::rhf::solver::SCFSolverType solver_type ) {
             auto plain_solver = new hf::rhf::solver::PlainSCFSolver(this->ao_basis.get_S(), H_core, this->ao_basis.get_g(),
                                                                     calculateP, calculateG, this->scf_threshold,
                                                                     this->MAX_NUMBER_OF_SCF_CYCLES);
-            plain_solver->solve();
+            plain_solver->solve(C_guess);
             this->SCF_solver_ptr = plain_solver;  // prevent data from going out of scope
             // we are only assigning this->eigensolver_ptr now, because
             // this->solveMatrixEigenvalueProblem only accepts BaseMatrixSolver*
@@ -178,7 +182,7 @@ void RHF::solve(hf::rhf::solver::SCFSolverType solver_type ) {
             auto DIIS_solver = new hf::rhf::solver::DIISSCFSolver(ao_basis.get_S(), H_core, ao_basis.get_g(),
                                                                    calculateP, calculateG, this->scf_threshold,
                                                                    this->MAX_NUMBER_OF_SCF_CYCLES);
-            DIIS_solver->solve();
+            DIIS_solver->solve(C_guess);
             this->SCF_solver_ptr = DIIS_solver;  // prevent data from going out of scope
             // we are only assigning this->eigensolver_ptr now, because
             // this->solveMatrixEigenvalueProblem only accepts BaseMatrixSolver*

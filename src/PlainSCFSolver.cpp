@@ -31,12 +31,13 @@ PlainSCFSolver::PlainSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_
  *      - @member C_canonical
  *      - @member orbital_energies
  */
-void PlainSCFSolver::solve() {
+void PlainSCFSolver::solve(Eigen::MatrixXd C_guess) {
     // Solve the generalized eigenvalue problem for H_core to obtain a guess for the density matrix P
     //  H_core should be self-adjoint
     //  S should be positive definite
-    Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (this->H_core,this->S);
-    Eigen::MatrixXd C = gsaes0.eigenvectors();
+    //Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (this->H_core,this->S);
+    //Eigen::MatrixXd C = gsaes0.eigenvectors();
+    Eigen::MatrixXd C = C_guess;
     Eigen::MatrixXd P = this->calculateP(C);
 
     size_t iteration_counter = 1;

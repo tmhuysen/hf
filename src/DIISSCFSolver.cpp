@@ -33,15 +33,16 @@ DIISSCFSolver::DIISSCFSolver(const Eigen::MatrixXd S, const Eigen::MatrixXd H_co
  *      - @member C_canonical
  *      - @member orbital_energies
  */
-void DIISSCFSolver::solve() {
+void DIISSCFSolver::solve(Eigen::MatrixXd C_guess) {
     // Initialize error and fock vector for the DIIS procedure
     this->fock_vector = {};
     this->error_vector = {};
     // Solve the generalized eigenvalue problem for H_core to obtain a guess for the density matrix P
     //  H_core should be self-adjoint
     //  S should be positive definite
-    Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (this->H_core,this->S);
-    Eigen::MatrixXd C = gsaes0.eigenvectors();
+    //Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd> gsaes0 (this->H_core,this->S);
+    //Eigen::MatrixXd C = gsaes0.eigenvectors();
+    Eigen::MatrixXd C = C_guess;
     Eigen::MatrixXd P = this->calculateP(C);
 
     size_t iteration_counter = 1;

@@ -40,7 +40,7 @@ public:
      *      - @member C_canonical
      *      - @member orbital_energies
      */
-    void solve() override;
+    void solve(Eigen::MatrixXd C_guess) override;
 
 
 
